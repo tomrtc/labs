@@ -3,7 +3,7 @@
 // most simple code does nothing
 // no default compile generated
 
-// template means generic a vay to construct other Type function
+// template means generic ; a vay to construct other Type function
 // typename means builtin types or user-defined types class
 // convention formal parametters of template uses capital letters.
 template <typename T>
@@ -15,7 +15,9 @@ template <typename T>
 
 class singleton {
   T     value; // convention is value.
-
+  // both equivalent:
+  // typedef T value_type;
+  // using value_type = T;
   // conversion from T and to T.
   explicit singleton(const T& t_value) // explicit means no implicit conversion.
     : value(t_value) {}
@@ -66,7 +68,7 @@ class singleton {
   // non-equality operator should be an non-member function with const parameters to be const-correct.
   // it MUST go with equality to ensure the semantic meaning of equality that imply inequality a==b => a!=b !!! 
   friend          // by saying friend the non-member operator is defined ; friend are easy to write inside but not outside.
-  bool operator==(const singleton& t_x, const singleton& t_y)
+  bool operator!=(const singleton& t_x, const singleton& t_y)
   {
     return !(t_x == t_y);  // call equality of singleton<T>
     // return  t_x.value == t_y.value; why not rely on T non-equality directly?
