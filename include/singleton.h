@@ -16,6 +16,11 @@ template <typename T>
 class singleton {
   T     value; // convention is value.
 
+  // conversion from T and to T.
+  explicit singleton(const T& t_value) // explicit means no implicit conversion.
+    : value(t_value) {}
+
+  explicit operator T() const  { return value;}
   // semi-regular type
   // operations : definition an almost regular type without equality.
   // idiomatic use of semiregular :
