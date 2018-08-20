@@ -3,19 +3,24 @@
 
 struct  spy_base
 {
+   enum class ops {
+    nops, copy_constructor, assigment_operator, destructor, default_constructor,
+      equality_predicate, comparaison_predicate, constructor
+  };
+  constexpr size_t ops_size = 8;  // there is no builtin method to have the number of enums ; think enum_value = 12.
+  static const char * counters_labels[ops_size];
+  static double counters[ops_size];
+
+  static void init(size_t t_size);
 };
+
+
 
 template <typename T>
 struct spy : spy_base
 {
-  enum class ops {
-    nops, copy_constructor, assigment_operator, destructor, default_constructor,
-      equality_predicate, comparaison_predicate, constructor
-  };
-  constexpr size_t ops_size = 8;
-  static double counters[ops_size];
-  static const char * counters_labels[ops_size];
-  static void init(size_t t_size);
+ 
+  
 
   spy(const spy& t_x) 
     : value(t_x.value) {
