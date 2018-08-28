@@ -43,8 +43,19 @@ compare_generic<T>(const T& t_left_value, const T& t_right_value)
     return 0;
 }
 
+//Barton–Nackman trick  refer to an idiom introduced by John Barton and Lee Nackman as Restricted Template Expansion.
+// A class template to express an equality comparison interface.
+/* template<typename T> class equal_comparable { */
+/*     friend bool operator==(T const &a, T const &b) { return  a.equal_to(b); } */
+/*     friend bool operator!=(T const &a, T const &b) { return !a.equal_to(b); } */
+/* }; */
 
-
+/*  // Class value_type wants to have == and !=, so it derives from */
+/*  // equal_comparable with itself as argument (which is the CRTP). */
+/* class value_type : private equal_comparable<value_type> { */
+/*   public: */
+/*     bool equal_to(value_type const& rhs) const; // to be defined */
+/* }; */
 template<typename T>
 struct equality_operators
 {
