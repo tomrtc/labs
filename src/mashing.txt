@@ -1,0 +1,65 @@
+   PROcedure store (k:integer);
+  label 1, 2;
+  const empty = 0 {means empty];
+  a, kw, aw, i, n, b, q, qw:integer;
+  procedure updatepredictor;
+     w:integer;
+  begin if q > max then w := max else w  :=  q;
+         if w () qw then L[a, n] := w
+  end;
+begin {main procedure}
+  a := h'(0, k);
+  if T[a] = empty then storeitem (a, k) {completed}
+  ELSE
+   begin kw := T(a]; aw := h'(0, kw);
+      if aw ( ) a then {displace the nonsynonym key kw}
+     begin L[a, g(kw)] := 0; storeitem (a, k);
+            k:=kw;a:=aw
+     end;
+
+
+
+
+  [hereafter, k:the key to be stored, a:the home address of k}
+          n := g(k); b := a; i := O;
+        1:q := L[b, n]; qw := q;
+        ifq=O
+        then {search empty cell}
+           repeat q := q + 1; i := i + 1;
+                   if i > M then table-full else b := h'(i, k)
+           until T[b] = empty
+        else {trace the cluster}
+           2:if i + q > M then table-full
+              else begin b := h'(i + q, k);
+                    if h'(0, T[b]) = a and g(T[b]) = n
+                    then begin J := J + q; updatepredictor; goto 1
+                       end
+                    else begin q := q + 1;
+                                if T[b] () empty then goto 2
+                       end
+                 end;
+       storeitem (b, k); updatepredictor {completed}  
+     end
+
+
+
+
+
+
+procedure search (k:integer);                
+   a, b, n, i:integer;
+begin
+   a := h'(0, k); b := a; n := g(k); i := O;
+   while T[b] ( ) k and L[b, n] ( ) 0
+   {that is, not equal to k, but synonyms are not exhausted}
+   do begin q := L[b, n]; i := i + q; b := h'(i, k);
+      if q > = max
+      then while h'(O, T[b]) () a or g(T[b]) () n
+          [search a synonym one-by-one]
+         do begin i := i + 1; b := h'(i, k) end;
+      end;
+   if T[b] = k then found else not-found
+
+
+
+
