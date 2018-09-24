@@ -1,0 +1,12 @@
+
+If you need to get the configuration of a running Linux kernel, have a look at:
+
+/proc/config.gz
+
+You might use that like this:
+
+zcat /proc/config.gz > /usr/src/linux/.config
+
+If /proc/config.gz isn't there (ie the kernel was compiled without CONFIG_IKCONFIG_PROC) have a look at:
+
+/usr/src/linux/scripts/extract-ikconfig

@@ -1,0 +1,42 @@
+
+SIP can be run, for example, over UDP, TCP or TCP with TLS (SSL) encryption however standard "A" DNS record lookups won't tell you anything about which of these protocols to use. NAPTR records are commonly used with SIP in conjunction with SRV records to discover what types of service are available for a name, (such as SIP, email or web) what name to use for an SRV lookup and (using the SRV record) what port and "A" records to use to find the IP for the service. That might come off sounding somewhat complicated so lets take a look at the entire process through an example.
+
+Lets consider a call to 2125551212@example.com. Given only this address though, we don't know what IP address, port or protocol to send this call to. We don't even know if example.com supports SIP or some other VoIP protocol like H.323 or IAX2. I'm implying that we're interested in placing a call to this URL but if no VoIP service is supported, we could just as easily fall back to emailing this user instead. To find out, we start with a NAPTR record lookup for the domain we were given:
+
+# host -t NAPTR example.com
+example.com NAPTR 10 100 "S" "SIP+D2U" "" _sip._udp.example.com.
+example.com NAPTR 20 100 "S" "SIP+D2T" "" _sip._tcp.example.com.
+example.com NAPTR 30 100 "S" "E2U+email" "!^.*$!mailto:info@example.com!i" _sip._tcp.example.com.
+
+Here we find that example.com gives us three ways to contact example.com, the first of which is "SIP+D2U" which would imply SIP over UDP at _sip._udp.example.com. But first, a bit about all the fields we have here.
+
+In the first line of our result in the example above, example.com is the name we looked up and NAPTR is obviously the type of record. The 10 refers to the preference for the record. The lower number is always tried first. 100 is the order and is only important if the preference numbers are the same.
+
+The "flag" field, in this case "S", is next. There are currently four possible flags: "S" which denotes that an SRV lookup is to be performed on the output of this NAPTR record. "A" means the result should be lookedup as an "A", "AAAA" or "A6" record. A "U" means that the NAPTR result is an absolute URI that the application should process. A "P" would signify a "non-terminal" rule where additional NAPTR lookups would be necessary. It is application specific and can be mutated by regular expressions. (discussed below)
+
+Next we have the "services" field, "SIP+D2U", "SIP+D2T" and "E2U+email" in the example above. "SIP+D2U" is SIP over UDP, "SIP+D2T" is SIP over TCP and (you guessed it) "E2U+email" stands for email. This is the application specific service optios we have to reach example.com.
+
+It might be hard to notice the next field, "", because there is nothing there, but this is the "regular expression" field. The regular expression is used to mutate the original request (in this case "example.com") into something new. We're not using it here but you could use this to substitute the entire name or parts of the name used in the original query. (NOTE: These are NOT cumulative. You would never use a regular expression on the output of a NAPTR lookup, only on the original query.)
+
+The last item we have is the "replacement". In the first result from our example above, we have "_sip._udp.example.com". Regular expressions and replacements are mutually exclusive. If you have one, you shouldn't have the other. The replacement is used as the "result" of the NAPTR lookup instead of mutating the original request as the regular expression in the paragraph above.
+
+That's all of our fields. So because we have the "S" designation in the "flag" field, our next step is to find the SRV record for the replacement "_sip._udp.example.com".
+
+# host -t SRV _sip._udp.example.com
+_sip._udp.example.com SRV 5 100 5060 sip-udp01.example.com.
+_sip._udp.example.com SRV 10 100 5060 sip-udp02.example.com.
+
+We get two answers here so first we'll try sip-udp01.example.com because it has the lower of the two priorities. (priority 5 before priority 10. 100 is the weight which is used to differentiate between records of the same priority.) Next we do an "A" record lookup to find the IP of the server to use to send our SIP INVITE.
+
+# host sip-udp01.example.com
+sip-udp01.example.com has address 11.22.33.44
+
+So in this example, our top preference would be to send a SIP INVITE via UDP to port 5060 on 11.22.33.44. Failing that, we would look up the IP for the other SRV response (sip-udp02.example.com) and hit that via UDP on port 5060 as well. Failing all of that, we would go back to the next response we got via the original NAPTR lookup and do an SRV lookup on _sip._tcp.example.com and presumably try a TCP connection to some other server and port combination. And lastly, failing all of that, the last response from the NAPTR lookup has us sending an email to info@example.com.
+
+Of course this usually isn't done on the command line, but by an application. It is handy, however, to see how you can mimic the requests a VoIP application is going to make for illustration and troubleshooting purposes.
+
+Not all clients will be able to speak all protocols so you should try to supply some alternate methods of contact in your NAPTR response rather than just one protocol in practical implementations. This could become particularly interesting in a fully IP world when, for example, my "contact info" is anders@example.com. The NAPTR record would return several ways for me to be contacted perhaps via VoIP, an IM option and lastly an email option. Remember, VoIP calls aren't restricted to numbers only, so as long as a client supports it, NAPTR allows for your email address to also be your VoIP "number".
+
+While most major DNS server packages out there today support NAPTR and SRV records natively, some do not. In the case of djbdns's tinydns authoritative nameserver, there is a patch for NAPTR support but you can also describe NAPTR records in the generic record format. There is a djbdns NAPTR record builder that creates NAPTR records in the generic syntax for use with an unpatched djbdns tinydns server.
+
+Note: Be aware that some applications (such as OpenSER / OpenSIPS) prepend the protocol information (_sip._tcp or _sip._udp) to names automatically before doing the SRV lookups. Check your nameserver log to see what clients are asking for.

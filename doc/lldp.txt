@@ -1,0 +1,29 @@
+What is LLDP?
+
+The full form of LLDP is Link Layer Discovery Protocol. It simplifies the deployment of access devices and enhances endpoint mapping, troubleshooting and management. LLDP is an IEEE standard and hence it can be used in multi-vendor networks (which is the case with most networks).
+What is the need for LLDP?
+
+With all kinds of devices connecting to the network these days, installing, tracking and managing each of them can be quite difficult in large networks.
+
+There are many applications for LLDP. Some of them are,
+
+    To automate the deployment of access devices like IP Phones, Wireless Access Points, etc
+    To help troubleshoot network attached devices
+    To automate firmware management
+    To discover the type and location (switch port) of a network device, connected anywhere on the network
+    To build a complete network topology (which is also automatically updated after adds/moves/changes)
+    To identify and place a device (like IP phone) on the correct VLAN meant for it, automatically
+    To identify how a device can be powered up (from the main line, from an external source, etc) and how much power it needs
+    To get information like hardware revision, firmware version, serial no, manufacturer/model name, etc from LLDP supported devices connected to the network
+
+How does LLDP work?
+
+LLDP compliant network devices regularly exchange LLDP advertisements with their neighbors and store it in their internal database (MIB). A Network Management Software (NMS) can use SNMP to access this information to build an inventory of the network devices connected on the network, and for other applications. LLDP advertisements can be sent to/received from devices that are directly connected with each other through a physical link.
+What are the advantages of LLDP?
+
+LLDP encourages and enables a multi-vendor network. There are proprietary protocols like CDP (Cisco Discovery Protocol) which automates the deployment and discovery of network devices (it can do much more, actually), but it can be used only with products manufactured by a single vendor. An IEEE standard common to multiple vendors can enable customers to buy network switches from one company, IP phones from another (for example) and still manage them all effectively from a central location. One can also argue that customers have more choices while buying additional devices and hence their capital expenses can be reduced. Another advantage of LLDP is its potential to reduce installation costs/time for various network devices.
+What is LLDP-MED?
+
+LLDP-MED is an enhancement to LLDP that has been developed by TIA (Telecommunications Industry Association) in order to define certain extensions that enhance the automation/management of certain types of network devices like IP phones, etc. LLDP-MED is used between a network device (like switches) and endpoint device (like IP phones) while LLDP can also be used between two network devices.
+
+Though LLDP has been around for quite sometime, it is yet to be fully implemented in all networks. Perhaps companies/organizations should take a more serious look now and consider implementing it in their networks?
