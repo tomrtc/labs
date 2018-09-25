@@ -34,3 +34,11 @@ build
 
 *~
 attic
+doc/*.log
+*+mp0*
+/doc/skelete-fig2.pdf
+/doc/skelete-fig1.pdf
+/doc/skelete.toc
+/doc/skelete.lof
+/doc/skelete.aux
+/doc/skelete.pdf
