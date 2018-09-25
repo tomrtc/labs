@@ -42,3 +42,5 @@ doc/*.log
 /doc/skelete.lof
 /doc/skelete.aux
 /doc/skelete.pdf
+/doc/skelete-fig3.pdf
+skelete-fig*.pdf

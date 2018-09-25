@@ -8,7 +8,7 @@
 \usetikzlibrary{decorations.pathreplacing}
 \usepackage[prefix=rt]{xcolor-material}
 \usepackage{blindtext, rotating}
-\usepackage{ tipa }
+
 %\usepackage{multicol}			% pour mettre un \begin{multicols}...\end{multicols} et faire du multicolonnage localement dans une page
 
 %XeLaTeX is essentially a replacement for pdfLaTeX. It was primarily developed to enable better font handling. For latin writers, the main benefit of XeLaTeX is the ability to use the fonts on your computer, just as you can with other software.
@@ -20,18 +20,19 @@
 % Here, the scales of the fonts have been chosento equalise their lowercase letter heights
 \setmainfont{TeX Gyre Adventor}[Scale=MatchLowercase]
 \usepackage{makeidx}			% pour permettre de construire un index
-
+\usepackage{fancyhdr, graphicx}
 \usepackage{fancybox}			% pour faire des boites entourée de différents types de cadres
 \usepackage{framed}			% pour mettre des sortes de minipages encadrées sur plusieures pages, sur fond coloré
 \usepackage{boxedminipage}		% pour mettre des bordures aux minipages
 \usepackage{relsize,fancyvrb}		% pour mettre des textes non interprétés encadrés et changer la taille des caractères à l'intérieur
 
 \usepackage{lettrine}			% pour mettre des lettrines
-\usepackage{ upgreek }
+\usepackage{upgreek}
 \usepackage{listings}			% pour mettre du code informatique non interprété
-\usepackage[shellescape,latex]{gmp}
+%%\usepackage[shellescape,latex]{gmp}
 \usepackage{mpgraphics}
 \usepackage{caption}			% pour gérer encore mieux les légendes
+\usepackage{showlabels}                 % track of labels\usepackage[final]{showlabels}
 \makeatother				% pour refaire de @ une lettre différente des autres (exploitée dans des macros)
 
 \renewcommand{\captionfont}{\it \small}	% pour avoir de l'italique pour le texte de légende
@@ -40,8 +41,8 @@
 \captionsetup{labelsep=endash,justification=centering,belowskip=10pt}	% pour avoir un petit trait après le no de légende
 
 \lstdefinestyle{hama}{%
-    literate={1}{\raisebox{0.5ex}{\fbox{\textcolor{blue}{1}}}}{1}%
-        {0}{\fbox{\textcolor{red}{0}}}{1},%
+    literate={1}{\raisebox{0.5ex}{\fbox{\textcolor{rtLightBlue400}{1}}}}{1}%
+    {0}{\fbox{\textcolor{rtLightBlue900}{0}}}{1},%
     basicstyle=\ttfamily,%
 }
 
@@ -50,12 +51,15 @@
 
 \newcommand{\Ra}[1]{\textcolor{rtLightBlue900}R\textsubscript{\textcolor{rtLightBlue900}{#1}}}
 \newcommand{\Rab}[1]{\small{\textcolor{rtLightBlue900}{2}}\textcolor{rtLightBlue900}R\textsubscript{\textcolor{rtLightBlue900}{#1}}}
-\newcommand{\gd}[1]{\textbf{\textdelta}\textsubscript{\textbf{#1}}}
-\newcommand{\gc}[1]{\textbf{\textgamma}\textsubscript{\textbf{#1}}}
-\newcommand{\gq}[1]{\textbf{\textepsilon}\textsubscript{\textbf{#1}}}
+
+
+%% http://artofproblemsolving.com/wiki/index.php/LaTeX:Symbols
+\newcommand{\gd}[1]{\textbf{$\updelta$}\textsubscript{#1}}
+\newcommand{\gc}[1]{\textbf{$\upgamma$}\textsubscript{#1}}
+\newcommand{\gq}[1]{\textbf{$\upepsilon$}\textsubscript{#1}}
 \newcommand{\Ca}[1]{\textcolor{rtLightBlue900}C\textsubscript{\textcolor{rtLightBlue900}{#1}}}
-\usepackage{nextpage}							% pour retirer les entêtes de la dernière page vide d'un chapitre ;
-\newcommand\myclearpage{\cleartooddpage[\thispagestyle{plain}]}		% il faut ensuite placer \myclearpage à la fin de chaque chapitre.
+%\usepackage{nextpage}							% pour retirer les entêtes de la dernière page vide d'un chapitre ;
+%\newcommand\myclearpage{\cleartooddpage[\thispagestyle{plain}]}		% il faut ensuite placer \myclearpage à la fin de chaque chapitre.
 \def\siecle#1{\textsc{\romannumeral #1}\textsuperscript{e}~siècle}	% macro pour écrire les siècles : \siecle{19} par exemple
 
 \newcommand{\concept}[1]{\textcolor{rtLightBlue900}{#1}}
@@ -71,31 +75,76 @@
 \newcommand{\E}{\mathrm{E}}
 \DeclareMathOperator{\ddiv}{div}
 %\makeindex				% pour construire effectivement l'index
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{}
+\fancyhead[R]{
+\includegraphics[width=4cm]{company-logo.eps}
+}
+\pagestyle{plain}
+\title{\thispagestyle{fancy}\flushleft{\HAMA{0010111aa} GÉOMÉTROGRAPHIE    }}
+\date{}
+\newcommand\rlArrow[1]{$\color{red}{abc \rightarrow} #1 \color{blue}{\leftarrow} abc$\\}
+
+
+
 \begin{document}
-\tableofcontents{}
 
-\renewcommand{\listfigurename}{Liste des figures}
-\listoffigures
+\maketitle
+%%\thispagestyle{fancy}
 
-\myclearpage
+%%\tableofcontents{}
+
+%%\renewcommand{\listfigurename}{Liste des figures}
+%%\listoffigures
+
+%\myclearpage
+
+
 
 %\listoftables
 %%Text\textsubscript{effect}
-\chapter{Introduction}
 
+
+
+\chapter{Introduction}
+\thispagestyle{fancy}
 \lettrine{C}{ette introduction} présente en premier lieu l'incontournable ...\textbf{Giordano Bruno (1548-1600)\index{Bruno Giordano}} \LaTeX{}
 $R = \R N = \N Z = \Z sp= \Sp E = \E $ et   $x \ddiv y    floor \floor{x} $
 
 
+\begin{align*}
+    fraction&=\frac{numerator}{denominator}\\
+    &\\
+    \text{fraction}&=\frac{\text{numerator}}{\text{denominator}}
+\end{align*}
+\begin{align}
+F = f_1+f_2+f_3+...+f_n
+\intertext{can be written as}
+\sum_1^n{f_i}
+\end{align}
+The summation of every item is: $\sum$
+
+$$ \textrm{The summation of every item is: } \sum$$
 
 
-
+\[
+\mathit{def}
+    f(x) =
+    \begin{cases}
+        0 & \text{if $x=0$,}\\
+        \frac{1}{x} & \text{otherwise.}
+    \end{cases}
+\]
 
 \begin{figure*}[t]
 \caption[La taille des planètes]{La queue de la comète\label{billetcomete}}
-\includegraphics[width=4cm]{Giordano_Bruno.eps}
+\shadowbox{\includegraphics[width=4cm]{Giordano_Bruno.eps}}
 \end{figure*}
-
+\begin{figure}[ht]
+    \centering
+    \shadowbox{\phantom{\rule{4cm}{3cm}}}
+    \caption{Phantom figure}
+\end{figure}
 \section{Définitions des expressions mathematiques}
 
 
@@ -104,7 +153,20 @@ draw (20,20)--(0,0)--(0,30)--(30,0)--(0,0)
 \end{mpinline}
 
 \section{GÉOMÉTROGRAPHIE}
-
+\begin{mpdisplay}
+def compute_curve(suffix f)(expr xmin,xmax,xinc) = ( (xmin,f(xmin))
+    for x=xmin+xinc step xinc until xmax: ..(x,f(x)) endfor )
+enddef;
+vardef f(expr x)=sind(x*180/3.14) enddef;
+path g;
+g:=compute_curve(f,-1.57,9.44,0.1);
+draw g xscaled 8pt yscaled 0.9cm withpen pencircle scaled 2bp;
+draw (-1cm,0)--(3cm,0);
+draw (0,1cm)--(0,-1cm);
+draw fullcircle scaled 1.8cm;
+label("y",(0,1.2cm));
+label("x",(3.2cm,0));
+\end{mpdisplay}
 \begin{mpdisplay}
 u=1cm;
 draw (2u,2u)--(0,0)--(0,3u)--(3u,0)--(0,0);
@@ -407,7 +469,7 @@ $\mathbb{R}_{\leq 0}$
 Greek Letters
 
 $\alpha$ 	alpha
-$\beta$  \backslash beta 	$\gamma$  \backslash gamma 	$\delta$  \backslash delta
+
 %% $\beta$  \\backslashbeta 	$\gamma$  \\backslashgamma 	$\delta$  \\backslashdelta
 %% $\epsilon$ 	epsilon 	$\varepsilon$  \\backslashvarepsilon 	$\zeta$  \\backslashzeta 	$\eta$  \\backslasheta
 %% $\theta$  \\backslashtheta 	$\vartheta$  \\backslashvartheta 	$\iota$  \\backslashiota 	$\kappa$  \\backslashkappa
@@ -445,7 +507,22 @@ $\beta$  \backslash beta 	$\gamma$  \backslash gamma 	$\delta$  \backslash delta
 %% $\swarrow$ 	\swarrow 	$\nwarrow$ 	\nwarrow
 \onecolumn
 \section{liste}
-
+\begin{tabular}{lll}
+    \hline
+    Name & Command & Example\\
+    \hline
+    default space & & \rlArrow{}\\
+    thin space & \verb|\,| & \rlArrow{\,}\\
+    thin neg. space & \verb|\!| & \rlArrow{\!}\\
+    medium space & \verb|\:| & \rlArrow{\:}\\
+    large space & \verb|\;| & \rlArrow{\;}\\
+    0.5em space & \verb|\enspace| & \rlArrow{\enspace}\\
+    1em space & \verb|\quad| & \rlArrow{\quad}\\
+    2em space & \verb|\qquad| & \rlArrow{\qquad}\\
+    custom space & \verb|\hspace{3em}| & \rlArrow{\hspace{3em}}\\
+    fill empty space & \verb|\hfill| & $\color{red}{abc \rightarrow} \color{black}\cdots$\\
+    \hline
+\end{tabular}
 \begin{turn}{45}
   \begin{minipage}{\linewidth}
     Tracer une droite quelconque; op.
