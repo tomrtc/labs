@@ -1,4 +1,4 @@
-\documentclass[12pt,a4paper]{book} % 12pt font size, A4 paper and two-sided margins twocolumn,oneside
+\documentclass[12pt,a4paper,twocolumn]{book} % 12pt font size, A4 paper and two-sided margins twocolumn,oneside
 
 \usepackage[a4paper,text={16.5cm,25.2cm},centering]{geometry}
 \makeatletter				% pour faire de @ une lettre simple (et non un caractère associé à une macro interne
@@ -7,9 +7,10 @@
 \usepackage{tikz}
 \usetikzlibrary{decorations.pathreplacing}
 \usepackage[prefix=rt]{xcolor-material}
+\usepackage{blindtext, rotating}
+\usepackage{ tipa }
+%\usepackage{multicol}			% pour mettre un \begin{multicols}...\end{multicols} et faire du multicolonnage localement dans une page
 
-\usepackage{multicol}			% pour mettre un \begin{multicols}...\end{multicols} et faire du multicolonnage localement dans une page
- 
 %XeLaTeX is essentially a replacement for pdfLaTeX. It was primarily developed to enable better font handling. For latin writers, the main benefit of XeLaTeX is the ability to use the fonts on your computer, just as you can with other software.
 \usepackage{fontspec,xltxtra,xunicode}
 \defaultfontfeatures{}
@@ -26,6 +27,7 @@
 \usepackage{relsize,fancyvrb}		% pour mettre des textes non interprétés encadrés et changer la taille des caractères à l'intérieur
 
 \usepackage{lettrine}			% pour mettre des lettrines
+\usepackage{ upgreek }
 \usepackage{listings}			% pour mettre du code informatique non interprété
 \usepackage[shellescape,latex]{gmp}
 \usepackage{mpgraphics}
@@ -48,17 +50,26 @@
 
 \newcommand{\Ra}[1]{\textcolor{rtLightBlue900}R\textsubscript{\textcolor{rtLightBlue900}{#1}}}
 \newcommand{\Rab}[1]{\small{\textcolor{rtLightBlue900}{2}}\textcolor{rtLightBlue900}R\textsubscript{\textcolor{rtLightBlue900}{#1}}}
-\newcommand{\gd}[1]{\textbf{δ}\textsubscript{\textbf{#1}}}
-\newcommand{\gc}[1]{\textbf{γ}\textsubscript{\textbf{#1}}}
-\newcommand{\gq}[1]{\textbf{ε}\textsubscript{\textbf{#1}}}
+\newcommand{\gd}[1]{\textbf{\textdelta}\textsubscript{\textbf{#1}}}
+\newcommand{\gc}[1]{\textbf{\textgamma}\textsubscript{\textbf{#1}}}
+\newcommand{\gq}[1]{\textbf{\textepsilon}\textsubscript{\textbf{#1}}}
 \newcommand{\Ca}[1]{\textcolor{rtLightBlue900}C\textsubscript{\textcolor{rtLightBlue900}{#1}}}
 \usepackage{nextpage}							% pour retirer les entêtes de la dernière page vide d'un chapitre ;
 \newcommand\myclearpage{\cleartooddpage[\thispagestyle{plain}]}		% il faut ensuite placer \myclearpage à la fin de chaque chapitre.
 \def\siecle#1{\textsc{\romannumeral #1}\textsuperscript{e}~siècle}	% macro pour écrire les siècles : \siecle{19} par exemple
 
-\newcommand{\concept}[1]{\textcolor{rtLightBlue900}{#1}} 
+\newcommand{\concept}[1]{\textcolor{rtLightBlue900}{#1}}
 \newcommand{\subconcept}[1]{\textcolor{rtLightBlue900}{\textit{#1}}}
-
+\newcommand{\ceil}[1]{{\lceil #1 \rceil}}
+\newcommand{\Ceil}[1]{{\left\lceil #1 \right\rceil}}
+\newcommand{\floor}[1]{{\lfloor #1 \rfloor}}
+\newcommand{\Floor}[1]{{\left\lfloor #1 \right\rfloor}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Sp}{\mathbb{S}}
+\newcommand{\E}{\mathrm{E}}
+\DeclareMathOperator{\ddiv}{div}
 %\makeindex				% pour construire effectivement l'index
 \begin{document}
 \tableofcontents{}
@@ -72,7 +83,9 @@
 %%Text\textsubscript{effect}
 \chapter{Introduction}
 
-\lettrine{C}{ette introduction} présente en premier lieu l'incontournable ...\textbf{Giordano Bruno (1548-1600)\index{Bruno Giordano}} \LaTeX{} 
+\lettrine{C}{ette introduction} présente en premier lieu l'incontournable ...\textbf{Giordano Bruno (1548-1600)\index{Bruno Giordano}} \LaTeX{}
+$R = \R N = \N Z = \Z sp= \Sp E = \E $ et   $x \ddiv y    floor \floor{x} $
+
 
 
 
@@ -102,25 +115,179 @@ endfor
 \end{mpdisplay}
 %\entry{Géométrographie}{définition}{ʒeɔ.me.tʁɔ.ɡʁa.fi}{estArt des constructions géométriques .}
 
+essai de ligne
+
+
+\begin{mpdisplay}
+draw fullcircle xscaled 6.5cm yscaled 2\mpdim\baselineskip;
+\end{mpdisplay}
+e1
+\begin{mpdisplay}
+u=.5cm;
+z1 = (0,0);
+z2 = (3u,0);
+z3 = (0,3u);
+z4 = (-1.5u,-1.5u);
+z5 = (3u,3u);
+z6 = (1.5u,-1.5u);
+draw z1--z2 dashed evenly;
+draw z1--z4 dashed evenly;
+draw z1--z3 dashed evenly;
+z7 = z6 shifted (0,3u);
+pickup pencircle scaled 1.5;
+draw z2--z6--z4;
+draw z6--z7;
+draw z2--z5;
+z8 = z4 shifted (0,3u);
+draw z7--z8;
+draw z7--z5;
+z9 = z1 shifted (0,3u);
+draw z9--z8;
+draw z4--z8;
+draw z9--z5;
+ahlength:=7pt;
+pickup pencircle scaled .5;
+drawarrow z4--(z4 shifted (-1u,-1u));
+drawarrow z2--(z2 shifted (1u,0));
+drawarrow z3--(z3 shifted (0,1u));
+label.urt("B", z2);
+label.lrt("Y", (z2 shifted (1u,0)));
+label.urt("C", z3);
+label.ulft("Z", (z3 shifted(0,1u)));
+label.lft("O", z1);
+label.lft("A", z4);
+label.lrt("X", (z4 shifted (-1u,-1u)));
+\end{mpdisplay}
+e5
+\begin{mpdisplay}
+  u=1cm;
+  z1=(0,0);
+  pickup pencircle scaled 1;
+  empovlf(z1,u);
+  z2 = (2u,0);
+  z3 = z1 shifted (0,.33u);
+  z4 = z2 shifted (0,.33u);
+  z5 = z1 shifted (0,-.33u);
+  z6 = z2 shifted (0,-.33u);
+  z7 = z4 shifted (0,.5u);
+  pickup pencircle scaled 1.2;
+  draw z3--z4--z6--z5;
+  pickup pencircle scaled .5;
+  ahlength:=8pt;
+  drawarrow z7--z4;
+  drawarrow z1--(0,-.8u);
+  drawarrow z1--(2.3u,0);
+  z10 = (3.2u,0);
+  z11 = z10 shifted (.33u,0);
+  z12 = z10 shifted (0,.33u);
+  z13 = z10 shifted (-.33u,0);
+  z14 = z10 shifted (0,-.33u);
+  pickup pencircle scaled 1.2;
+  draw z11..z12..z13..z14..cycle;
+  pickup pencircle scaled .5;
+  z15 = z10 shifted (-.5u,0);
+  z16 = z10 shifted (0,-.5u);
+  drawarrow z10--z15;
+  drawarrow z10--z16;
+  ahlength:=4pt;
+  z17 = z10 shifted (.3u, (-sqrt(.33u**2-.3u**2)));
+  drawarrow z10--z17 dashed evenly scaled 0.5;;
+  cotah(z5, z6, -.15u, -1, "L", .5u);
+  cotav(z3, z5, -.5u, -1,\btex $\rm 2R$ etex, .5u);
+  label.urt("r", (z10+z17)/2);
+  label.top("Y", z15);
+  label.rt("X", z16);
+  label.top("Z", (2.3u,0));
+  label.lrt("X", (0,-.8u));
+  label.urt("O", z1);
+  label.top("O",z10);
+  label.rt("P",z7);
+\end{mpdisplay}
+
+\begin{mpdisplay}
+u=1cm;
+z0=(0,0);
+z1=(7.8u,0);
+pickup pencircle scaled 1;
+draw (x0-1u,0)--z1;
+z2 = (1.5u,5u);
+R=5;
+z3=(0,u*(1-cosd 17.46)*R);
+z4=((R*sind(8.73))*u,R*(1-cosd (8.73))*u) ;
+z5=(1.5u,0);
+z6=((1.5+R*sind (180/24))*u,R*(1-cosd (180/24))*u);
+z7=((1.5+R*sind (180/12))*u,R*(1-cosd (180/12))*u);
+z8=((1.5+R*sind (180/8))*u,R*(1-cosd (180/8))*u);
+z9=((1.5+R*sind (180/6))*u,R*(1-cosd (180/6))*u);
+pickup pencircle scaled 5;
+draw z2;
+draw z3;
+draw z9;
+pickup pencircle scaled 2;
+draw z3..z4..z5..z6..z7..z8..z9;
+pickup pencircle scaled .6;
+draw z2--z5;
+draw z2--z7;
+label.lft(btex $\rho$ etex, (1.5u,1.5u));
+z10=(-1u,-5u);
+z11=(x9,-5u);
+draw z9--z11 dashed evenly;
+draw z3--(z0 shifted (0,-5u)) dashed evenly;
+draw z5--(z5 shifted (0,-5u)) dashed evenly;
+draw z7--(x7,-5u) dashed evenly;
+z12=(x5,-3u);
+z13=(x7,-3u);
+filldraw z12--z13--(x7,-5u)--(x5,-5u)--cycle withcolor .8white;
+draw z12--z13--(x7,-5u)--(x5,-5u)--cycle dashed evenly;
+draw (x0,-2.5u){dir 0}..z13..(x11,-3.5u){dir 0};
+pickup pencircle scaled 1;
+draw z10--(7.5u,-5u);
+pickup pencircle scaled .6;
+draw z7--(x7+R*(cosd (180/12))*u,(R*sind (180/12)*u));
+draw (x6,(y9-(x9-x6)*(sind 180/6)/cosd 180/6))--(x9+(5*cosd 180/6)*u,y9+(5*sind 180/6)*u);
+draw z3--((9*cosd 17.46)*u,-(9*sind 17.46)*u);
+label.top(btex $A$ etex,z3);
+label.top(btex $B$ etex,z9);
+label.urt(btex $n$ etex,z7 shifted (0,.2u));
+label.urt(btex $ds$ etex,z5 shifted (.3u,.1u));
+drawdblarrow (x5,-1.5u)--(x7,-1.5u);
+drawdblarrow (x7,-1.5u)--(x9,-1.5u);
+label.bot(btex $dx$ etex,(x6,-1.5u));
+label.bot(btex $x$ etex,((x7+x9)/2,-1.5u));
+label.urt(btex $a_1$ etex,(x0,-2.5u));
+label.rt(btex $b_1$ etex,(x11,-3.5u));
+label.rt(btex $M$ etex,(x7,-4u));
+label.llft(btex $m$ etex,z5);
+drawdblarrow (8.5u*cosd 17.46,-8.5u*sind 17.46){dir 72}..(x9+4.5u*cosd 180/6,y9+4.5u*sind 180/6){dir 120};
+label.rt(btex $\theta$ etex,(8.65u,.6u));
+label.rt(btex $B'$ etex,z9 shifted (0,-1.6u));
+drawdblarrow (6u,0){dir 90}..(5.9u,.89u){dir 100};
+label.rt(btex $d\theta$ etex,(5.95u,.54u));
+label.urt(btex $x\,d\theta$ etex,(x9,.1u));
+drawdblarrow (x5,2.5u){dir 0}..(x6,2.6u){dir 180/12};
+label.bot(btex $d\theta$ etex,((x5+x6)/2,2.45u));
+\end{mpdisplay}
+
+
+
 \lettrine{L}{a théorie} proprement dite qui n'est, en somme, que l'indication
 de notations avec les conventions adoptées.
-\begin{mpost}[name=mwe]
+\begin{mpdisplay}
     numeric u; u:=1.0cm;
     draw (0,0)*u--(1,0)*u;
     label(\btex "A" etex, (0,0)*u);
     label(\btex "B" etex, (1,0)*u);
-\end{mpost}
+\end{mpdisplay}
 
-\usempost[width=4.0in]{mwe}
-\begin{mpost*}
+\begin{mpdisplay}
 ua:=1;
 for i = -.3cm step .6cm until 3.6cm:
     label.bot(decimal ua,(i,-3.7cm));
     ua := incr(ua);
 endfor
-  % draw a line  
-  draw (1cm,2cm) -- (3cm,5cm);     
-\end{mpost*}
+  % draw a line
+  draw (1cm,2cm) -- (3cm,5cm);
+\end{mpdisplay}
 
 
 \subsection{NOTATIONS.}
@@ -161,15 +328,15 @@ une distinction dont 1 importance n'est que spéculative;
 Symboles pour l'équerre :
 
 Parallèle ou perpendiculaire quelconque à la ligne de terre au moyen de l'equerre ou du T : \gq{} .
- 
+
  Ligne de rappel ou parallèle  à la ligne de terre passant par un point déterminé : \gq{1} .
- 
+
 Parallèle  quelconque à une droite :\gq{2} .
- 
+
  Parallèle à une droite donnée passant par un point determiné  :\gq{3} .
- 
- 
- 
+
+
+
  \subsection{coefficient de simplicité ou simplicité.}
  Nous supposerons que toute droite tracée et que tout cercle
 tracé dans le cours d'une construction le sont en entier.
@@ -178,7 +345,7 @@ A la Géométrie canonique des Grecs, qui n'admet que les
 solutions par la droite et le cercle, correspondra la Géornétrographie canonique qui admettra seulement la règle et le compas.
 
 
-une construction ; en notation géométrographique \emph{Lemoine} ;s'exprimera par une formule : 
+une construction ; en notation géométrographique \emph{Lemoine} ;s'exprimera par une formule :
 
 $[l_{1}.\Ra{1} + l_{2}.\Ra{2} + m_{1}.\Ca{1} + m_{2}.\Ca{2} + m_{3}.\Ca{3}]$.
 
@@ -190,9 +357,9 @@ Le nombre $ l_{2}$ correspond au nombre de ligne tracées.
 
 Le nombre $m_{3}$ correspond au nombre de cercles tracés.
 
-une construction ; en notation géométrographique \emph{Bernes}  avec equerre,  \gd{1} \gc{1} \gq{1} ;s'exprimera par une formule : 
+une construction ; en notation géométrographique \emph{Bernes}  avec equerre,  \gd{1} \gc{1} \gq{1} ;s'exprimera par une formule :
 
-$[l.\gd{} + l_{1}.\gd{1} + l_{2}.\gd{2} + m.\gc{} + m_{1}.\gc{1} + m_{2}.\gc{2} + n.\gq{} + n_{1}.\gq{1} + n_{2}.\gq{2} + n_{3}.\gq{3} ]$ 
+$[l.\gd{} + l_{1}.\gd{1} + l_{2}.\gd{2} + m.\gc{} + m_{1}.\gc{1} + m_{2}.\gc{2} + n.\gq{} + n_{1}.\gq{1} + n_{2}.\gq{2} + n_{3}.\gq{3} ]$
 
 
 Le nombre $l + 2.l_{1} + 3.l_{2} + m + 2.m_{1} + 3.m_{2} + 4.m_{3} + n + 2.n_{1} + 3.n_{2} + 4.n_{3}$ est \emph{le coefficient de simplicité}.
@@ -219,16 +386,73 @@ les Grecs, dans tous les ouvrages de géométrie.
 
 Je montre ainsi, dès le début, que ces constructions universellement enseignées peuvent, toutes à peu près, être notablement simplifiées, quelquefois dans des proportions qui semblent invraisembables, et que l'on est conduit à la notion d'un Art des constructions géométriques et à une methode pour les simplifier.
 
+\subsection{NOTATIONS.}
+$ for prime numbers using \mathbb{P},
+\mathbb{W} for whole numbers using \mathbb{W},
+\mathbb{N} for natural numbers using \mathbb{N},
+\mathbb{Z} for integers using \mathbb{Z},
+\mathbb{I} for irrational numbers using \mathbb{I},
+\mathbb{Q} for rational numbers using \mathbb{Q},
+\mathbb{R} for real numbers using \mathbb{R} and
+\mathbb{C} for complex numbers using \mathbb{C}.$
 
+Positive and non-negative real numbers, $\mathbb{R}_{>0} and \mathbb{R}_{\geq0},$ can now be typeset using:
+
+
+$\mathbb{R}_{>0}$
+
+$\mathbb{R}_{\leq 0}$
 %%\appendix
 
+Greek Letters
+
+$\alpha$ 	alpha
+$\beta$  \backslash beta 	$\gamma$  \backslash gamma 	$\delta$  \backslash delta
+%% $\beta$  \\backslashbeta 	$\gamma$  \\backslashgamma 	$\delta$  \\backslashdelta
+%% $\epsilon$ 	epsilon 	$\varepsilon$  \\backslashvarepsilon 	$\zeta$  \\backslashzeta 	$\eta$  \\backslasheta
+%% $\theta$  \\backslashtheta 	$\vartheta$  \\backslashvartheta 	$\iota$  \\backslashiota 	$\kappa$  \\backslashkappa
+%% $\lambda$  \\backslashlambda 	$\mu$ 	\mu 	$\nu$ 	\nu 	$\xi$ 	\xi
+%% $\pi$ 	\pi 	$\varpi$ 	\varpi 	$\rho$ 	\rho 	$\varrho$ 	\varrho
+%% $\sigma$ 	\sigma 	$\varsigma$ 	\varsigma 	$\tau$ 	\tau 	$\upsilon$ 	\upsilon
+%% $\phi$ 	\phi 	$\varphi$ 	\varphi 	$\chi$ 	\chi 	$\psi$ 	\psi
+%% $\omega$ 	\omega
+
+
+%% Capital Letters Symbol 	Command 	Symbol 	Command 	Symbol 	Command 	Symbol 	Command
+%% $\Gamma$ 	\Gamma 	$\Delta$ 	\Delta 	$\Theta$ 	\Theta 	$\Lambda$ 	\Lambda
+%% $\Xi$ 	\Xi 	$\Pi$ 	\Pi 	$\Sigma$ 	\Sigma 	$\Upsilon$ 	\Upsilon
+%% $\Phi$ 	\Phi 	$\Psi$ 	\Psi 	$\Omega$ 	\Omega
+
+
+%% Arrows
+%% Symbol 	Command 	Symbol 	Command
+%% $\gets$ 	\gets 	$\to$ 	\to
+%% $\leftarrow$ 	\leftarrow 	$\Leftarrow$ 	\Leftarrow
+%% $\rightarrow$ 	\rightarrow 	$\Rightarrow$ 	\Rightarrow
+%% $\leftrightarrow$ 	\leftrightarrow 	$\Leftrightarrow$ 	\Leftrightarrow
+%% $\mapsto$ 	\mapsto 	$\hookleftarrow$ 	\hookleftarrow
+%% $\leftharpoonup$ 	\leftharpoonup 	$\leftharpoondown$ 	\leftharpoondown
+%% $\rightleftharpoons$ 	\rightleftharpoons 	$\longleftarrow$ 	\longleftarrow
+%% $\Longleftarrow$ 	\Longleftarrow 	$\longrightarrow$ 	\longrightarrow
+%% $\Longrightarrow$ 	\Longrightarrow 	$\longleftrightarrow$ 	\longleftrightarrow
+%% $\Longleftrightarrow$ 	\Longleftrightarrow 	$\longmapsto$ 	\longmapsto
+%% $\hookrightarrow$ 	\hookrightarrow 	$\rightharpoonup$ 	\rightharpoonup
+%% $\rightharpoondown$ 	\rightharpoondown 	$\leadsto$ 	\leadsto
+%% $\uparrow$ 	\uparrow 	$\Uparrow$ 	\Uparrow
+%% $\downarrow$ 	\downarrow 	$\Downarrow$ 	\Downarrow
+%% $\updownarrow$ 	\updownarrow 	$\Updownarrow$ 	\Updownarrow
+%% $\nearrow$ 	\nearrow 	$\searrow$ 	\searrow
+%% $\swarrow$ 	\swarrow 	$\nwarrow$ 	\nwarrow
 \onecolumn
 \section{liste}
-Tracer une droite quelconque; op.
+
+\begin{turn}{45}
+  \begin{minipage}{\linewidth}
+    Tracer une droite quelconque; op.
 
 Tracer une droite qui passe par un point placé
 
-Tracer une droite passant par deux points placés 
+Tracer une droite passant par deux points placés
 Tracer un cercle quelconque op. (C3).
 
 Tracer un cercle quelconque dont le centre est placé;
@@ -236,7 +460,7 @@ Tracer un cercle quelconque dont le centre est placé;
 VI. Prendre avec le compas une longueur donnée AB
 op.
 Tracer un cercle dont le rayon est une longueur donnée
-et le centre un point place; op. 
+et le centre un point place; op.
 VIII. Porter sur une ligne donnée, à partir d'un point indé-
 terminé de cette ligne ou à partir d'un point placé
 sur cette ligne, la longueur comprise entre les branches du compas
@@ -244,5 +468,14 @@ sur cette ligne, la longueur comprise entre les branches du compas
 Tracer un angle droit ou tracer deux droites perpendicu-
 laires entre elles.
 ...
+
+  \end{minipage}
+
+\end{turn}
+\begin{figure*}[ht]
+\centering
+\rule{\linewidth}{3cm}
+\caption{Wide single column figure in a twocolumn document.}
+\end{figure*}
 
 \end{document}
