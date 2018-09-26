@@ -1,0 +1,1131 @@
+\documentclass[12pt,a4paper,twocolumn]{book} % 12pt font size, A4 paper and two-sided margins twocolumn,oneside
+
+\usepackage[a4paper,text={16.5cm,25.2cm},centering]{geometry}
+\makeatletter				% pour faire de @ une lettre simple (et non un caractère associé à une macro interne
+\usepackage{amsmath,amsthm,amsfonts,amssymb,mathtools}
+\usepackage{color,graphicx,xcolor}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing}
+\usepackage[prefix=rt]{xcolor-material}
+\usepackage{blindtext, rotating}
+\usepackage{slantsc}
+\newcommand\textscsl[1]{\textsc{\slshape#1}}
+\usepackage{fontspec,xltxtra,xunicode}
+\defaultfontfeatures{}
+%\usepackage{palatino} % Use the Palatino font
+% to choose a font, you just need its full name on your system
+% fc-list  | grep -i texgyr
+% Here, the scales of the fonts have been chosento equalise their lowercase letter heights
+\setmainfont{TeX Gyre Adventor}[Scale=MatchLowercase]
+\usepackage{makeidx}			% pour permettre de construire un index
+\usepackage{fancyhdr, graphicx}
+\usepackage{fancybox}			% pour faire des boites entourée de différents types de cadres
+\usepackage{framed}			% pour mettre des sortes de minipages encadrées sur plusieures pages, sur fond coloré
+\usepackage{boxedminipage}		% pour mettre des bordures aux minipages
+\usepackage{relsize,fancyvrb}		% pour mettre des textes non interprétés encadrés et changer la taille des caractères à l'intérieur
+
+\usepackage{lettrine}			% pour mettre des lettrines
+\usepackage{upgreek}
+\usepackage{listings}			% pour mettre du code informatique non interprété
+%%\usepackage[shellescape,latex]{gmp}
+\usepackage{mpgraphics}
+\usepackage{caption}			% pour gérer encore mieux les légendes
+\usepackage{showlabels}                 % track of labels\usepackage[final]{showlabels}
+\usepackage{tabu}   
+\makeatother				% pour refaire de @ une lettre différente des autres (exploitée dans des macros)
+
+ \def\ogla{{\fontfamily{fi4}\selectfont<<}}
+  \def\fgla{{\fontfamily{fi4}\selectfont>>}}
+  \def\oglb{{\fontfamily{bch}\selectfont<<}}
+  \def\fglb{{\fontfamily{ccr}\selectfont>>}}
+  \def\oglc{{\fontfamily{pag}\selectfont<<}}
+  \def\fglc{{\fontfamily{fvs}\selectfont>>}}
+  \def\ogld{{\fontfamily{pnc}\selectfont<<}}
+  \def\fgld{{\fontfamily{pzc}\selectfont>>}}
+
+
+\usepackage{tabstackengine}
+\setstackEOL{;}% row separator
+\setstackTAB{,}% column separator
+\setstacktabbedgap{1ex}% inter-column gap
+\setstackgap{L}{1.0\normalbaselineskip}% inter-row baselineskip
+\let\nmatrix\parenMatrixstack
+
+
+\begin{document}
+
+
+
+section{\textsc{Au tout début\dots}}
+
+
+
+		\begin{itemize}
+			\item<+->  via un lecteur de cartes perforées ;
+			\item<+->  ou un clavier de machine à écrire électrique.
+		\end{itemize}
+
+	
+
+		\begin{itemize}
+			\item<+->  sur du papier à bandes perforées ;
+			\item<+->  via une imprimante rapide ;
+			\item<+->  ou une machine à écrire électrique.
+						\item<+->  la police de caractères était l'unique police de l'imprimante ou de la machine à écrire !
+		\end{itemize}
+{\textsc{On n'avait donc pas la possibilité :}}
+		\begin{itemize}
+			\item<+-> d'avoir des polices proportionnelles ;
+			\item<+-> ni d'avoir du gras, de l'italique ;
+			\item<+-> ni des caractères de différentes tailles, indices, exposants\dots
+		\end{itemize}
+{\textsc{Ensuite sont arrivés les écrans individuels :}}
+		\begin{itemize}
+			\item<+-> la police de caractères était \textit{bitmap} et unique ;
+			\item<+-> en mémoire dans l'écran qui fonctionnait en mode \textit{texte} ;
+			\item<+-> on avait 20 à 25 lignes de 40 ou 80 caractères\dots
+			\item<+-> Tout ceci codé en \textsc{ascii}, 1963, à la norme étendue flottante\dots
+		\end{itemize}
+		
+		{\textsc{les imprimantes à aiguilles :}}
+		\begin{itemize}
+			\item<+-> travaillaient en mode \textit{texte} ou \textit{graphique} ;
+			\item<+-> avaient 9 puis 24 \textit{aiguilles}, les lignes en fait\dots
+		\end{itemize}
+	{\textsc{L'apparition de TeX !}
+	 {\textsc{Donald \textsc{Knuth}\dots}}
+		\begin{itemize}
+			\item<+-> crée en 1978 la première version de TeX avec des caractères crées par une ébauche de Metafont ;
+			\item<+-> l'idée est déjà d'avoir un système autonome et léger de créations de documents ;
+			\item<+-> à l'époque, rien n'existait\dots
+		\end{itemize}	
+	{\textsc{MetafontLes bases}
+	{\textsc{Le principe est celui du roseau fendu}}
+		\begin{itemize}
+			\item<+-> ou de la plume Sergent Major ;
+			\item<+-> qui permet de créer des pleins et des déliés\dots
+		\end{itemize}	
+		
+	{\textsc{Comme en calligraphie}}
+		\begin{itemize}
+			\item<+-> la plume suit une courbe orientée ;
+			\item<+-> en étant plus ou moins inclinée ;
+			\item<+-> cette inclinaison est variable au besoin\dots
+			\item<+-> On utilise des courbes de Bézier, sur lesquelles on reviendra\dots
+		\end{itemize}	
+
+{\textsc{Une telle police :}}
+		\begin{itemize}
+			\item<+-> est ensuite convertie en bitmap haute précision pour impression,
+				la puissance des machines à ce moment interdisait de faire cela à la volée ;
+			\item<+-> on lui adjoint des instructions de crénage, rapprocher ou éloigner deux caractères
+				qui s'emboîtent plus ou moins bien ;
+			\item<+-> et des instructions de ligature, réunir deux caractères qui se suivent en un seul\dots
+			\item<+-> est limitée à 256 caractères !
+			\item<+-> Bien qu'au final, dans le document, c'est du bitmap, les polices Metafont sont les premières polices vectorielles !
+			\end{itemize}	
+			
+		{Un exemple de police non optique}
+	\begin{verbatim}
+	{\fontfamily{jkp}\selectfont
+	\newcommand{\PO}{Police non optique}
+	\scalebox{4}{\fontsize{6}{6}\selectfont\PO}\\[1ex]
+	\scalebox{2}{\fontsize{12}{12}\selectfont\PO}\\[1ex]
+	\scalebox{.75}{\fontsize{32}{32}\selectfont\PO}}
+	\end{verbatim}
+	{\fontfamily{jkp}\selectfont
+	\newcommand{\PO}{Police non optique}
+		\scalebox{4}{\fontsize{6}{6}\selectfont\PO}\\[1ex]
+		\scalebox{2}{\fontsize{12}{12}\selectfont\PO}\\[1ex]
+		\scalebox{.75}{\fontsize{32}{32}\selectfont\PO}}	
+	{Un exemple de polices optiques}
+	\begin{verbatim}
+	{\fontfamily{cmr}\selectfont
+	\newcommand{\PO}{Police optique}
+	\scalebox{4}{\fontsize{6}{6}\selectfont\PO}\\[1ex]
+	\scalebox{2}{\fontsize{12}{12}\selectfont\PO}\\[1ex]
+	\scalebox{.75}{\fontsize{32}{32}\selectfont\PO}}
+	\end{verbatim}
+	{\fontfamily{cmr}\selectfont
+		\newcommand{\PO}{Police optique}
+		\scalebox{4}{\fontsize{6}{6}\selectfont\PO}\\[1ex]
+		\scalebox{2}{\fontsize{12}{12}\selectfont\PO}\\[1ex]
+		\scalebox{.75}{\fontsize{32}{32}\selectfont\PO}}		
+	{\textsc{Une telle police :}}
+		\begin{itemize}
+			\item<+-> en 12 pt : {\fontsize{12}{14}\fontfamily{jkp}\selectfont AaBbCc} ;
+			\item<+-> en 25 pt : {\fontsize{25}{28}\fontfamily{jkp}\selectfont AaBbCc} ;
+			\item<+-> le caractère agrandi parait plus gras\dots
+			\item<+-> Metafont permet facilement de créer des polices optiques en modifiant le crayon !
+			\item<+-> Mais aujourd'hui, les polices optiques ont presque complètement disparues, on en reparlera\dots		
+			\end{itemize}	
+			{\textsc{Postcript}}
+		\begin{itemize}
+			\item<+-> est un langage de chez Adobe apparu en 1982 ;
+			\item<+-> puis en 1984 pour les polices.
+		\end{itemize}
+{\textsc{Un caractère Postcript de type 1}}
+		\begin{itemize}
+			\item<+-> est formé de contours fermés orientés ;
+			\item<+-> assemblage de courbes de Bézier cubiques ;
+			\item<+-> et on noircit ce qui est à droite de ces contours\dots
+		\end{itemize}
+	\textsc{Un exemple :}}
+  	\begin{center}\begin{tikzpicture}
+  		\filldraw [pink] (1,2) circle (2pt)
+  		                 (0,1) circle (2pt);
+  		\filldraw [green](0,0) circle (2pt)
+  		                 (5,2) circle (2pt);
+  		\draw [->] (0,0) .. controls (0,1) and (1,2) .. (5,2) ;
+  		\draw	[gray,->] (0,0) -- (0,1) ;
+  		\draw	[gray,->] (5,2) -- (1,2) ;
+  	\end{tikzpicture}\end{center}	
+
+	On a symbolisé les extrémités en vert et les deux points de contrôle en rose
+	
+	On assemble des courbes de ce type pour obtenir un ou des chemins fermés.
+	
+	On remplit alors \textsl{à droite} des chemins fermés.				Une Bezier cubique se décompose en deux Beziers cubiques !
+	
+	 	\begin{center}\begin{tikzpicture}
+  		\draw [->] (.59,3.36) .. controls (.88,4.11) and (1.50,4.58) .. (2.40,4.58) ;
+  		\draw [red] (.59,3.36) -- (.88,4.11) -- (1.50,4.58) -- (2.40,4.58)
+  					-- (2.71,4.58) -- (3.78,3.97) -- (3.78,2.98) --(3.78,.94) -- (3.78,.42) -- (4.05,.32) 
+  					-- (4.47,.43) -- (4.51,.17) -- (4.51,.17) -- (3.72,.04) -- (3.25,-.07) 
+  					-- (2.97,-.07) -- (3.00,.68) -- (3.00,.68) -- (2.13,-.12) -- (1.58,-.12) --
+  					(.87,-.12) -- (.35,.33) -- (.35,1.07) -- (.35,1.88) -- (.97,2.12) -- (1.70,2.37)
+  					-- (3.00,2.81) -- (3.00,3.58) -- (2.78,4.13) -- (1.91,4.10) -- (1.46,4.07) -- 
+  					(1.17,3.60) -- (.94,3.16) ;
+  		\draw [->] (2.40,4.58) .. controls (2.71,4.58) and (3.78,3.97) .. (3.78,2.98) ;
+  		\draw [->] (3.78,2.98) -- (3.78,.94) ;
+  		\draw [->] (3.78,.94) .. controls (3.78,.42) and (4.05,.32) .. (4.47,.43) ;
+  		\draw [->] (4.47,.43) -- (4.51,.17) ;
+  		\draw [->] (4.51,.17) .. controls (4.51,.17) and (3.72,.04) .. (3.25,-.07) ;
+  		\draw [->] (3.25,-.07) .. controls (2.97,-.07) and (3.00,.68) .. (3.00,.68) ;
+  		\draw [->] (3.00,.68) .. controls (2.13,-.12) .. (1.58,-.12) ;
+  		\draw [->] (1.58,-.12) .. controls (.87,-.12) and (.35,.33) .. (.35,1.07) ;
+  		\draw [->] (.35,1.07) .. controls (.35,1.88) and (.97,2.12) .. (1.70,2.37) ;
+  		\draw [->] (1.70,2.37) -- (3.00,2.81) ;
+  		\draw [->] (3.00,2.81) .. controls (3.00,3.58) and (2.78,4.13) .. (1.91,4.10) ;
+  		\draw [->] (1.91,4.10) .. controls (1.46,4.07) and (1.17,3.60) .. (.94,3.16) ;
+  		\draw [->] (.94,3.16) -- (.59,3.36) ;
+  		\draw [red] (3.00,1.03) -- (2.77,.76) -- (2.28,.44) -- (1.91,.44) -- (1.48,.44) -- (1.20,.81) --
+  		      (1.20,1.23) -- (1.20,1.95) -- (3.00,2.49) -- (3.00,2.49) ;
+  		\draw [<-] (3.00,2.49) -- (3.00,1.03) ;
+  		\draw [<-] (3.00,1.03) .. controls (2.77,.76) and (2.28,.44) .. (1.91,.44) ;
+  		\draw [<-] (1.91,.44) .. controls (1.48,.44) and (1.20,.81) .. (1.20,1.23) ;
+  		\draw [<-] (1.20,1.23) .. controls (1.20,1.95) and (3.00,2.49) .. (3.00,2.49) ;
+  	\end{tikzpicture}\end{center}
+	
+		Notez les sens de parcours !
+	\begin{itemize}
+			\item<+-> la notion de police définie par des contours, ce qui rend les polices optiques difficiles à écrire ;
+			\item<+-> tous les caractères on un nom, \textit{agrave} pour \textit{à}, ce qui permet de dépasser la limite des 256 caractères,
+				ceci restera vrai dans les polices suivantes\dots
+			\item<+-> Cependant, il ne peut, par exemple, exister qu'un seul \textit{a} utilisable très facilement !
+			\item<+-> Le fichier de dessin des caractères doit s'accompagner d'un fichier de métriques, ligatures et crénages.
+		\end{itemize}
+		
+\section{TrueType -- .ttf}		
+	{\textsc{Les polices TrueType}}
+		\begin{itemize}
+			\item<+-> sont une création d'Apple, apparues à la fin des années 80 ;
+			\item<+-> dans le but de concurrencer les polices Postscript.
+		\end{itemize}	
+	{\textsc{Un caractère TrueType}}
+		\begin{itemize}
+			\item<+-> est formé de contours fermés orientés ;
+			\item<+-> assemblage de courbes de Bézier quadratiques ;
+			\item<+-> et on noircit ce qui est à droite de ces contours\dots
+		\end{itemize}	
+{\textsc{Grande nouveauté}}
+		\begin{itemize}
+			\item<+-> les métriques sont intégrées au fichier .ttf ;
+			\item<+-> un seul fichier suffit donc !
+		\end{itemize}	
+{\textsc{La guerre des polices n'aura pas lieu}}
+		\begin{itemize}
+			\item<+-> Adobe et Apple se mettront d'accord pour développer les polices TrueType et suivantes ensemble !
+		\end{itemize}		
+
+
+Utilisation dans pdf\LaTeX		
+{\textsc{Possible assez facilement}}
+		\begin{itemize}
+			\item<+-> mais il faut fabriquer les fichiers nécessaires ;
+			\item<+-> Font Definition -- .fd
+			\item<+-> TeX Font Metrics -- .tfm, voire peut-être -- .vf
+			\item<+-> le fichier .map et au besoin le ou les fichiers d'encodage -- .enc !
+		\end{itemize}
+{\textsc{Les polices OpenType}}
+		\begin{itemize}
+			\item<+-> ont été crées en 1996 ;
+			\item<+-> sont développées conjointement par Adobe et Apple.
+		\end{itemize}
+		
+	{\textsc{Un caractère OpenType}}
+		\begin{itemize}
+			\item<+-> est formé de contours fermés orientés ;
+			\item<+-> assemblage de courbes de Bézier cubiques, ou quadratiques parfois ;
+			\item<+-> et on noircit ce qui est à droite de ces contours\dots
+			\item<+-> Rien de nouveau pour le moment !
+		\end{itemize}	
+		
+		
+		
+		
+{\textsc{Les polices OpenType}}
+		\begin{itemize}
+			\item<+-> sont dites \textit{intelligentes} ;
+			\item<+-> on leur passe des commandes pour fournir à la même demande des résultats différents !
+			\item<+-> Par exemple, on a souvent 4 caractère \ogla 1 \fgla{} différents :
+			\begin{itemize}
+				\item<+-> le {\fontfamily{jkp}\selectfont 1}, en largeur fixe ou proportionnelle ;
+				\item<+-> le {\fontfamily{jkp}\selectfont \oldstylenums{1}} elzévirien, en largeur fixe ou proportionnelle.
+			\end{itemize}
+			\item<+-> Par défaut, c'est le premier, mais on aura des commandes pour passer en proportionnel et en elzévirien !
+		\end{itemize}
+		
+				
+		
+		
+		{\textsc{Les commandes}}
+			\begin{itemize}
+				\item<+->  Elles correspondent des scripts exécutables gérant :
+				\begin{itemize}
+					\item<+-> les corps optiques ;
+					\item<+-> le crénage ;
+					\item<+-> les substitutions ;
+					\item<+-> mais aussi les substitutions contextuelles !
+				\end{itemize}
+				\item<+->  Ce qui permet d'avoir par exemple sans modification du source :
+				
+			
+				{\fontfamily{jkpvos}\selectfont\itshape
+				Quelles= superbes= questions= !}
+				
+	
+%%{\fontfamily{jkp}\selectfont\scslshape Quelles superbes questions !}
+			
+				
+				Regardez attentivement petites capitales penchées et les \ogla s \fgla !
+				
+				Il faut, bien sûr, que la fonte considérée le permette !
+				\item<+->  En principe, les polices OpenType \textit{PRO} contiennent des variantes optiques !
+\end{itemize}
+{\textsc{Commandes courantes}}
+			
+			\begin{itemize}
+				\item<+-> Les commandes de ces polices sont des mots de 4 lettres, certaines, souvent toutes, sont prédéfinies :
+				\begin{itemize}
+					\item<+-> \texttt{onum} et \texttt{pnum} pour les nombres elzéviriens et proportionnels ;
+					\item<+-> \texttt{smcp} pour les petites capitales\dots
+				\end{itemize}
+			\end{itemize}		
+		
+		
+	{Trouver les spécifications d'une fontes OpenType}	
+{\textsc{Cela dépend du système !}}
+  \begin{itemize}
+  \item Sous Linux, installer \textit{Fontforge} par exemple :
+			\begin{itemize}
+				\item<+-> Suivre \textit{View}, \textit{Display Substitutions}\dots
+			\end{itemize}
+	\item Sous Mac OS ou Windows, installer la version de démonstration de \textit{FontLab Studio} :
+			\begin{itemize}
+				\item<+-> l'info est sur le panneau \textit{OpenType}, qu'on peut rendre visible au besoin,
+				\item<+-> en suivant \textit{Window}, \textit{Panels}, \textit{OpenType}\dots
+			\end{itemize}
+			Sous Mac, c'est aussi dans les propriétés de la police.
+	\end{itemize}		
+		
+		
+		{\textsc{Liste des commandes standard et leur sens !}}
+			
+			\begin{itemize}
+				\item<+-> On trouve la liste des commandes possibles sur \verb=http://en.wikipedia.org/wiki/=
+				
+				\qquad\qquad\qquad\verb=List_of_typographic_features=
+				\item<+-> ou encore \begin{verbatim}
+				http://www.adobe.com/devnet/opentype/afdko/
+				           topic_feature_file_syntax.html
+				\end{verbatim}
+			\end{itemize}
+		
+		
+	section{OpenType et \LuaLaTeX}	
+		
+		
+	{\textsc{Des nombres :}}
+			\begin{verbatim}
+\fontspec{TeX Gyre Pagella}00011123456789
+
+\fontspec[Numbers={Proportional}]
+                  {TeX Gyre Pagella}00011123456789
+
+\fontspec[Numbers={OldStyle}]
+                  {TeX Gyre Pagella}00011123456789
+			\end{verbatim}	
+		
+		
+		\fontspec{TeX Gyre Pagella}00011123456789
+		
+		\fontspec[Numbers={Proportional}]
+                  {TeX Gyre Pagella}00011123456789
+
+\fontspec[Numbers={OldStyle}]
+                  {TeX Gyre Pagella}00011123456789			
+                  
+                  
+                  
+                  
+                  
+ {\textsc{À noter :}}
+\begin{itemize}
+\item<+->	\begin{verbatim}
+			\usepackage[utf8]{inputenc} % ou latin1...
+			\usepackage[T1]{fontenc}     % ou OT1...
+			\end{verbatim}
+			disparaissent...
+\item<+->	\begin{verbatim}
+			\usepackage{fontspec}
+			\end{verbatim}
+			est obligatoire !
+\item<+->	Si on veut utiliser Beamer :
+			\begin{verbatim}
+			\usepackage{luatextra}
+			\end{verbatim}
+			est obligatoire !
+\item<+->	On peut continuer à utiliser \texttt{babel} ;
+\item<+->	Réglez au départ votre éditeur pour utiliser l'encodage \texttt{utf8} par défaut, c'est obligatoire !
+\end{itemize}                 
+                  
+                  
+    {\textsc{Pas besoin de nouveau package !}}
+  \begin{itemize}
+  \item Pour un document ou une partie de document, on utilise les commandes :
+			\begin{itemize}
+				\item<+-> \verb=\setmainfont[spécifications]{Nom de Police}=
+				\item<+-> \verb=\setsansfont[spécifications]{Nom de Police}=
+				\item<+-> \verb=\setmonofont[spécifications]{Nom de Police}=
+				\item<+-> \verb=\fontspec[spécifications]{Nom de Police}=
+				\item<+-> \verb=\newfontfamily\mapolice=
+				
+				\hfill\verb=[spécifications]{Nom de Police}=
+				\item<+-> \verb=\addfontfeature{specifications}=
+				\item<+-> \dots
+			\end{itemize}
+	\item Pas de package, mais les polices ont, ou devraient avoir, une doc qui précise les spécifications admises...
+			et qu'il faut lire !
+	\end{itemize}              
+                  
+                  
+    {\textsc{Mathématiques en OpenType}}
+			\begin{itemize}
+				\item<+->  On a déjà vu que le texte en OpenType et les mathématiques habituelles de \LaTeX cohabitent sans problème !
+				\item<+->  Le package \texttt{unicode-math} permet de composer avec les polices mathématiques OpenType existantes :
+				\begin{itemize}
+					\item Cambria Math (avec \textit{Microsoft Office})
+					\item Minion Math (police commerciale \texttt{typoma})
+					\begin{itemize}
+					\item ou bien le package \texttt{MnSymbol}, mais\dots
+					\end{itemize}
+					\item Latin Modern Math
+					\item TeX Gyre Pagella Math, et autres TeX Gyre : Bonum, Schola,Termes
+					\item Asana Math
+					\item Neo Euler
+					\item STIX
+					\item XITS\dots
+				\end{itemize}
+			\end{itemize}              
+                  
+   {\textsc{Un préambule minimum :}}
+			\begin{verbatim}
+			\documentclass[12pt]{article}
+			\usepackage[frenchb]{babel}
+			\usepackage{unicode-math}
+			\setmainfont{TeX Gyre Termes}
+			\setmathfont{TeX Gyre Termes Math}
+			\begin{document}
+			...
+			\end{document}
+			\end{verbatim}               
+                  
+                  
+ {\textsc{D'autre part :}}
+		\begin{itemize}
+			\item<+->  les polices historiques de \LaTeXe{} sont les polices \textit{metafont}, fichiers \texttt{mf,pk} ;
+			\item<+->  les autres polices vectorielles sont:
+			\begin{itemize}
+				\item<+-> les polices \textit{postscript}, en \texttt{.pfb} le plus souvent ;
+				\item<+-> les polices \textit{true type}, en \texttt{.ttf} ;
+				\item<+-> les polices \textit{open type}, en \texttt{.otf} ;
+			\end{itemize}
+			\item<+->  \texttt{dvips} gère les polices \textit{postscipt};
+			\item<+->  \texttt{pdfTeX} gère aussi les polices \textit{true type} et \textit{open type};
+			\item<+->  \texttt{XeTeX} gère aussi \textit{directement} les polices \texttt{ttf} et surtout \texttt{otf} ;
+			\item<+->  comme \texttt{LuaTeX} devrait le faire bientôt.
+		\end{itemize}                 
+           {\textsc{Et enfin :}}
+		\begin{itemize}
+			\item<+->  \textit{fontinst} permet d'installer (assez) facilement des polices Postscript ;
+			\item<+->  \textit{fontools} permet d'installer (assez) facilement des polices \texttt{ttf} et surtout \texttt{otf} ;
+		\end{itemize}   
+		
+	\section{\textsc{Les familles}}
+
+\subsection{Texte}	
+		
+		
+	{\textsc{Les 3 familles (prédéfinies) de polices}   \LaTeX{} \textsc{sont}}
+			\begin{itemize}
+				\item<+->  \textrm{Les polices romaines : rm} ;
+				\item<+->  Les polices sans-serif : sf ;
+				\item<+->  \texttt{Les polices machine à écrire : tt}.
+				\end{itemize}	
+		
+	\textsc{Comment modifier une famille par défaut ?}}
+	
+		
+	{\textsc{En utilisant un Package}}
+			\begin{itemize}
+				\item<+-> \textit{bookman, newcent, times, palatino} modifient les 3 familles de polices,
+				
+								 avec la police titre en romaine ;
+				\item<+-> \textit{helvet, avant} modifient les familles sans-serif ;
+				\item<+-> \textit{courier, luximono} modifient les familles télétype ;
+				\item<+-> \dots  
+				\item<+-> \textit{helvet, luximono} prennent en option un coefficient de taille pour s'adapter à toutes	
+								les polices romaines.
+			\end{itemize}	
+		
+	{\textsc{Sans utiliser de Package}}
+  \begin{itemize}
+  \item<+-> Pour un document ou une partie de document, on utilise les commandes :
+			\begin{itemize}
+				\item<+-> \verb=\renewcommand{\rmdefault}{=\textsl{jkp}\texttt{\}}
+				\item<+-> \verb=\renewcommand{\sfdefault}{=\textsl{jkpss}\texttt{\}}  
+				\item<+-> \verb=\renewcommand{\ttdefault}{=\textsl{jkptt}\texttt{\}}
+				\item<+-> \verb=\renewcommand{\familydefault}{=\textsl{jkpss}\texttt{\}}
+			\end{itemize}
+	\item<+-> on décrira plus loin comment avoir une modification \ogla plus locale \fgla.
+	\end{itemize}	
+		
+	\subsection{Math}	
+		
+	{\textsc{On a toujours au moins les familles :}}
+			\begin{itemize}
+				\item<+-> \textit{operators}, pour $0123\;+-=\;\Gamma\Delta\dots$
+				\item<+-> \textit{letters} pour $abc\;\alpha\beta\gamma\dots$
+				\item<+-> \textit{symbols} pour les symboles de base, comme $\to\;\mapsto\;\Rightarrow\;\exists\dots$
+				\item<+-> \textit{largesymbols} pour les symboles mathématiques de taille variable, (et de base) 
+									$\sum\;\displaystyle\sum$ $\int\;\displaystyle\int\dots$
+			\end{itemize}	
+	\textsc{Comment modifier une famille par défaut ?}
+	
+	{\textsc{En utilisant un Package}}
+			\begin{itemize}
+				\item<+-> \textit{txfonts} utilise \textit{times}, en texte et en math \ogla letters \fgla ;
+				\item<+-> \textit{pxfonts} utilise \textit{palatino} en\dots ;
+				\item<+-> \textit{fourier} utilise \textit{utopia} ;
+				\item<+-> \textit{euler} modifie les polices mathématiques, souvent utilisé avec \textit{concrete} en texte ;
+				\item<+-> \textit{kpfonts} utilise ses polices originales et modifie tout ;
+				\item<+-> voir aussi \textit{mathdesign} qui prend en option une des polices romaines : 
+								\textit{utopia, garamond, charter}\dots
+			\end{itemize}
+	\textsc{Comment modifier une police mathématiques ?}
+	
+	{\textsc{A partir de polices de texte}}
+			\begin{itemize}
+				\item<+-> Vous utilisez \textit{fourier}, par exemple, 
+				et vous voulez avoir \textit{courier} comme police \texttt{télétype}, 
+				tant en mode texte qu'en mode mathématique :
+				\begin{itemize}
+					\item<+-> \verb=\renewcommand{\ttdefault}{pcr}=
+            \begin{itemize}
+            	\item pour le mode texte ;
+            \end{itemize}
+					\item<+-> \verb=\DeclareMathAlphabet{\mathtt}{T1}{pcr}{m}{n}=
+					\item<+-> \verb=\SetMathAlphabet{\mathtt}{bold}{T1}{pcr}{b}{n}=
+            \begin{itemize}
+            	\item pour le mode mathématique ;
+            \end{itemize}
+				\end{itemize}
+				\item<+-> \`A placer dans le préambule, bien sûr\dots
+			\end{itemize}
+	
+	Vous pouvez aussi de la même façon ajouter un \verb=\mathsc=, par exemple
+	\textsc{Comment ajouter une police mathématique ?}
+	{\textsc{A partir de polices mathématiques}}
+			\begin{itemize}
+				\item<+-> Vous voulez ajouter la police \verb=\mathscr= de \textit{kpfonts}, vous tapez :
+				\item<+-> \verb=\DeclareMathAlphabet{\mathscr}{U}=
+									
+									\hfill\verb={jkpsyd}{m}{n}=
+				\item<+-> \verb=\SetMathAlphabet{\mathscr}{bold}{U}=
+									
+									\hfill\verb={jkpsyd}{b}{n}=
+				\item<+-> On a déclaré une nouvelle commande \verb=\mathscr= , utilisable aussi en gras\dots
+			\end{itemize}
+		Les informations nécessaires sont prises dans les fichiers \textit{sty} des packages utilisés.
+		
+		
+		\textsc{Comment ajouter une police de symboles ?}
+		
+		
+		{\textsc{Quand utiliser ceci ?}}
+			\begin{itemize}
+				\item<+-> Vous voulez avoir le \verb=\int= droit de \textit{kpfonts} :
+				\begin{itemize}
+					\item<+-> \verb=\DeclareSymbolFont{kpint}{OMX}{jkp}{m}{n}=
+					\item<+-> \verb=\SetSymbolFont{kpint}{bold}{OMX}{jkp}{bx}{n}=
+					\item<+-> \verb=\let\intop\undefined=
+					\item<+-> \verb=\DeclareMathSymbol{\intop}{\mathop}{kpint}{82}=
+					\item<+-> \verb=\def\int{\intop\nolimits}=
+				\end{itemize}
+				\item<+-> \`A placer dans le préambule, bien sûr\dots
+				\item<+-> Le nom \textsl{kpint} est arbitraire ;
+				\item<+-> Il faudrait le refaire pour les intégrales doubles etc
+			\end{itemize}
+		
+		
+	\section{\textsc{Les attributs}}
+{\textsc{Les 5 attributs d'une police   \LaTeX{}}}
+			\begin{itemize}
+				\item<+->  Le codage : ot1, t1, ts1, oml, oms, omx\dots 
+				\item<+->  La famille : cmr, cmss, ptm, ppl, jkp, jkpss\dots
+				\item<+->  La graisse : m, b, bx\dots
+				\item<+->  La forme : n, it, sc, sl\dots
+					\begin{itemize}
+						\item<+->  Ce qui empèche d'avoir des petites capitales italiques !
+						\item<+->  \textscsl{mais KPFONTS en a quand même (forme scsl)}\dots
+					\end{itemize}
+				\item<+->  La taille en points.
+			\end{itemize}
+\subsection{Texte}
+	
+		
+		
+		{\textsc{Modifier les attributs d'une police de texte}}
+  \begin{itemize}
+		\item<+-> Les instructions sont les suivantes :
+			\begin{itemize}
+				\item<+->  l'encodage : \verb=\fontencoding{...}=
+				\item<+->  la famille : \verb=\fontfamily{...}=
+				\item<+->  la graisse : \verb=\fontseries{...}=
+				\item<+->  la forme : \verb=\fontshape{...}=
+				\item<+->  la taille : \verb=\fontsize{=\textit{taille}\verb=}{=\textit{saut de ligne}\verb=}=
+			\end{itemize}
+		\item<+-> toujours suivis de \verb=\selectfont=\dots
+		\item<+-> Ceci s'ajoute aux commandes de haut niveau que vous connaissez !
+	\end{itemize}
+	
+	
+	{\textsc{Mathématiques : passer en gras}}
+  \begin{itemize}
+		\item<+-> En mode texte :
+			\begin{itemize}
+				\item<+->  tapez : \verb=\mathversion{bold}=
+				\item<+->  et tapez : \verb=\mathversion{normal}= 
+				
+							pour quitter le mode gras.
+			\end{itemize}
+		\item<+-> Le package \textit{bm} permet de passer en gras dans une partie de formule ;
+		\item<+-> il y a aussi la police \verb=\mathbf=
+	\end{itemize}
+	
+	
+	
+	
+	\subsection{Fichier \texttt{.fd}}
+	
+	
+	
+	{\textsc{Trouver le bon fichier} \texttt{.fd}}
+			\begin{itemize}
+				\item<+->  \`A partir du codage, par exemple \texttt{t1} ; 
+				\item<+->  et de la famille, par exemple \texttt{jkp} ;
+				\item<+->    \LaTeX{} cherche le fichier \texttt{t1jkp.fd}.
+			\end{itemize}
+	
+	
+{\textsc{Le fichier} \texttt{.fd}}
+\begin{itemize}
+	\item<+->  Le fichier \texttt{.fd} contient :
+			\begin{itemize}
+				\item<+->  une ligne de déclaration de famille :
+				
+							\verb=\DeclareFontFamily{T1}{jkp}{}=
+				\item<+->  des lignes de déclarations de forme :
+				
+							\verb=\DeclareFontshape{T1}{jkp}{m}{n}{<->jkpmn8t}{}=
+							
+				\item<+->  des lignes de substitution :
+				
+							\verb=\DeclareFontshape{T1}{jkp}{m}{it}=
+							
+							\hfill\verb+{<->ssub * jkp/m/sl}{}+
+			\end{itemize}
+	\item<+->  remarquons qu'on a ici \texttt{jkpmn8t}, le nom interne d'une \textit{police}   \LaTeX{}.
+	\item<+->  On a des choses équivalentes en math avec les \verb=\Declare=\dots{} déjà vus.
+	
+	Les packages de polices mathématiques ont aussi leurs fichiers \texttt{.fd}.
+\end{itemize}	
+	
+	
+	
+	
+	{\textsc{Polices réelles ou virtuelles}}
+\begin{itemize}
+	\item<+-> Les noms internes de police   \LaTeX{} correspondent à des polices rélles ou virtuelles :
+			\begin{itemize}
+				\item<+->  une police réelle correspond à un fichier \texttt{.tfm} ;
+				\item<+->  une police virtuelle correspond à un fichier \texttt{.tfm} et un fichier \texttt{.vf} ;
+					\begin{itemize}
+						\item<+->  \texttt{.tfm} = TeX Font Metric ;
+						\item<+->  \texttt{.vf} = Virtual Font.
+					\end{itemize}
+				\item<+->  Leurs formats lisibles sont les fichiers \texttt{.pl} et \texttt{.vpl} :
+					\begin{itemize}
+						\item<+->  un fichier \texttt{.pl} correspond au fichier \texttt{.tfm};
+						\item<+->  un fichier \texttt{.vpl} correspond aux 2 fichiers \texttt{.tfm} et \texttt{.vf}.
+					\end{itemize}
+			\end{itemize}
+	\item<+-> Pour l'instant, aucun de ces fichiers ne contient de dessin de caractère !
+\end{itemize}
+	
+	
+	
+	
+	
+\subsection{Fichiers \texttt{.pl .vpl}}
+	
+	
+	
+	
+	
+	
+	
+Un fichier \texttt{.pl} ou \texttt{.vpl} contient des lignes du type :
+
+\texttt{(FONTDIMEN ...)}
+{\fontfamily{jkptt}\selectfont 
+
+{\color[rgb]{0,.5,0}(MAPFONT D 0 (FONTNAME ...))
+
+(MAPFONT D 1 (FONTNAME ...))}
+
+   (LIGTABLE
+
+		...
+		
+   (LABEL O 55)(LIG O 55 O 173)(STOP)
+   
+   ...
+   
+   (LABEL C A)(KRN C V R -0.12)(STOP)
+   
+   ...)}
+   
+{\fontfamily{jkptt}\selectfont ...
+
+(CHARACTER O 20
+
+   (CHARWD R 0.314)(CHARHT R 0.4625)
+   
+   (CHARDP R 0.00475)(CHARIC R 0.053)
+   
+   {\color[rgb]{0,.5,0}(MAP (SELECTFONT D 1) (SETCHAR O 20)))}
+   
+...}
+	
+	
+	
+	{\textsc{Les lignes d'un fichier} \texttt{.pl,.vpl} \textsc{en mode math}}
+\begin{itemize}
+	\item<+-> Dans une police mathématique, on peut aussi trouver :
+\begin{itemize}
+	\item<+-> \texttt{NEXTLARGER}, pour les symboles à dimension variable ;
+	\item<+-> et, pour les symboles à extention infinie, 
+	
+	\texttt{VARCHAR}, puis :
+	\begin{itemize}
+	\item<+-> \texttt{REP}, répétition ;
+	\item<+-> \texttt{TOP}, haut ;
+	\item<+-> \texttt{BOT}, bas ;
+	\item<+-> \texttt{MID}, milieu.
+	\end{itemize}
+	\item<+-> Les accolades, par exemple, nécessitent l'ensemble de ces éléments.
+\end{itemize}
+\end{itemize}
+	
+	Les polices référencées dans le fichier \texttt{.vpl} sont aussi réelles ou virtuelles
+Mais on finit par arriver sur une police réelle !
+
+  \LaTeX{} cherche alors la police dans un fichier \texttt{.map}
+	
+	{\textsc{Les lignes d'un fichier} \texttt{.map} \textsc{contiennent}}
+			\begin{itemize}
+				\item<+->  \texttt{jkpmsl8r} : le nom   \LaTeX{} de la police (fichier tfm) ;
+				\item<+->  \texttt{Kp-Regular} : le nom postscript de la police ;
+				\item<+->  \texttt{<8r.enc} : le réencodage
+				 ;
+				\item<+->  \texttt{<jkpmn8a.pfb} : le nom du fichier des dessins des caractères ;
+				\item<+->  \texttt{" TeXBase1Encoding ReEncodeFont}
+				
+									\hfill\texttt{0.167 SlantFont "} :
+				
+									encodage et transformations pour \textit{dvips} ou \textit{pdfTeX}.
+			\end{itemize}
+	
+	
+	\subsection{Fichier \texttt{.enc}}
+	
+	{\textsc{Un fichier} \texttt{.enc}}
+			\begin{itemize}
+				\item<+->  fait le lien :
+				\begin{itemize}
+					\item<+->  entre les slots (positions, de 0 à 255) utilisés par \TeX ;
+					\item<+->  et les noms \textit{postscript} des caractères dans le \texttt{.pfb};
+				\end{itemize}
+				\item<+->  et permet :
+				\begin{itemize}
+					\item<+->  d'utiliser des polices \texttt{.pfb} de plus de 256 caractères ;
+					\item<+->  la recherche de mots dans les fichiers \texttt{.ps} ou \texttt{.pdf},
+					           le nom des caractères y est inséré ;
+				\end{itemize}
+				\item<+->  et c'est souvent absent dans les polices de symboles\dots
+			\end{itemize}
+	
+	\section{\textsc{Métriques}}
+
+\subsection{Fontdim}
+
+	
+	{\textsc{Les dimensions d'une police de texte sont :}}
+	\begin{enumerate}
+		\item<+->  \texttt{SLANT}, son inclinaison ;
+		\item<+->  \texttt{SPACE}, la largeur de l'espace ;
+		\item<+->  \texttt{STRETCH}, la dilatation possible de l'espace ;
+		\item<+->  \texttt{SHRINK}, sa compression possible ;
+		\item<+->  \texttt{XHEIGHT}, la hauteur du \ogla x\fgla ;
+		\item<+->  \texttt{QUAD}, la largeur du \texttt{quad}, aussi égale à \texttt{1 em} ;
+		\item<+->  \texttt{EXTRASPACE}, l'espace supplémentaire en début de phrase.
+	\end{enumerate}
+		Les polices mathématiques \textsc{symbols} et \textsc{largesymbols} contiennent respectivement 22 et 13 dimensions,
+	
+	qui servent à construire les formules mathématiques. 
+	
+	On peut voir un exemple de placement d'indice plus loin.
+	
+	\subsection{Ligatures}
+\textsc{Ligatures et Crénages}
+	
+	{\textsc{Ligatures}}
+  \begin{itemize}
+  \item<+-> Une \textit{ligature} est le regroupement de deux caractères consécutifs en un troisième.
+  \item<+-> Une ligature peut être :
+		\begin{itemize}
+			\item<+-> technique comme {-}- qui donne -- ;
+			\item<+-> classique comme {f}i qui donne fi ;
+			\item<+-> ou désuette comme {\fontfamily{jkpos}\selectfont {c}t} qui donne {\fontfamily{jkpos}\selectfont ct}.
+		\end{itemize}
+  \item<+-> En général, on n'utilise pas de ligature en mode math.
+	\end{itemize}
+	
+\subsection{Crénages}	
+	
+	
+	{\textsc{Crénages}}
+  \begin{itemize}
+  \item<+-> Un \textit{crénage} est la façon dont deux caractères se rapprochent ou s'éloignent selon leur dessin :
+		\begin{itemize}
+			\item<+-> On a \ogla Tout \fgla{} et non \ogla {T}out \fgla{} ;
+			\item<+-> Et on a \ogla dîme \fgla{} et non \ogla {d}îme \fgla.
+		\end{itemize}
+  \item<+-> En général, on n'utilise pas de crénage en mode math.
+	\end{itemize}
+	
+	\subsection{Caractères}
+	
+	
+{\textsc{Métriques des caractères}}
+	 \begin{itemize}
+		 \item<+->  La métrique d'un caractère a 4 éléments :
+		\begin{itemize}
+			\item<+-> \texttt{CHARWD}, sa largeur ;
+			\item<+-> \texttt{CHARHT}, sa hauteur au dessus de la ligne de base ;
+			\item<+-> \texttt{CHARDP}, sa profondeur en dessous de la ligne de base ;
+			\item<+-> \texttt{CHARIC}, sa correction italique.
+		\end{itemize}
+		 \item<+->  Le sens de la largeur et de la correction italique n'est pas le même en mode texte ou en mode math.
+	 \end{itemize}	
+	
+	
+{\textsc{Métriques des caractères en texte}}
+	 \begin{itemize}
+		 \item<+->  Pour un caractère en mode texte :
+		\begin{itemize}
+			\item<+-> \texttt{CHARWD}, sa largeur est sa largeur ;
+			\item<+-> \texttt{CHARIC}, sa correction italique est appliquée quand on quitte l'italique.
+		\end{itemize}
+		 \item<+->  On va voir cela dans 40 secondes\dots
+	 \end{itemize}	
+	
+	{\textsc{Métriques des caractères en mode math}}
+	 \begin{itemize}
+		 \item<+->  En mode math, pour un caractère :
+		\begin{itemize}
+			\item<+-> \texttt{CHARWD}, sa largeur sert à placer l'indice ;
+			\item<+-> \texttt{CHARWD+CHARIC}, sert à placer l'exposant, et,
+			
+			est la largeur effective du caractère, 
+			
+			sauf en cas de présence d'exposant ou d'indice assez large.
+		\end{itemize}
+		 \item<+->  On va voir cela dans 10 secondes\dots
+	 \end{itemize}
+	
+	
+	{\textsc{Métriques des caractères en mode texte et math}}
+  	\begin{center}\begin{tikzpicture}
+  		\filldraw [green] (1.5,0.2) -- (1.5,3.5) -- (0.2,3.5) -- (0.2,3.8) -- (3.1,3.8) -- (3.1,3.5) -- (1.8,3.5) -- (1.8,0.2) -- cycle ;
+  		\filldraw [blue] (6,0.2) -- (6,3.5) -- (4.7,3.5) -- (4.7,3.8) -- (7.6,3.8) -- (7.6,3.5) -- (6.3,3.5) -- (6.3,0.2) -- cycle ;
+  		\draw	[red] (0,0.2) -- (3.3,0.2) -- (3.3,3.8) -- (0,3.8) -- cycle ;
+  		\draw	[red] (4.3,0.2) -- (8,0.2) -- (8,3.8) -- (4.3,3.8) -- cycle ;
+  		\draw	[red] (6.8,0.2) -- (6.8,3.8) ;
+  		\draw	[gray,<->] (0,1) -- (3.3,1) ; \draw [gray] (1.55,1.2) node {CHARWD};
+  		\draw	[gray,<->] (4.3,1) -- (6.8,1) ; \draw [gray] (5.55,1.2) node {CHARWD};
+  		\draw	[gray,<->] (6.8,2) -- (8,2) ; \draw [gray] (7.4,2.2) node {CHARIC};
+  		\draw	[gray,<->] (3.8,.2) -- (3.8,3.8) ; \draw [gray] (3.8,2) node {CHARHT};
+  		\draw	[gray,<->] (3.8,.2) -- (3.8,-1.3) ; \draw [gray] (3.8,-.5) node {CHARDP (=0 ici)};\draw (2.8,-1.3) -- (4.8,-1.3) ;
+  		\draw [thick] (-.2,0.2) -- (10,0.2) ; 
+  		\filldraw [white] (6.8,-1) -- (8.8,-1) -- (8.8,1) -- (6.8,1) -- cycle ; \draw [gray] (7.8,0) node {Indice};
+  		\draw [red] (6.8,-1) -- (8.8,-1) -- (8.8,1) -- (6.8,1) -- cycle ; 
+  		\filldraw [white] (8,3) -- (8,5) -- (10,5) -- (10,3) -- cycle ; \draw [gray] (9,4) node {Exposant}; 
+  		\draw [red] (8,3) -- (8,5) -- (10,5) -- (10,3) -- cycle ;
+  		\draw [red] (1.65,4.5) node {Texte};
+  		\draw [red] (6.15,4.5) node {Math};
+  		\draw [gray] (2.75,0.35) node {base line};
+  	\end{tikzpicture}\end{center} 
+	
+	
+	
+	
+	{  \LaTeX{} \textsc{ajoute des espaces en mode math}}
+	 \begin{itemize}
+		 \item<+->  Il y a 8 types de symboles, comme \texttt{mathord} et \texttt{mathbin} ;
+		 \item<+->  entre 2 symboles,   \LaTeX{} ajoute éventuellement de l'espace.
+		 \item<+->  Il y a trois espaces possibles :
+		\begin{itemize}
+			\item<+-> \verb=\thinmuskip= ou \verb=\,= qui vaut 3\,mu ;
+			\item<+-> \verb=\medmuskip= ou \verb=\:= qui vaut 4\,mu plus 2\,mu minus 4\,mu ;
+			\item<+-> \verb=\thickmuskip= ou \verb=\;= qui vaut 5\,mu plus 5\,mu ;
+		\end{itemize}
+		 \item<+->  Certains espaces entre symboles ne sont pas ajoutés quand on est en indice :
+		 \[\textstyle\sum\limits_{i=1}^ni=\dfrac{n(n+1)}{2}\]
+	 \end{itemize}
+	
+	
+	{\textsc{On peut modifier ces espacements}}
+	 \begin{itemize}
+		 \item<+->  Pour modifier ces espaces, par exemple :
+		\begin{itemize}
+			\item<+-> \verb+\thinmuskip=2mu+
+			\item<+-> \verb+\medmuskip=3mu minus 1mu+
+			\item<+-> \verb+\thickmuskip=4mu plus 1mu minus 1mu+
+		\end{itemize}
+		 \item<+->  Ici, on a réduit l'espacement et l'élasticité.
+	 \end{itemize}
+	
+	
+	{\textsc{On peut modifier les tailles des indices et exposants}}
+	 \begin{itemize}
+		 \item<+->  Cela se fait de 2 façons :
+		\begin{itemize}
+			\item<+-> \verb+\DeclareMathSizes{1}{2}{3}{4}+ avec les tailles des polices :
+\begin{enumerate}
+	\item<+-> de texte, qui sert ici de base ;
+	\item<+-> math principale, souvent égale à celle de texte ;
+	\item<+-> math indice ou exposant, plus petite ;
+	\item<+-> math indice ou exposant d'indice ou exposant ou \dots
+	
+						encore plus petite (ensuite, on garde la même taille) ;
+\end{enumerate}
+			\item<+-> On peut aussi déclarer :
+\begin{itemize}
+	\item<+-> \verb=\def\defaultscriptratio{.78}=
+	\item<+-> \verb=\def\defaultscriptscriptratio{.62}=
+	
+						 par exemple.
+	\item<+-> Cela donne des tailles d'indices pour toutes les tailles de caractères.
+\end{itemize}
+   \end{itemize}
+   \end{itemize}
+	
+	
+	
+	{\textsc{Placer un indice en présence d'exposant}}
+	 \begin{itemize}
+		 \item<+->  Placer un indice \texttt{I} à un caractère \texttt{C} en présence d'un exposant \texttt{E} :
+	 \begin{itemize}
+		 \item<+->  depuis la ligne de base, descendre de \texttt{max(p+S19,S17)} 
+		 						où \texttt{p} est la profondeur de \texttt{C}.
+		 \item<+->  Calculer \texttt{h} le haut de \texttt{I} ;
+				\begin{itemize}
+					\item<+-> s'il le faut, descendre \texttt{I} de façon telle que $\mathtt{h}\leqslant4/5\times\mathtt{S5}$ ;
+					\item<+-> s'il le faut, descendre \texttt{I} et monter \texttt{E} de façon telle que
+										le haut de \texttt{I} et le bas de \texttt{E} soient distants d'au moins $4\times\mathtt{X8}$.
+				\end{itemize}
+		 \item<+->  Remarques :
+				\begin{itemize}
+					 \item<+->  \texttt{S} désigne les dimensions de \ogla \textsc{symbols} \fgla;
+					 \item<+->  \texttt{X} désigne les dimensions de \ogla \textsc{largesymbols} \fgla;
+					 \item<+->  \texttt{S5} est \texttt{xHeight}, la hauteur du \ogla x \fgla ;
+					 \item<+->  \texttt{X8} est la hauteur de la barre de fraction.
+				\end{itemize}
+	 \end{itemize}
+	 \end{itemize}
+	
+	\section{\textsc{Glyphes}}
+
+\subsection{Type 1}
+
+	
+	{\textsc{Les courbes de Bézier sont :}}
+	\begin{enumerate}
+		\item<+->  de la forme : $\overrightarrow{OM}=\sum\limits_{k=0}^n\binom{n}{k}t^k(1-t)^{(n-k)}\overrightarrow{OA_k}$ ;
+		\item<+->  $A_0$ et $A_n$ sont les extrémités ;
+		\item<+->  les autres points sont les points de contrôle ;
+		\item<+->  la tangente aux extrémités est dirigée vers le premier point de contrôle ;
+		\item<+->  dans les polices, $n=3$, on a deux points de contrôle.
+	\end{enumerate}
+	
+	
+	
+	{\textsc{Un exemple :}}
+  	\begin{center}\begin{tikzpicture}
+  		\filldraw [pink] (1,2) circle (2pt)
+  		                 (0,1) circle (2pt);
+  		\filldraw [green](0,0) circle (2pt)
+  		                 (5,2) circle (2pt);
+  		\draw [->] (0,0) .. controls (0,1) and (1,2) .. (5,2) ;
+  		\draw	[gray,->] (0,0) -- (0,1) ;
+  		\draw	[gray,->] (5,2) -- (1,2) ;
+  	\end{tikzpicture}\end{center}
+	On a symbolisé les extrémités en vert et les deux points de contrôle en rose
+	
+	On assemble des courbes de ce type pour obtenir un ou des chemins fermés.
+	
+	On remplit alors \textsl{à droite} des chemins fermés.
+	
+	
+	{\textsc{Un exemple complet :}}
+  \bigskip
+  	\begin{center}\begin{tikzpicture}
+  		\draw [->] (.59,3.36) .. controls (.88,4.11) and (1.50,4.58) .. (2.40,4.58) ;
+  		\draw [red] (.59,3.36) -- (.88,4.11) -- (1.50,4.58) -- (2.40,4.58)
+  					-- (2.71,4.58) -- (3.78,3.97) -- (3.78,2.98) --(3.78,.94) -- (3.78,.42) -- (4.05,.32) 
+  					-- (4.47,.43) -- (4.51,.17) -- (4.51,.17) -- (3.72,.04) -- (3.25,-.07) 
+  					-- (2.97,-.07) -- (3.00,.68) -- (3.00,.68) -- (2.13,-.12) -- (1.58,-.12) --
+  					(.87,-.12) -- (.35,.33) -- (.35,1.07) -- (.35,1.88) -- (.97,2.12) -- (1.70,2.37)
+  					-- (3.00,2.81) -- (3.00,3.58) -- (2.78,4.13) -- (1.91,4.10) -- (1.46,4.07) -- 
+  					(1.17,3.60) -- (.94,3.16) ;
+  		\draw [->] (2.40,4.58) .. controls (2.71,4.58) and (3.78,3.97) .. (3.78,2.98) ;
+  		\draw [->] (3.78,2.98) -- (3.78,.94) ;
+  		\draw [->] (3.78,.94) .. controls (3.78,.42) and (4.05,.32) .. (4.47,.43) ;
+  		\draw [->] (4.47,.43) -- (4.51,.17) ;
+  		\draw [->] (4.51,.17) .. controls (4.51,.17) and (3.72,.04) .. (3.25,-.07) ;
+  		\draw [->] (3.25,-.07) .. controls (2.97,-.07) and (3.00,.68) .. (3.00,.68) ;
+  		\draw [->] (3.00,.68) .. controls (2.13,-.12) .. (1.58,-.12) ;
+  		\draw [->] (1.58,-.12) .. controls (.87,-.12) and (.35,.33) .. (.35,1.07) ;
+  		\draw [->] (.35,1.07) .. controls (.35,1.88) and (.97,2.12) .. (1.70,2.37) ;
+  		\draw [->] (1.70,2.37) -- (3.00,2.81) ;
+  		\draw [->] (3.00,2.81) .. controls (3.00,3.58) and (2.78,4.13) .. (1.91,4.10) ;
+  		\draw [->] (1.91,4.10) .. controls (1.46,4.07) and (1.17,3.60) .. (.94,3.16) ;
+  		\draw [->] (.94,3.16) -- (.59,3.36) ;
+  		\draw [red] (3.00,1.03) -- (2.77,.76) -- (2.28,.44) -- (1.91,.44) -- (1.48,.44) -- (1.20,.81) --
+  		      (1.20,1.23) -- (1.20,1.95) -- (3.00,2.49) -- (3.00,2.49) ;
+  		\draw [<-] (3.00,2.49) -- (3.00,1.03) ;
+  		\draw [<-] (3.00,1.03) .. controls (2.77,.76) and (2.28,.44) .. (1.91,.44) ;
+  		\draw [<-] (1.91,.44) .. controls (1.48,.44) and (1.20,.81) .. (1.20,1.23) ;
+  		\draw [<-] (1.20,1.23) .. controls (1.20,1.95) and (3.00,2.49) .. (3.00,2.49) ;
+  	\end{tikzpicture}\end{center}
+	
+	
+	
+	
+	
+		
+		\[ e^{ \scriptscriptstyle\frac{A}{B}+ 1} \quad e^{\tfrac{\textscsl{a}}{\raisebox{0.3ex}{\textscsl{\scriptsize b}}} + 1} \quad e^{\tfrac{A}{B} + 1}\]%
+		
+		
+		\[ % start display-style math mode 
+e^{{\displaystyle\frac{A}{B}} + 1} % awful  
+   \quad 
+e^{\displaystyle\frac{A}{B}+1} 
+   \quad
+e^{\textstyle\frac{A}{B}+1} 
+   \quad
+e^{\frac{A}{B}+1} % "\scriptstyle" is default math mode
+   \quad
+e^{\scriptscriptstyle\frac{A}{B}+1} 
+   \quad
+e^{(\mkern-1.5muA/\mkern-2.5mu B+1)} % apply some (negative) kerning
+   \quad
+\exp\Bigl(\frac{A}{B}+1\Bigr) 
+\]
+		
+		
+		\begin{gather*}
+ \mbox{\scriptsize%
+    $A = \begin{bmatrix} a & b & c \\ d & e & f \\ g & h & i \end{bmatrix}$}\\
+    A = \begin{bmatrix} a & b & c \\ d & e & f \\ g & h & i \end{bmatrix}
+\end{gather*}
+		
+		
+		
+ 
+
+\tabulinestyle{on 2pt off 2pt}
+$\begin{tabu}{cc|cc|cc|c}
+  1 & -1 & 0 & & & & 0 \\
+  -1 & 1 & 0 & 0 & 0 & & \\ \tabucline-
+  0 & 0 & \bullet & \bullet & 0 & &\\
+  & 0 & \bullet & \bullet & 0 & 0 & \\ \tabucline-
+  &  & 0 & 0 & \bullet & \bullet & 0 \\
+  &  &  & 0 & \bullet & \bullet & 0 \\ \tabucline-
+  0 &  &  & 0 & 0 &0 & \ddots
+\end{tabu}$
+
+		
+
+	
+		totot
+		lalal
+		
+		\[
+		%% \let\nmatrix\bracketMatrixstack or \parenMatrixstack \braceMatrixstack, \vertMatrixstack, and simply \Matrixstack
+		%% \fixTABwidth{<T or F>} 
+		%% An optional argument exists to set the column alignment as l, c, or r
+		%% 
+	\nmatrix{1,2,3;4,5,6}
+	\]
+		
+\[
+\begin{matrix}
+\framebox[3.\width]{J} &
+\begin{matrix}
+0 & 0  \\
+0 & 0
+\end{matrix}
+& \\
+\begin{matrix}
+0 & 0 \\
+0 & 0
+\end{matrix}
+& \framebox[3.\width]{J} &
+\end{matrix}
+\]
+		    
+\end{document}
