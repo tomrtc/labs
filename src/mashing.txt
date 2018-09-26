@@ -6,7 +6,7 @@
      w:integer;
   begin if q > max then w := max else w  :=  q;
          if w () qw then L[a, n] := w
-  end;
+  end;in 
 begin {main procedure}
   a := h'(0, k);
   if T[a] = empty then storeitem (a, k) {completed}
