@@ -1,0 +1,292 @@
+n large project such as dissertations or even books, it is important and necessary to keep the content organized. One way is to split a document, by chapter for example, and then load the parts using input or include. The catchfilebetweentags package offers a more flexible way to organize content. It let’s you store chunks of code in another file. The code chunks don’t have to be ordered, as tags are used for identification. This way, you can store equations, tables or figures apart from text, making content more manageable.
+
+In the following example, I will use two tex-files, a main document, main.tex, and a document containing all figures, figures.tex.
+
+Main document
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+
+\documentclass[11pt]{article}
+
+\usepackage{catchfilebetweentags} % load the package
+
+\newcommand{\loadFigure}[1]{ % define command to load figures
+   \ExecuteMetaData[figures.tex]{#1} % call the package macro to load chunk from file
+}
+\begin{document}
+
+\loadFigure{fig:01} % load figure with tags id: fig:01
+\loadFigure{fig:02} % load figure with tags id: fig:02
+
+\end{document}
+
+First the package is loaded. Next, we define a new macro for figures that takes one argument, the tag ID, being the tag name. Inside the macro, we call another macro, ExecuteMetaData defined by the package, to load a code chunk from file: figures.tex. The package will then find the tag with the same name as the ID and replace \loadFigure{tagID} by the actual chunk.
+
+Code chunks file
+
+The code chunks can be exported in any order to a text file (in my case figures.tex). In fact, any text file will do. Important is that the chunks are delimited by tags with same ID used to load the chunk in the main file. Also notice the % symbol in from of the tags and the * inside the opening tag.
+1
+2
+3
+
+%<*tagID>
+    ...LaTeX code...
+%</tagID>
+
+To complete the example above, I created figures.tex, containing two dummy figures and placed the file into the same directory as the main document, main.tex. However, you could use any directory, just make sure to change the filename by adding the path in the main file, i.e. \ExecuteMetaData[path/to/file]{#1}.
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+
+%Figure file: figures.tex
+
+%<*fig:02>
+    \begin{figure}[ht]
+    \begin{center}
+    \rule{0.4\textwidth}{0.3\textwidth}
+    \caption{My second figure}
+    \label{fig:01}
+    \end{center}
+    \end{figure}
+%</fig:02>
+
+%<*fig:01>
+    \begin{figure}[ht]
+    \begin{center}
+    \rule{0.3\textwidth}{0.4\textwidth}
+    \caption{My first figure.}
+    \label{fig:01}
+    \end{center}
+    \end{figure}
+%</fig:01>
+
+The \rule{}{} command used in the example is just a figure placeholder and will produce a black box of the size given.
+
+Many thanks to Giacomo Drago who pointed the package out to me and from where I copied the macro code.
+
+On paragraphs in TeX/LaTeX
+27. February 2013 by tom	8 Comments
+
+When writing documents in TeX/LaTeX, it is important to understand how the TeX engine “thinks”. A paragraph is the basic text unit in a document and many TeX/LaTeX commands, when used properly, affect the current paragraph only. TeX provides a set of basic commands controlling the way a paragraphs are typeset. The following article explains the most commonly used commands and illustrates them with examples.
+
+Any piece of text in TeX/LaTeX is a paragraph and follows predefined specifications. Single line-breaks will be ignored by the engine. To end a paragraph, leave a blank line between the end of the current and the beginning of the new paragraph.
+1
+2
+3
+
+...end of the current paragraph.
+
+Beginning of a new paragraph...
+
+The second, indented line marks the beginning of a new paragraph.
+
+ending_paragraph
+
+Alternatively, \par might be used to end a paragraph.
+1
+2
+3
+4
+5
+
+\documentclass{article}
+\usepackage{blindtext}
+\begin{document}
+\blindtext\par\blindtext
+\end{document}
+
+
+Paragraph width
+
+In plain TeX, \hsize controls the paragraph width, set to 6.5in by default. The example below shows how to change the paragraph width for a single paragraph.
+1
+2
+3
+4
+5
+6
+7
+8
+
+\documentclass{article}
+\usepackage{blindtext}
+\begin{document}
+\blindtext
+
+\hsize 4in
+\blindtext
+\end{document}
+
+paragraph-width
+
+The \leftskip and \rightskip commands provide a alternative, reducing the paragraph size from left and right respectively.
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+
+\documentclass{article}
+\usepackage{blindtext}
+\begin{document}
+\blindtext
+
+\leftskip=1.5in
+\blindtext
+
+\leftskip=0in \rightskip=1.5in
+\blindtext
+\end{document}
+
+
+LaTeX knows at least two macros to control the paragraph width, the minipage environment and the \parbox command.
+1
+2
+3
+4
+5
+6
+7
+
+%Parbox macro
+\parbox{4in}{...}
+
+%Minipage environment
+\begin{minipage}{4in}
+...
+\end{minipage}
+
+
+Within a paragraph, the width is changed through the \hangindent and \hangafter commands. \hangindent controls the amount of indentation from left (positive value) or right (negative value). \hangafter, on the other hand, controls the number of full-width lines before changing the indent (\hangindent). A positive number produces full-width lines at the beginning, whereas a negative number produces them at the end.
+
+Here is an example reducing the paragraph width by 2in from the right after the fifth line.
+1
+2
+3
+4
+5
+6
+7
+8
+9
+
+\documentclass[11pt]{article}
+\usepackage{blindtext}
+\begin{document}
+\hangindent=-2in
+\hangafter=5
+\blindtext
+
+\blindtext
+\end{document}
+
+hangindent-hangafter1
+
+
+Paragraph indentation
+
+By default, TeX indents the first line of each paragraphs by 20pt. The \parindent command controls the indentation of paragraphs. To change the indentation document-wide, set \parindent in the document preamble to the desired value. To disable the indentation for a single paragraph, use \noindent at the beginning of the paragraph.
+1
+2
+3
+4
+5
+6
+7
+8
+
+\documentclass{article}
+\usepackage{blindtext}
+\parindent=0pt % disables indentation
+\begin{document}
+\blindtext
+
+\blindtext
+\end{document}
+
+paragraph-indent
+
+
+Vertical space between paragraphs
+
+TeX leaves no vertical space between paragraphs by default (\parskip=0pt). Similar to \parindent, setting \parskip in the document preamble controls the vertical space between paragraphs document-wide.
+1
+2
+3
+4
+5
+6
+7
+8
+
+\documentclass{article}
+\usepackage{blindtext}
+\parskip=12pt % adds vertical space between paragraphs
+\begin{document}
+\blindtext
+
+\blindtext
+\end{document}
+
+paragraph-vertical-space
+
+
+Vertical space between lines
+
+While using the default font size (10pt), the line distance is 12pt. A ratio of 1.2 (line height to font size) leaves enough space between lines for a good reading experience and gives a harmonious look. The line height can be changed through \baselineskip.
+
+More on font size in LaTeX.
+1
+2
+3
+4
+5
+6
+7
+8
+
+\documentclass{article}
+\usepackage{blindtext}
+\begin{document}
+\blindtext
+
+\baselineskip=20pt
+\blindtext
+\end{document}
+
+paragraph-linespace1
