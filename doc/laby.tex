@@ -34,14 +34,14 @@
 \usepackage{tabu}   
 \makeatother				% pour refaire de @ une lettre différente des autres (exploitée dans des macros)
 
- \def\ogla{{\fontfamily{fi4}\selectfont<<}}
-  \def\fgla{{\fontfamily{fi4}\selectfont>>}}
-  \def\oglb{{\fontfamily{bch}\selectfont<<}}
-  \def\fglb{{\fontfamily{ccr}\selectfont>>}}
-  \def\oglc{{\fontfamily{pag}\selectfont<<}}
-  \def\fglc{{\fontfamily{fvs}\selectfont>>}}
-  \def\ogld{{\fontfamily{pnc}\selectfont<<}}
-  \def\fgld{{\fontfamily{pzc}\selectfont>>}}
+\def\ogla{{\fontfamily{fi4}\selectfont<<}}
+\def\fgla{{\fontfamily{fi4}\selectfont>>}}
+\def\oglb{{\fontfamily{bch}\selectfont<<}}
+\def\fglb{{\fontfamily{ccr}\selectfont>>}}
+\def\oglc{{\fontfamily{pag}\selectfont<<}}
+\def\fglc{{\fontfamily{fvs}\selectfont>>}}
+\def\ogld{{\fontfamily{pnc}\selectfont<<}}
+\def\fgld{{\fontfamily{pzc}\selectfont>>}}
 
 
 \usepackage{tabstackengine}
@@ -53,1079 +53,1586 @@
 
 
 \begin{document}
+\section{\textsc{Le choix de la fontes de caractères}}
+Il est généralement admis que les fontes (ce terme est parfaitement français, en passant) avec empattements sont plus lisibles que les fontes linéales.
+ans or Serif?
+
+In my opinion, a lot of time is wasted attempting to prove that one is better than the other for setting extended text. I suggest that you ignore the vague and inconclusive findings of such ramblings and decide for yourself. Oh, but seriffed types are better for extended text because the serifs lead your eye along… Stop! Nonsense.
+Rather than write another ten paragraphs on this topic, I’ll simply say that we read most easily that which we are most familiar with. 
+
+
+Les didones, par exemple (Didot, Bodoni) ont été abandonnées par l’usage dans le texte courant, car elles donnent un aspect hachuré fort désagréable et distrayant sur une page.
+pour l’usage des journaux, où concentrer le plus de texte possible est capital (le Times et ses variantes en sont l’illustration la plus courante). Bien qu’elles puissent présenter quelques avantages pour un éditeur (moins de papier) ou pour un monteur (leur chasse étroite minimise les problèmes liés à la justification), elles ont tendance à produire des blocs gris très compacts qui rendent la lecture plus difficile.
+
+La fonte choisie devrait appartenir à l’une des deux grandes familles que sont les garaldes et les réales. Ces dernières étant directement inspirées des premières, elles sont si semblables qu’un œil non averti aurait beaucoup de peine à les distinguer. Elles sont toutes deux caractérisées par leurs empattements triangulaires. Elles comportent des différences qui justifie qu’on les distingue.
+Les garaldes sont inspirées des premières fontes humanistes. Elles sont caractérisées par leur élégance et reconnues pour leur grande lisibilité. De manière générale, elles fonctionnent à merveille comme police principale d’un livre. Leurs jambages très longs, s’ils ajoutent à leur lisibilité, imposent cependant un corps plus grand qu’une réale pour un effet équivalent.
+
+Exemples : Garamond, Caslon, Sabon, Goudy OldStyle, Borgia Pro, Minion Pro.
+Les réales sont nées d’une volonté d’apporter une régularité géométrique aux garaldes. Leur œil est plus important, leur axe plus vertical. Avec une hauteur d’x plus grande que les garaldes, elles forment des gris plus homogènes et généralement plus denses. Leur contraste entre les pleins et les déliés est plus important. Pour une lisibilité équivalente, elles acceptent en général un corps plus petit que les garaldes.
+
+Exemples : Baskerville et New Baskerville, Times et Times New Roman.
+\section{\textsc{Le choix de la fontes de caractères}}
+de vue technique. Ce sont l’impression offset et l’impression numérique.
+L’offset est une forme d’impression utilisant des plaques, traitées chimiquement pour retenir l’encre à certains endroits. C’est le mode d’impression dominant, celui des magazines, des journaux et, la plupart du temps, des livres. Il exige des plaques, un équipement coûteux et un savoir faire important, aussi il est assorti d’un coût de base qui ne peut s’amortir qu’avec de grands tirages. Le coût à la copie, quant à lui, est imbattable, ce qui en a fait le roi incontesté durant des décennies.
+L’impression numérique s’impose cependant rapidement. Longtemps synonyme de qualité inférieure, elle rejoint maintenant et même dépasse souvent la qualité de l’offset, avec un coût de base nettement inférieur, mais un coût à la copie encore supérieur. 
+l n’y a guère qu’à un endroit où la technique d’impression de votre livre doit vous influencer, et c’est le choix de la police de caractère. Pourquoi? À cause d’un phénomène nommé le gain de presse.
+
+Le gain de presse est un petit trouble fête, mais les presses modernes sont parvenues à le réduire. En impression numérique, il est pratiquement imperceptible. L’offset s’en tire mieux que jadis, mais les conditions d’impression et surtout le papier choisi peuvent l’augmenter considérablement. Plus le papier est poreux, plus le gain de presse est important. Les livres de poche, en particulier, sont souvent imprimés sur du papier bon marché. Les fontes, dans tout ça?
+
+Les fontes ont été dessinées à des fins d’imprimerie, et en gardant à l’esprit des phénomènes comme le gain de presse. C’est surtout le cas pour les dessins les plus anciens. Le gain de presse a pour effet de réduire le contraste entre les pleins et les déliés. Les réales, en raison de leur contraste prononcé, résistent mieux que les garaldes à un gain de presse important. Baskerville, par exemple, aura un comportement exemplaire sur papier journal.
+Écran vs papier
+
+Une bonne fonte écran n’est pas nécessairement idéale pour le papier, et vice versa. Imprimez toujours un échantillon de votre texte.
+Des marges minces peuvent vous être imposées, donnant au texte une apparence chargée. Vaut mieux alors utiliser une garalde d’aspect léger. Votre public cible se situe au-dessus de cinquante ans? Utilisez une réale solide, à l’œil affirmé, qui facilitera la lecture pour ceux dont la vue baisse.
+évitez la fonte trop banale. Le Time New Roman n’est pas dénué de qualités,
+une licence pour des polices de très grande qualité comme le Caslon Pro,  le Arno Pro ou l’excellent Garamond Premier Pro.
+Une fonte très bien dessinée comme le Jenson (par pitié, ne pas prononcer à l’anglaise) aurait sa place dans une saga historique
+Le dessin rassemble toutes les qualités des réales et des garaldes. Aussi lisible que possible. Sa chasse est presque aussi courte que celle du times, sans en avoir la densité. La fonte est complète, avec des petites capitales exquises, des majuscules de fantaisie et même des ornements.
+
+Attention cependant. Je parle ici du Caslon d’Adobe. Caslon est le non d’un maître ancien, et à peu près toutes les fonderies ont leur dessin de Caslon, qui peut varier énormément d’une maison à l’autre. 
+Adobe Caslo Pro
+Une de mes fontes favorites, c’est la quintessence de l’élégance des garaldes. Sa chasse est plus courte que celle du Caslon, mais son œil aussi, ce qui fait qu’elle imposerait un corps plus grand pour un effet équivalent. Elle est très complète, avec des dessins différents selon la taille du texte; les «captions» peuvent servir aux notes en bas de page, les «subhead» pour les titres de chapitre.
+Adobe Garamond Premier Pro
+La remarque précédente à propos du Caslon s’applique ici. Les garamonds varient beaucoup d’une maison à l’autre.
+OFL Sort Mill Goudy
+le OFL Sort Mill Goudy. Vous pouvez le télécharger immédiatement, l’utiliser sur Mac, Windows ou Linux, il comporte des vrais petites capitales. Pas de caractères gras, mais cela n’empêche pas de l’utiliser pour le corps de texte. Pour les entêtes de pages et les titres de chapitres, vous n’aurez qu’à utiliser un sans sérif. Les approches semblent bien réglées — les approches mal réglées sont une des plaies des fontes open source, avec les tables de caractères incomplètes.
+
+Son dessin est classique, un peu plus affirmé que mes deux exemples précédents. Son œil est aussi un brin plus grand, et sa chasse plus large.
+A ‘typographic’ tradition since Roman times, diminuendo is a type arrangement in which a large letter or word leads the eye, gradually, to smaller and smaller words until a standard text size is established. An abbreviated diminuendo is still seen today in the initial cap or large single letter that is sometimes used to lead the reader into a chapter of a book or a section of an article.
+Our modern English alphabet is a child of the Latin alphabet or Roman alphabet, which evolved from a western version of the Greek alphabet approximately 2,700 years ago. The profession of typography was essentially born in Germany with Johannes Gutenberg’s invention of a movable metal type printing press in the early 1450s. The individual pieces of metal type that Gutenberg worked with were not letters, but letterforms.
+difference in meaning between a grapheme, character or letter and a glyph, letterform or sort. A letter, character or grapheme refers to a fundamental conceptual mark that represents a spoken sound. (A phoneme refers directly to the sound.) A sort, letterform or glyph refers to a particular manifestation of a letter or character, one created by a type designer.
+A ligature is a single sort in which two or more letters are joined, usually to improve the space between them. There are a few ligatures that are still seen today, such as the connected fi, fl, the triple play ffl, and sometimes even the stylish ct ligature. A typographic diphthong is a glyph of two vowels spliced together, and it symbolizes a phonemic diphthong, two linked vowel sounds. Ligatures and diphthongs are also known as tied characters, tied letters, and sometimes quaints.
+Since the invention of printing, typefaces have been classified historically. The earliest type is now known as black letter, blackletter, block, fraktur, gothic or old English. The humanist, or Venetian typefaces followed, a style that more closely resembled handwriting. Old style, old face, or garalde type. Garalde, a term rarely used now, is a mash-up of the names Garamond and Aldus, referring to the notable typefounders Claude Garamond and Aldus Manutius. Old style typefaces are distinguishable from humanist types by the horizontal rather than oblique or sloping crossbar of the lowercase e.
+Italic type is an old style variation developed in Venice around the year 1500 at Aldus Manutius’ foundry. It was cut by Francesco Griffo, and based on handwriting of the time. The dramatically condensed characters decreased the space taken up by the text, and with italic type Manutius produced the first pocket-sized books set in this new italic. The first cursive type also arrived around this time. Like italic, cursive resembles handwriting, but cursive characters are, whenever possible, connected.
+Transitional type refers to typefaces such Baskerville, by English printer John Baskerville, and Philippe Grandjean’s Romain du Roi, which was created for the exclusive use of presses allied with the French Crown and then declared the only legal typeface. 
+Transitional typefaces have more vertical stress than old style type, they stand taller, with slighter more contrast between the thick and thin strokes, and feature, not insignificantly, horizontal serifs. Transitional type, named in hindsight, was part of an evolution towards the typefaces of the late 1700s and early 1800s.
+Modern type has a very nearly vertical and horizontal structure and much greater contrast between thicks and thins than had ever been seen before. Bodoni and Didot, two representative examples, were created by and named for competing family type foundries. Both of these typefaces are also classified as Didones.
+Slab serif and sans serif typefaces appeared in the early 1800s, the 18-teens to be precise. Both are characterized by a fairly even line weight, even into the serifs of the appropriately named slab serifs. The earliest slab serifs were heavy display faces, but these soon evolved into a broad range of weights and styles. Interestingly, sans serifs, easily distinguished now by their lack of serifs, at first resembled nothing so much as a slab serif.
+
+
+There are other terms that describe not the history but the physical structure of a typeface. The width of a typeface can be described as broad, extended, expanded, normal, condensed, extra-condensed and slim. The posture of a typeface refers to its relationship to an imaginary vertical line. The vertically oriented letters are generally known as roman. Carefully crafted letters that resemble handwriting and lean to the right are generally called italic. Characters that have been mechanically or digitally redrawn to lean to the right–even sometimes to the left–are known as oblique characters.
+Case alphabets, such as English, are those alphabet systems in which the letters have two distinct forms. The terms uppercase and lowercase come directly from the slim but heavy horizontal cases of metal type that were indispensable to printers for over 500 years, from 1454 to the 1950s and ’60s. When arranged for the process of handsetting type, the uppercase letters, also known as capitals, majuscules or versals were stored in the upper type case, above and resting at a slightly steeper angle than a second case of letters, the lowercase letters, also known as small letters, or minuscules. The term titlecase refers to the convention, often used in titles and headlines, of an uppercase initial letter followed by lowercase letters in each word.
+Case mapping is the designation of uppercase, lowercase or titlecase in the editorial or typographic instructions. When specifying uppercase or lowercase type, designers and printers often use the abbreviations Uc for uppercase and lc for lowercase. When used in combination, the use of upper- and lowercase type is abbreviated U&lc or U/lc, and I have heard second hand of a C&lc, an acronym for, presumably, caps and lowercase.
+Broadly speaking, there are two styles of serifs, unilateral serifs, which break from the stem in only one direction, and the more common bilateral serifs, which break from the stem in two directions. These can be further characterized by a surprising number of terms: type designers speak of abrupt serifs (that break abruptly from the stem at an angle), adnate serifs (which emerge from the stem gradually and more organically), bifircated serifs (which appear to curl away from a split in the stem), bracketed or fillet serifs (with a curved connection between the serif and the stem), cupped serifs (which form a concave curve or ‘suction cup’ at the end of the stem), scutulate serifs (diamond shaped), finial serifs (with a somewhat tapered curved end), foot serifs (which rest firmly on the baseline), hairline serifs (hairline thin foot serifs), slab or Egyptian serifs (thick serifs set at right angles to the stem), square serifs (square-shaped slab serifs), straight serifs (which are thin but not hairline serifs) and wedge serifs (simple wedge-shaped or triangular serifs).
+
+
+An invisible grid of parallel horizontal lines is used as a constant reference in the creation of a font. It resembles a musical score and its four (or five) horizontal lines represent, from top to bottom, the ascender line (the height of the highest ascender), which is sometimes equivalent to and sometimes higher than the ascent or capline (the height of the capital letters). Next comes the meanline or waist line (the height of a lowercase x), which can be referred to as a high waist line or a low waist line; the baseline (on which the letters appear to rest); and finally, at the very bottom, the descent, descender or beard line (the level to which the lowest descenders descend).
+Ascenders are the parts of some lowercase letters that rise above the meanline, and descenders are, conversely, the parts of some lowercase letters that fall below the baseline. The ascenders and descenders of a given typeface may be described as long, normal or short. There are a number of self-descriptive terms for the relative distances between the lines on this typographic grid, such as the p height, the k height, the H height or cap height, and, most famously, the x height or body of a typeface.
+
+The lowercase letters, which, like the x, have no ascenders or descenders, are known as the primary letters. The uppercase or capital letters are the 23 capitalis monumentalis invented by the Romans, plus three characters that were added to the alphabet later: U and W, about a thousand years ago, and just 500 years ago our youngest letter, J was born.
+When creating a new typeface, type designers sometimes look at particularly revealing words to test the look of the letters in sequence. These are known as key words, trial words, test terms, and sometimes simply as proof. The word Slang, for instance, contains an uppercase letter, lowercase letters, an ascender, a descender, round letters and straight letters. The aforementioned Oboe is a key word; some other popular trial words are Champion, Hamburgevons, Hamburgefonts and even, for those who really want to study their emerging typeface, Hamburgefontsiv.
+
+A set of fonts that are designed to appear related, but with contrasting proportions and weights, is known as a family. A type set is a complete set of letters, sometimes, but not always, including both uppercase and lowercase characters and basic punctuation. A type set is also known as a font. An advanced type set, which typically include alternate characters such as swash letters, once very popular in book and movie titles, is known as an expert set. Expert sets often contain alternate characters and small capitals or small caps, are often used for the first few words of an opening paragraph.
+When typographers mention to color, they are typically not referring to a rainbow. They are speaking, instead, of black and white and the wide range of grey textures which are called forth when white and black interact. Every typeface has its own apparent lightness or darkness, or optical weight. Arranged as they might fall along an imaginary grey scale, some of the terms used to describe a type’s color are, from darkest to lightest: black, ultra bold, extra bold, bold, demi or demi bold, medium, book, lightface, and hairline. As the great Swiss typographer Emil Ruder put it in 1960, “The business of typography is a continual weighing up of white and black, which requires a thorough knowledge of the laws governing optical values.”
+
+According to tradition, the ideal typographic color for a block of text is an even grey that can be better seen when you slightly squint your eyes at a page of type. Rivers are vertical ribbons of white space that sometimes appear by happenstance in a column of type. To the most sensitive typographers, rivers are like fingernails on a blackboard. They are most common in newspapers, which tend to have narrow columns and tight deadlines. The problem with rivers is that they draw your attention away from the text that you were trying to read.
+A bad break refers to an awkward typographic situation which might distract a reader from a typeset text. Typographers take bad breaks very seriously and have given them appropriately tragic names. A widow occurs when a short word at the end of a paragraph is left alone on a single line, thus awkwardly breaking the column of type. When this lone word occurs at the top of the next column, the poor thing is called an orphan. Typographers and graphic designers blithely toss some other startling words, referring to the bleed (images or text which run off the edge of a page), a full bleed (a bleed on all four sides of a page), and the often gleefully spoken kill, which denotes
+White Space
+
+Among graphic designers and typographers there is an extensive vocabulary for describing white space or negative space, the unprinted area of a printed piece. This terminology includes the margin (the space around a column of text), which might be a head margin (above the text), a foot margin (below the text), a side margin (towards the edge of a book or magazine), or a gutter or alley (the space toward the page fold, or between columns of text). Reversed type or knock-out type is type that is not actually printed, but is revealed, in the color of the printed surface, by the ink that surrounds it. Open matter refers to text, such as pull-out quotes (also known as lead-ins, extracts, or callouts) that is set with abundant linespacing or many short lines.
+
+The white space between lines of text type is known as leading, and is quantifiable in points. The term comes from the strips of soft metal, which were once placed snugly between rows of metal type. These strips of leading were lower than the type itself, and so did not print. Today leading is also referred to as linespacing, interline spacing, linefeed, or interlinear space (a term preferred by many authors). Lines of type with no leading are said to be set solid. These days, leading refers to the distance between baselines. Negative linespacing or reverse leading is now possible with digital type, but is never good for extended text, as the ascenders and descenders collide.
+Every typographer knows that it is the space around and between the letters that defines the letters. This interletter spacing, letter spacing, letterspacing or tracking, as it is variously known, can be described as loose, normal, tight, very tight, kissing (the super-tight spacing popular in the 1970s), touching, and there is even a term for the step beyond: negative letterspacing.
+When characters that should not touch each other, do, this is known as a crash. When the space between pairs of letters is fine tuned by the typesetter, this is known as kerning. Kerning includes the adjustment of space known as white space reduction, which is also known as dovetailing, notching or undercutting. But kerning can also refer to an expansion of space, as when kerning to correct a crash.
+The space between words is known as interword separation, interword spacing, word spacing or wordspacing, and can be described as loose, normal or tight. There are also specific blank spaces that relate to the size of the type. The em space, mutton or mutton quad is the width of a capital M, the en space, also known as half an em or a nut, is half that width.
+
+In the days of metal type, the em space and en space were supplemented by even smaller spaces, such as the 3-em or 3-to-the-em space, a third of the width of an em space, the 4-em or midspace, one quarter of the width of an em space, and the 5-em space, or 5-to-the-em space, one fifth of the width of an em space. Nowadays, graphic designers tend to refer to the smaller spaces as, in order of their decreasing widths, a flush space, a thin space and the tiny hair space. Other spaces worth noting are the nonbreaking space, which refuses to be hyphenated, the figure space, the width of a monospaced number, and a punctuation space, the width of the simplest punctuation marks.
+he Roman alphabet came equipped with its own numbering system, and Roman numerals still have their uses. They are commonly seen, for instance, on clock faces, in movie credits, and on the pages of a book which precede the introduction and the text itself. The letters M D C L X V and I, used in combination and sometimes with a bar over the letter, Roman numerals can signify all whole or natural numbers. Well, everything but zero (0). The zero was invented in India, and it has maintained the same form, generally a circle but sometimes just a dot, ever since.
+The word cipher, derived from the same root zephyr and zero, usually suggests a zero but it can refer to other digits too. The European digits that have generally come to replace Roman numerals are sometimes referred to, inaccurately, as Arabic numerals. They might more properly be called Indian numerals, because they evolved from characters that, like the zero, originally came from India. The term Arabic numerals can lead to confusion with Arabic digits, the numbering system currently in use in Arabic culture. Arabic numerals and Arabic digits have similar ancestors, share some formal characteristics, and consist of ten characters, but are completely different symbol sets.
+
+Typographically speaking, there are several ways to classify European digits. Tabular figures share a common figure width and are used for tabular data because they form orderly rows and columns. Proportional figures have varying widths and are used for everything that doesn’t require tabular figures.
+
+Old Style or text figures are designed to work in harmony with the ascenders and descenders of a typeface; they sometimes fall below the baseline, and sometimes rise above the x-height. Lining figures are usually drawn to match the base and the height of, and thus align with, capital letters, but some type designers create a second set that is slightly shorter than the capitals and looks better in running text.
+A specialized font might also include numerator and denominator figures. Smaller numbers that rest below or just higher than the regular characters are known inferior or subscript (the lower numbers) and superior or superscript (the higher ones).
+
+The forward slash (/), which we met earlier, is used to create horizontally bound split fractions. Stacked fractions, also known as horizontal bar fractions or vertical fractions, consist of numbers stacked above and below a figure dash. A nut fraction is a stacked fraction that is specifically designed to fit an en space. A built fraction is one that is painstakingly assembled element by element, whereas a piece fraction is one that comes as part of a font.
+
+Speaking of math, the basic typographic units of measurement are the point and the pica. There are 12 points in a pica, and a pica is equivalent to 1/6 inch, thus making a typographic point 4.233 mm or 0.166 inch. Type is typically measured in points, and type size is referred to as point size. (Point size is determined by measuring from the top of the highest ascender to the bottom of the lowest descender, and therefore cannot be accurately measured from a single character.)
+ashes, Rules and Dot Leaders
+
+The smallest typographic line is the hyphen, the short dash used to link hyphenated words and for wordbreaks at the end of a line. Ems and ens return to help describe the other line dashes: the en dash, the width of an en space, and the em dash, a popular line the width of an em space.
+s Alexander & Nicholas Humez, describe it in the book ABC Et Cetera, “The em dash is used to indicate abrupt transitions—What?—and quasi-parenthetical expressions—such as this one.” The two-em dash and the three-em dash are precisely as long as their names imply.
+
+The two remaining character-size lines are the underscore or understrike (_), and the increasingly popular pipe, also known as a vertical or a vertical bar (|). Incidentally, the grids created using vertical bars and understrikes, open at the top, for the filling-in, letter by letter, of information are known as combs.
+
+Larger typographic lines are referred to as rules, which is perhaps not surprising in a field as traditional as typography. A hairline rule is a particular fine line; other rules are defined by width as measured in points. At some undefined point a wide rule becomes a bar. Bar width is also measured in points. Cutoff rules are used to distinguish the width of columns of type, and a leader of dashes sometimes carries the eye across a column of information, linking, for instance, a chapter title to a page number. A dot leader is a row of periods or midpoints set for the same purpose.
+
+The ruled box in the upper right hand corner of an envelope or postcard that contains permit information instead of a stamp is known as the indicia. The left and right hand pages of an open book or magazine spread are known as the verso (the page on the left) and the recto (the page on the right).
+The page numbering is known as the pagination. A page number is also known as the folio. Folio refers to the printed number, not the page itself, and so a page without a page number is known as a blind folio.
+Punctuation
+
+There were no extraneous specks, lines or squiggles to distract from the beauty of the original Roman majuscules. There were not even any spaces between the words, and this helped give Roman lettering, particularly when inscribed in stone, a harmonious texture. For sheer aesthetic appeal, legibility be damned, a comparison of wordswithoutspacing and space between the words reveals the beauty of the former and can leave the latter looking like gap teeth.
+
+The first punctuation mark was a dot or small triangle situated midway between the top and bottom of the letters, which was used, instead of spacing, to indicate a named or title. The interpunct, centered dot, middle dot or midpoint has been hailed by Wikipedia, as “perhaps the first consistent visual representation of word boundaries in written language.” So the interpunct may be the mother of all punctuation marks, and not just the obviously similar, but slightly bolder and much lower full point, full stop, or period (.).
+
+Today we would be lost, or at least often confused, if we didn’t clarify our prose with this handy little dot. The period once had an even loftier role in world affairs: most nineteenth-century newspapers had a period at the end of their mastheads. The New York Times continued with the period until 1966, half a century after most other papers had dropped the dot. Perhaps the editors felt that the period suggested stability and tradition, and was therefore worth the $84 a year in ink that type designer Edward Rondthaler once jokingly estimated that it required.
+
+There is more to punctuation than just periods, of course. As every type designer soon realizes, a complete font set will also need an apostrophe (’), colon (:), semicolon (;), comma (,), hyphen (-), an en-dash (–), an em-dash (—), ellipsis or suspension points (…), and an exclamation mark, sometimes known as an exclamation point, screamer or bang (!).
+
+In Britain the exclamation mark is sometimes referred to as a dog’s prick, and that, further, the combination of a colon and a dash (:—), out of fashion now but long used to represent a restful pause, is known as a dog’s bollocks. This is because the combination is, according to the online Oxford English Dictionary, “regarded as forming the shape resembling the male sexual organs.” The “dog’s bollocks (also dog’s ballocks)” also serves, incidentally, as British slang for the best of anything; as in the “bee’s knees.”
+
+The question mark, query or squiggle (?) is of course crucial mark, and there are two types of quotation marks: smart quotes, also known as curly quotes or, in Britain, inverted commas (“”), and prime marks, a catch-all which includes the foot mark (′), the inch mark (″) and hatch marks or dumb quotes (″″). Both smart quotes and dumb quotes can be referred to as single quotes (‘’) or double quotes (“”). Standard punctuation marks also include a set of braces or brackets ([]) and its variations: curly brackets ({}), chevrons (<>), guillemets, otherwise known as angle brackets or angle quotes («»), and, of course, parentheses, which is both singular and plural for the ubiquitous curls (()), which can be distinguished individually as open parentheses (() and close parentheses ()). (Parenthetically, parenthesis, spelled with an i, refers to the inserted material, while parentheses, with three e’s, refers to the typographic glyphs.) And these days every typeface needs a slash or forward slash, also known as a slant, stroke, diagonal, whack, separatrix, or virgule (/). A pair of these, leaning as they do on every page of the Internet, are known as a double virgule (//).
+
+The ampersand (&) is a stylized ligature of e and t, and represents the Latin word et or ‘and.’ Other commonly called for but unusual marks are the asterisk or splat (*), the commercial at sign, more commonly known as the at (@), the backslash (\), bullet (•), caret (^), currency marks (such as ¢, $, €, £, and ¥), a dagger or obelisk (†), double dagger (‡), degree mark (°), an inverted exclamation point (¡) and inverted question mark (¿) for Spanish exclamations and interrogations, a lozenge (◊), a percent sign (%), a paragraph mark, paragraph sign, pilcrow or alinea, from the Latin a linea, meaning “of the line,” (¶), a section sign (§) and what must surely be the most-named typographic mark of all time, an octothorpe (named by Bell Labs’ engineer Don MacPherson by combining octo-, meaning eight, with the name of the 1912 Olympic decathlon champion Jim Thorpe), with the variations octothorp or octothorn, also known as the crosshatch, double hashmark, pound sign, number sign or, in computerese, a crunch (#).
+
+Accent marks, which rest over and under the letters of foreign expressions, are also known as diacritical marks or diacritics. Some common diacritics are the acute or aigu (é), the cedille (ç), the caret, circumflex or circonflexe (ê), the grave (à), the tilde or swung dash (ñ), and the umlaut, a feature in many German words (ü), is identical to the diaeresis or trema (ö) that is rare and not mandatory in English (don’t be naïve), but is a regular feature of Dutch, French and Spanish.
+
+A floating or non-spacing diacritic has, in the computer’s mind, zero width, and so one diacritic can be easily combined with any of a variety of letters.
+
+Dingbats are typographic ornaments or simple illustrations, the most famous set of which, Zapf Dingbats, was designed by Hermann Zapf. They are sometimes also known as ornaments, or as fleurons if the illustrations are of a horticultural nature. A set of pi characters, also known as a pi font, consists of nothing but unusual type forms, generally known as all sorts, special sorts, or peculiars.
+
+Slang punctuation refers to typographic signs that are created by the user of a typeface, rather than the type designer, by combining pre-existing characters of the font. Two examples are a combination of question marks and exclamation marks (!?) to express exasperation, or augmentation by repetition (!!!) for emphasis. A third is a form of expression that has developed as a consequence of the surge of email and text messaging: emoticons, such as the apparently timeless smiley face. =)
+
+In Emoticons During Wartime, a recent article in The New Yorker (December 10, 2007), Tom McNichol documents the usefulness of emoticons in communicating by visual innuendo. Emoticons can mean whatever the writer and reader want them to mean, until, of course the meaning is explicitly defined for all by The New Yorker. Two striking examples are:
+
+“=|:-)= This e-mail is being monitored by Uncle Sam for your protection,” and “:-x I’d rather not say in an e-mail that’s being monitored for my protection.”
+
+“When the world blows up and the final edition has gone to press the proofreaders will quietly gather up all commas, semicolons, hyphens, asterisks, brackets, parenthesis, periods, exclamation marks, etc. and put them in a little box over the editorial chair.”
+—Henry Miller, Tropic of Cancer, 1961.
+http://www.rightreading.com/typehead/typehead.htm
+Les chiffres elzéviriens (du nom de la famille de libraires et imprimeurs hollandais Elzevier), chiffres minuscules, chiffres bas-de-casse, chiffres français1, chiffres non alignés, ou chiffres suspendus sont, en typographie, des chiffres débordant de manière variable sur la hampe ou le jambage, en opposition aux chiffres classiques, dits chiffres Didot2, alignés sur la ligne de base et de même hauteur que les majuscules. 
+https://www.fontsquirrel.com/fonts/eb-garamond
+our se rabattre sur un équivalent open source, il existe le: EB Garamond. Deux variantes: 8 points, qui convient aux notes en bas de pages et aux petits caractères en général, et le 12 points, excellent pour le texte courant. C’est une reproduction fidèle d’un spécimen imprimé par Claude Garamont lui-même, avec les imperfections volontaires que cela suppose. Vraies petites capitales, chiffre elzéviriens.
+Si vous avez besoin d’un très large inventaire de caractères exotiques (essentiellement, tous les caractères de toutes les langues vivantes ou mortes et quelques ornements en bonus), il y a Junicode. Elle ressemble un peu au Garamond de ITC, avec une version condensée. Police universitaire, elle est conçue pour l’impression de livres et non pour l’affichage à l’écran.
+
+Plus audacieux, il y a la police Cormorant. C’est une police de caractère destinée à l’affichage et aux grands titres mais, à ma grande surprise, elle fonctionne passablement bien comme fonte de texte, en particulier sa déclinaison Cormorant Garamond Book. Sa grande particularité dans cet usage est ses accents presque verticaux, qui peuvent déranger. J’avoue que j’aimerais bien l’essayer.
+Bembo a été adapté plusieurs fois, et certaines versions sont très accessibles. Par exemple, la police Borgia Pro est gratuite en plusieurs graisses: http://www.fontspring.com/fonts/fontsite/borgia-pro. Avantage supplémentaire, Borgia Pro comporte les vraies petites capitales. Toutefois, ce n’est pas parce qu’une font est gratuite que vous avez nécessairement le droit de l’intégrer à un ePub, par exemple.
+
+Cardo est une excellents adaptation open source. Encore ici, il s’agit d’une police comportant un très grand nombre de caractères anciens, mais son usage courant ne diffère pas du Bembo classique. Cardo est maintenant très utilisé sur le web, mais la police a été conçue pour l’usage dans les livres. Cette police présente quelques approches un peu approximatives, ceci dit.
+Baskerville
+
+Baskerville est peut-être le meilleur exemple de police réale. C’est une solution sûre dans un grand nombre de mises en pages, et sans doute la meilleure alternative si vous êtes tenté d’utiliser du Times pour une raison ou une autre.
+
+Pablo Impallari en a créé une version open source, le Libre Baskerville, qui est optimisé pour affichage à l’écran. Hauteur d’x plus grande, chasse plus large. Dans le même esprit, il y a aussi Baskervald, plus proche de l’original.
+Goudy
+
+Police dessinée avec plus d’élégance que nécessaire, Goudy Oldstyle un choix courant. Si vous vous plantez des clous dans les mains pour vous retenir d’utiliser Garamond sous prétexte qu’elle est trop utilisée, Goudy est votre meilleure option.
+
+OFL Mills Goudy est un robuste portage open source par Barry Schwartz. Avec vraies petites capitales, caractères elzéviriens et tout ce qu’il faut.
+Caslon
+
+Le caractère de la Déclaration d’Indépendance des États-Unis est encore un petit chouchou de nos jours. La version Adobe Caslon Pro est une véritable légende de nos jours, une de mes polices préférées et l’un des choix les plus courants en fiction. Si elle n’a pas les déclinaisons optiques d’autres magnifiques polices d’Adobe (le déjà nommé Garamond Premier Pro, Arno Pro, le Minion Pro et quelques autres)
+
+Pablo Impallari (encore lui) a réalisé le Libre Caslon, encore une fois optimisé pour l’usage à l’écran. Cela se traduit essentiellement par une hauteur d’x plus grande et moins de contraste entre les pleins et les déliés. À noter: il y a une version «Display», idéale pour les titres.
+Palatino
+
+Palatino a longtemps dominé la typographie livresque allemande, et son inclusion des les polices de bases fournies avec les ordinateurs (sous sa vraie forme ou sous sa copie Book Antiqua) en a fait une des polices de caractères les plus utilisées au monde.
+
+Le créateur de cette police, Herman Zapf, en a produit différentes version, sous des noms parfois différents, car la marque Palatino appartient à Linotype. Par exemple, le Palladio est un version beaucoup plus complète que la version de Palatino fournie gratuitement avec chaque Mac. Pas gratuite, mais tout de même très abordable, avec une version titling dessinée par le maître lui-même.
+
+Il en existe une déclinaison open source très complète, le TeX Gyre Pagella. Les caractères courants des deux polices sont pratiquement identiques, et la version open source est plus complète. Par exemple, contrairement au Palatino de base que vous avez peut-être sur votre ordinateur, le Pagella comprends les vraies petites capitales, ce qui peut être un gros argument en sa faveur.
+Fairfield
+
+Envie d’un peu de distinction, de précision, de mordant dans votre mise en page? Toutes ses adaptions de vieilles lettres sur de vieilles feuilles vous donnent la nausée? Fairfield, avec son dessin précis et ouvert, est un choix fort populaire et très recommandable.
+
+Barry Schwartz l’a adaptée avec la police Fanwood. Si le dessin est similaire, Fanwood est plus lourd que le Fairfield Light et plus léger que le Fairfield Médium, comme si Fanwood avait pour but de combler une lacune dans la police originale. Quoi qu’il en soit, c’est une excellente police, avec les vraies petites capitales. Et si vous vous destinez à un usage sur écran, la police Fanwood Text est adaptée à cet usage.
+Trajan
+
+Directement inspirée des inscriptions de la Colonne Trajane, Trajan est devenue une des fontes les plus utilisées en affichage et pour tous genres de titres. Quelle que soit la semaine, il est pratiquement impossible qu’il ne sorte pas au moins un films hollywoodien qui utilise cette fonte. Sur les couvertures de livres, son ubiquité n’est jamais parvenue à lasser.
+
+Chez les designers graphiques, cette surutilisation a tout de même fini par provoquer un ressac. Il existe toutefois une alternative open source, le Cinzel. Moins contrastée dans sa version régulière, elle est riche de deux graisses supplémentaires, ainsi que d’une version «décorative» dont on est facilement tenté d’abuser.
+
+Plus simplement, on peut lui substituer une version petites capitales du Cardo ou du OFL Mills Goudy, par exemple, ou l’une des très nombreuses, et magnifiques, déclinaisons du Cormorant.
+Times
+
+Je ne suis toujours pas un fan de l’utilisation du Times (ou du Times New Roman) dans les livres. Trop courant, trop identifiable, conçue pour être utilisée en format bien plus petit que ce qu’exige un livre.
+
+Si toutefois vous êtes de ces irréductibles qui pensent que la police par défaut de Word d’il y a quinze ans est certainement le meilleur choix, ou si vous êtes pris avec une décision antérieure, il existe une version open source bien plus complète que le Times original, avec en prime les vraies petites capitales: TeX Gyre Termes. Si vous faites le mal, faites-le bien.
+
+Puisque nous en parlons, GUST e-foundry a aussi assuré l’adaptation d’autres polices bien connues, comme le Century Schoolbook, le Bookman et l’Helvetica.
+Mise à jour Utopia
+
+Je viens de la découvrir, celle là.
+
+Utopia est une police de grande qualité réalisée par Adobe. Oui, une autre. Un peu «carrée» à mon goût, alors je ne l’ai jamais utilisée. Mon intuition me dit qu’elle est très lisible, même en petits caractères, et qu’elle garderait ses qualités à l’écran.
+
+Adobe a eu la bonne idée de relâcher ses sources sur les anciennes version type 1 d’Utopia, ce qui fait que quelques adaptations open source existent, comme l’excellent Heuristica, qui apporte en plus les vraies petites capitales. Une nouvelle option, donc.
+Akzidenz Grotesk
+
+Akzidenz Grotesk was the first widely-adopted sans serif typeface, and an influencer of many later neo-grotesque typefaces, including Helvetica and Univers. There are a number of variations available, including Akzidenz-Grotesk Book, Book Rounded, Schoolbook, Old Fact, and Next. Akzidenz-Grotesk is one of the official fonts of the American Red Cross (along with Georgia).
+Akzidenz Grotesk was created in 1898 by H. Berthold AG type foundry, and was originally called “Accidenz-Grotesk”. It’s been speculated that the typeface was derived from either Didot or Walbaum, which have similar looks if their serifs are removed. The official report, though, is that it was based on Royal Grotesk light, designed by Ferdinand Theinhardt (which was later merged into Berthold). Modern iterations of the typeface are descendants of a late-1950s project at Berthold to enlarge the type family, though these new typefaces retain the idiosyncrasies of the original.
+
+Strengths
+Akzidenz-Grotesk is a versatile typeface, suitable for both headlines and body copy. The slight idiosyncrasies present in the typeface give it a bit more visual interest than other, similar neo-grotesques.
+
+Best Uses
+It’s suitable for use in virtually any project.
+
+ 
+Avenir
+
+Avenir is a geometric sans-serif typeface designed in 1988 by Adrian Frutiger. The name, Avenir, means “future” in French. It was designed to be a more humanistic version of traditional geometric typefaces like Futura. Upon release, it was available in three weights, using Frutiger’s two-digit weight and width naming convention: 45 (book) /46 (oblique), 55 (text) /56 (oblique), and 75 (bold) /76 (oblique). Three more weights were later added.
+
+Avenir is a relatively new typeface, but it’s become widely used. LG uses it for the buttons on most of their cell phones. BBC Two uses Avenir in its logo and identity. Dwell magazine started using it in 2007, and the upcoming J.J. Abrams film Super 8 also uses it for titles.
+
+Strengths
+Avenir’s greatest strengths are its simplicity and balance. It bridges the gap between geometric and humanist sans-serifs, making it a versatile, modern choice.
+
+Best Uses
+Avenir is suitable for both headline and body copy. Improvements in hinting have made it better for on-screen viewing at smaller sizes.
+
+ 
+Baskerville
+
+Baskerville is a transition serif typeface that falls somewhere between classical typefaces like Caslon and modern serifs like Didot. It was created by John Baskerville as an attempt to improve upon the typefaces created by William Caslon. To that end, it has more contrast between the thick and thin strokes of the letterforms, as well as sharper serifs and a more vertical axis to rounded letters. The characters are also more regular, and the rounded strokes are more circular.
+Baskerville was created in 1757, and then revived by Bruce Rogers for the Harvard University Press in 1917. The original typeface was used by John Baskerville to print a folio Bible. His rivals of the time were intimidated by the perfection of his work, and some claimed that the stark contrasts of his typefaces would damage the eyes. Others admired him, including Fournier, Bodoni, and even Benjamin Franklin.
+
+Baskerville was also revived in England in 1923 by Stanley Morison for the British Monotype Company. In 1996, it was used by Zuzana Licko as the basis for the Mrs Eaves typeface. A free version of Baskerville, called Open Baskerville, has also been created.
+
+Strengths
+The clarity and consistency of the letterforms are what make Baskerville such a readable typeface. It’s widely used in documents, and has a traditional, professional look. The University of Birmingham uses it for many of its documents, and a modified version can be seen in some of the Canadian government’s corporate identity materials (including in the “Canada” wordmark).
+
+Best Uses
+Baskerville is excellent for body copy, and is suitable for use in books, newsletters, newspapers, and other printed materials. It’s also a fairly common typeface, making it suitable for use on the web, though backup typefaces also need to be specified.
+Bembo
+
+Bembo is an old style serif, based on a humanist typeface created by Francesco Griffo in the late 15th century. It has a number of characteristics of humanist typefaces, including minimal variation between the weights of thin and thick strokes; a small x-height; short, bracketed serifs; angled top serifs on lower-case letters; and ascenders that are taller than capital letters.
+Bembo was revived by the Monotype Corporation in 1929, under the direction of Stanley Morison. The original typeface was first used in February of 1496, though, in a 60-page book about a journey to Mount Aetna, called Petri Bembi de Aetna Angelum Chalabrilem liber, written by Pietro Bembo. Francesco Griffo later cut the first italic types, for Aldus Manutius.
+
+Since the original typeface had no italic cut with it, it’s rumored that renowned calligrapher Alfred Fairbank was commissioned by Stanley Fairbank to create an italic for Bembo. Fairbank maintains that he created the type independently and then sold it to Monotype, but in either case, the metal type for an italic version of Bembo was released in 1929.
+
+Strengths
+Bembo is considered a good classical typeface, with a strong humanist, Old Style look. It’s perfect for use in designs where classic beauty or formal tradition are important.
+
+Best Uses
+Bembo is considered a good choice for book typography.Bickham Script Pro
+
+Bickham Script Pro is a script typeface based on English round hand writing common in the 18th century, and specifically on the engravings of George Bickham. It’s an ornate, romantic typeface, available in regular, bold, and semibold weights. Bickham Script Pro was created by Richard Lipton in 1997, and is available as part of the Adobe Type Library.
+Strengths
+Bickham Script Pro is excellent for formal, elegant designs, especially those reminiscent of its origin in the 18th century. It also includes a number of OpenType features, including discretionary ligatures, swashes, superscripts, stylistic alternates, and cast-sensitive glyph connectors. The contextual changes that occur to the characters as one types make it an especially versatile typeface, and improves your designs effortlessly.
+
+Best Uses
+Bickham Script is purely a display typeface, perfect for headings and subheads. It’s commonly seen in logos, menus, invitations, annual reports, and packaging, in primarily formal, elegant designs.
+Bodoni
+
+Bodoni is a modern serif typeface, with high contrast between thin and thick stroke weights, and a slightly condensed shape. It was based on the work of John Baskerville, but has taken his ideas to a more extreme conclusion. There are a few variations on Bodoni, some with more transitional shapes (including ITC Bodoni and Bodoni Old Face), and some more modern.
+
+Bodoni was first designed by Giambattista Bodoni in 1798. In addition to the influence from Baskerville, Bodoni was also influenced heavily by the work of Pierre Simon Fournier and Firmin Didot.
+
+Strengths
+Bodoni, for the most part, is best suited to larger font sizes. Because of the extreme variation between thin and thick strokes, it can degrade at small sizes and become illegible (specifically, it creates an effect known as “dazzle”). There are some typeface variations though, that are optimized for use at smaller sizes (including Bodoni Old Face at 9 points, ITC Bodoni 12 at 12 points, and ITC Bodoni 7 at 7 points).
+
+Best Uses
+Bodoni is well-suited for use in modern designs where a serif typeface is desired. It’s a great serif for use in headlines and subheads, though some variations can be used for body copy, too. Some of its more recognizable uses can be found in the logo for grunge band Nirvana, and on the Mamma Mia! posters.
+
+ 
+Caslon
+
+Caslon is a set of serif typefaces with the irregularity common of Dutch Baroque types. It has short ascenders and descenders, bracketed serifs, and is moderately-high contrast. The italics have a rhythmic calligraphic stroke, and some of the lowercase italics have the suggestion of a swash.
+The first Caslon typeface was designed in 1722. It was similar to Dutch Fell types by Voskens, and also by the typefaces cut by Van Dyck, another Dutchman. The Caslon types were used throughout the British Empire, including British North America. The decayed appearance common in a lot of early American printing is often thought to be caused by the oxidation that resulted from long exposure to seawater during the transport of metal type from England to America. Caslon was used extensively, and perhaps most famously in the printing of the U.S. Declaration of Independence.
+
+Strengths
+Caslon is sometimes considered a great universal typeface. There was even a common rule of thumb among printers and typesetters, “When in doubt, use Caslon.” It’s a versatile typeface that can be used equally well in headings or in body copy. The wide variety of weights and styles available make it even more versatile.
+
+Best Uses
+Caslon can be used for virtually any kind of typesetting, from body copy to headlines, and is quite legible at small sizes.
+Clarendon
+
+Clarendon is a slab-serif typeface, and is considered to be the first registered typeface. There’s only moderate contrast between thick and thin strokes, common of slab-serifs. It was originally designed by Robert Besley for the Fann Street Foundry in 1845. It was later copied heavily by other foundries.
+Clarendon was used heavily during World War I by the German Empire, and was commonly used in wanted posters in the American Old West. More recently, it was used by the US National Parks Service on traffic signs, and became the typeface of choice by the Ruby Tuesday restaurant chain when they relaunched their corporate identity in 2008.
+
+Strengths
+Clarendon has strong letterforms common to slab serifs. It’s also a very readable typeface, which makes it appropriate for use at somewhat smaller sizes.
+
+Best Uses
+Strong letterforms make Clarendon a great choice for things like signs, logos, and headlines. It’s already used by companies like Sony and Wells Fargo in their logos.
+
+ 
+Franklin Gothic
+
+Franklin Gothic is a relatively high profile grotesque sans serif typeface. In addition to Franklin Gothic, the News Gothic, Alternate Gothic, Monotone Gothic and Lightline Gothic typefaces are essentially just different weights of the original. Franklin Gothic itself is an extra-bold typeface, with a traditional double-story “a” and “g”.
+Franklin Gothic was first created in 1902. “Gothic” at that time just meant sans serif. It briefly fell out of popularity in the 1930s with the rise of Futura and Kabel, but was then rediscovered by American designers in the 1940s, and has remained popular since.
+
+Strengths
+Franklin Gothic is quite a strong typeface, stylistically, though the addition of related typefaces makes it much more versatile.
+
+Best Uses
+Franklin Gothic is well-suited to display use due to its weight. Other variations of the typeface, though, can be used for body copy, especially in onscreen situations.
+
+ 
+Frutiger
+
+Frutiger is a sans serif typeface designed by Adrian Frutiger. There are also serif and ornamental varieties of Frutiger, including Frutiger Serif, Frutiger Stones, and Frutiger Symbols. Frutiger was originally commissioned in 1968 by the Charles De Gaulle International Airport for their directional sign system. Frutiger was originally called Roissy (the airport is located in Roissy, France), and was completed in 1975.
+Strengths
+Frutiger was designed to have the rationality and cleanliness of Univers (also designed by Adrian Frutiger), but with the proportional and organic aspects of Gill Sans. Because of this, Frutiger is both distinctive and legible, with a modern appearance. Apertures of the typeface are wide and ascenders and descenders are prominent, making it easy to distinguish letters from each other.
+
+Best Uses
+Because of its excellent legibility, Frutiger is suitable for a variety of uses. It’s especially well-suited for signs though, as its readable from a distance, and from varying angles.
+
+ 
+Futura
+
+Futura is a geometric sans-serif typeface that was commissioned by the Bauer type foundry in 1927. Originally, it included Light, Medium, Bold, and Bold Oblique fonts, and then later Light Oblique, Medium Oblique, Demibold, Demibold Oblique, Book, Extra Bold, and Extra Bold Italic fonts were released.
+Futura was designed by Paul Renner. While he wasn’t associated with the Bauhaus, he shared the idea that a modern typeface should express modern models, rather than simply reviving an older design.
+
+Strengths
+Futura has an efficient, forward appearance, and is derived from simple geometric forms. This is evident in the obvious influence of near-perfect circles, squares, and triangles. All non-essential elements were removed from the typeface, and the uppercase characters have proportions similar to classical Roman capitals.
+
+Best Uses
+Futura is an excellent choice for advertising copy. It was used by IKEA until 2010, Volkswagen, Shell Petrol, and HP in their advertising and branding. West Anderson uses Futura for all of his films, and it was also Stanley Kubrick’s favorite font. It’s well suited to any modern design, for both headings and short copy.
+
+ 
+Garamond
+
+Garamond is an old-style serif typeface, named after punch-cutter Claude Garamond. Adobe Garamond and Stempel Garamond were both based on this original typeface from the 16th century, and Granjon and Sabon were heavily influenced by it. There are a few unique characteristics of Garamond, including the small bowl of the lowercase “a” and the small eye of the “e”.
+Garamond is one of the most legible serif typefaces, especially for use in print applications. It’s also one of the most eco-friendly typefaces in terms of ink usage. The original punches and matrices were sold to Christopher Plantin upon the death of Claude Garamond, and were in turn used in many printers, adding to its rise in popularity. Garamond revivals were created as early as 1900.
+
+Strengths
+Garamond’s greatest strength is its legibility and readability.
+
+Best Uses
+Garamond is an excellent choice for printed materials, including books and reports, due to its high legibility in print.
+Gill Sans
+
+Gill Sans is a humanist sans-serif typeface created in 1926 by Eric Gill. It was developed further, into a complete type family, after being commissioned by Stanley Morison to compete with the families of Erbar, Futura, and Kabel. In 1928, Gill Sans was released by Monotype Corporation.
+The uppercase characters of Gill Sans are based on Roman capitals like those found in Caslon and Baskerville. There are fourteen styles in the family. Gill Sans is distributed as a system font with Mac OS X and is bundled with some Microsoft products as Gill Sans MT.
+
+Strengths
+Gill Sans has a less mechanical feel to it than typefaces like Futura, because of its basis in Roman tradition. The lowercase letters are modeled on the lowercase Carolignian script, which is especially noticeable in the two-story lowercase “a” and “g”. This basis in traditional, classical typefaces gives Gill Sans a more refined look than many other sans serif typefaces.
+
+Best Uses
+Gill Sans is ideal for display uses, and can be used successfully as a text font at larger sizes. It’s best suited for modern designs, though it can be combined successfully with more traditional typefaces for classic designs.
+
+ 
+Helvetica
+
+Helvetica is probably the most commonly used typeface in all of graphic design, and almost certainly the most widely used sans serif. It was developed by Max Miedinger in 1957 with Eduard Hoffman, for the Haas Typefoundry. There are dozens of variations and numerous typefaces have been based on it.
+Helvetica is often considered a “neutral” typeface, in that it takes on the mood and attitude of its surroundings. Used in a modern setting, it appears modern. And yet it can blend into a classic setting effortlessly, too. It’s largely because of this chameleon-like ability that Helvetica has become so widely used.
+
+Strengths
+As mentioned, Helvetica’s ability to be used in virtually any circumstance is probably its greatest strength. It also has excellent letterforms and kerning.
+
+Best Uses
+Helvetica could be argued to be the most versatile typeface out there. It’s literally suitable for virtually any kind of design application, and looks good at both large and small sizes. It’s used in numerous logotypes (including those for American Airlines, American Apparel, 3M, Verizon Wireless, Motorola, Panasonic, Target, Toyota, Microsoft, and many, many others). It’s commonly seen online for both body copy and headlines, and can be seen in use on signs around the world.
+
+ 
+Lucida Sans/Lucida Grande
+
+Lucida Sans is a humanist, sans-serif typeface that is part of the larger Lucida type family (which includes serif, blackletter, console, and other variations). It was designed by Chalres Bigelow and Kris Holmes in 1985 as a complement to the Lucida Serif typeface. Technically, Lucida Grande is part of the Lucida Sans type family (which also includes Lucida Sans Typewriter, a monospaced typeface, and Lucida Sans Unicode, which is based on Lucida Sans regular but with additional characters).
+Strengths
+Lucida Grande and Lucida Sans are both highly legible, even at small sizes. Because of this, they’re heavily used for body copy and large blocks of small text.
+
+Best Uses
+Lucida Grande and Lucida Sans are both commonly seen as the primary typeface for body text on various websites and blogs, Facebook being just one example. It’s most recognizable, though, for its use throughout the user interface of Mac OS X.
+
+ 
+Minion
+
+Minion is an old style serif typeface, inspired by late Renaissance-era typefaces. It was designed in 1990 by Robert Slimbach for Adobe Systems. One unique feature of Minion is the support of Regular and Display optical sizes, meant to optimize the legibility by using different stroke contrasts and details, in the Regular and Italic versions of the typeface.
+
+The Minion Expert font package includes small caps, ligatures, old style ligatures, and swash glyphs that aren’t included in the regular Minion package. There’s also a Cyrillic version of Minion available.
+
+Strengths
+The different optical sizes available with Minion are one of its greatest strengths, making it considerably more versatile.
+
+Best Uses
+Minion is an excellent choice for printed copy, and is used for typesetting books and journals. It has also been used in various logotypes, including MathWorks’ Matlab and Brown University.
+
+ 
+Myriad
+
+Myriad is a humanist sans-serif typeface created specifically for Adobe Systems by Robert Slimbach and Carol Twombly. It’s easily distinguishable from other sans-serif fonts because of its special “y” descender and slanting “e”cut.
+Originally, Myriad was offered in two weights, with complementary italics for each. Later, a condensed version was released, and then a “Headline” version. Additional variations have since ben released, including Myriad Web and Myriad Pro.
+
+Strengths
+Myriad’s greatest strength is the letterforms it includes that set it apart from other sans-serif typefaces, which are often too similar to be easily recognizable.
+
+Best Uses
+Myriad is recognizable as the typeface of choice for Apple’s branding efforts. It’s well-suited to modern designs, especially if you want to evoke Apple’s corporate branding.
+
+ 
+Optima
+
+Optima is a unique sans-serif typeface, in that it uses varying stroke weights more commonly found in serif typefaces. In addition to the varying stroke weights, it also has subtle swelling at its terminals, reminiscent of a glyphic serif. The italic version of Optima is really just an oblique, without any specialized italic letterforms (like a single-story “a”), which is more typical of realist sans-serif typefaces like Helvetica.
+Optima was designed by Hermann Zapf in the mid-50s, for the D. Stempel AG Foundry. Linotype owns the trademark to Optima, though the typeface is widely imitated (Bitstream’s Zapf Humanist is one such example, as well as the free MgOpen Cosmetica).
+
+Strengths
+Optima’s similarity to serif typefaces gives it a more classic appearance than most sans serifs. It also improves legibility at some sizes.
+
+Best Uses
+Optima is an elegant if conservative type choice, and is well-suited to understated designs. Most famously, it’s been used for the Vietnam Veterans Memorial, and by the 2008 John McCain presidential campaign. It’s also the official branding typeface of Estée Lauder Companies and Aston Martin.
+Palatino
+
+Palatino started out as an old style serif typeface designed by Hermann Zapf. It was released in 1948 by Linotype. A revised version was released in 1999, also designed by Zapf, called Palatino Linot
+The original Palatino was based on humanist typefaces from the Italian Renaissance, and was named after 16th century Italian calligraphy master Giambattista Palatino. Palatino has larger proportions than most Renaissance-inspired type, and because of that is much easier to read.
+
+Strengths
+Palatino’s greatest strength is its readability.
+
+Best Uses
+Palatino is widely used for body copy, especially in books and similar printed materials.
+
+ 
+Rockwell
+
+Rockwell is a slab serif, with no real variation in stroke weight. It was designed in-house at Monotype in 1934, supervised by Frank Hinman Pierpont. It’s a geometric typeface, with upper- and lowercase “O” more of a circle than an ellipse. The serif at the apex of the uppercase “A” is a distinctive feature of Rockwell that sets it apart from many other serif type faces.
+Strengths
+The geometric forms of Rockwell make it more similar to sans-serif typefaces, making it a good choice for combining with geometric sans serifs.
+
+Best Uses
+Rockwell is best-suited for use as a display typeface due to its thick, monoweighted strokes.
+
+ 
+Sabon
+
+Sabon is an old style serif typeface designed by Jan Tschichold between 1964 and 1967. It was released jointly by Linotype, Monotype, and Stempel foundries in 1967. It’s based on typefaces designed by Claude Garamond, particularly the one printed by Konrad Berner of Frankfurt, as well as the italics by Robert Grandjon.
+One of the distinguishing features of Sabon is that the roman, italic, and bold weights all take up the same width when typeset. It’s an unusual feature, but meant that only one set of copyfitting data is needed for all three styles.
+
+Strengths
+Sabon is a highly legible typeface, with moderate contrast between thick and thin strokes. That makes it suitable for use in a variety of sizes.
+
+Best Uses
+Sabon is a favorite for typesetting book copy, and is well-suited to any traditional or formal design.
+
+ 
+Times New Roman
+
+Times New Roman was commissioned by the British newspaper The Times in 1931 after the paper was criticized by Stanley Morison for being typographically antiquated and poorly printed. It was created by Cameron S. Latham of Monotype, under the supervision of Morison.
+The name “Times New Roman” was used because the former font of The Times was called “Times Old Roman”. It was based on another typeface by Morison, called Plantin, but revisions were made to make it more economical in terms of space and to increase legibility. Times New Roman is still widely used in book typography, and it has served as the basis for a number of other typeface, including Georgia.
+
+Strengths
+The ubiquitous nature of Times New Roman has made it an ideal choice for situations where fonts can’t be embedded. It’s also highly readable, even at smaller sizes.
+
+Best Uses
+Times New Roman is best suited for body copy, both online and off.
+
+ 
+Univers
+
+Univers is a neo-grotesque sans serif typeface that was designed by Adrian Frutiger in 1954, and released by Deberny & Piegnot in 1957. It was then acquired by Haas in 1972, and later by D. Stempel AG and then Linotype.
+Univers is based on the 1898 typeface Akzidenz-Grotesk, which was also the basis for Helvetica (the two typefaces are sometimes confused). The entire Univers type family consists of 44 faces, with 16 uniquely numbered weight, width, and position combinations. Twenty of these fonts offer oblique characters, while eight support Central European character sets and another eight support Cyrillic characters.
+
+Strengths
+The largest strength of Univers is its diversity, which is further enhanced by the number of weights available. It also has some of the same neutral character of Helvetica.
+
+Best Uses
+Univers is well-suited to a variety of designs, especially modern designs. It works well as both body copy and display.
+
+ 
+Close calls
+
+There are a lot more typefaces that are commonly used by designers the world over. Below is just a partial list of some additional popular choices (feel free to add more in the comments!):
+
+Antique Olive
+
+ 
+
+Avant Garde
+
+ 
+
+Century Gothic
+
+ 
+
+Dax
+
+ 
+
+Didot
+
+ 
+
+Din
+
+ 
+
+Gotham
+
+ 
+
+Meta
+
+ 
+
+Mrs Eaves
+
+ 
+
+Trade Gothic
+
+ 
+
+Trajan
+
+ 
+
+VAG Rounded
+
+ 
+
+Warnock
 
 
 
-section{\textsc{Au tout début\dots}}
 
 
-
-		\begin{itemize}
-			\item<+->  via un lecteur de cartes perforées ;
-			\item<+->  ou un clavier de machine à écrire électrique.
-		\end{itemize}
-
-	
-
-		\begin{itemize}
-			\item<+->  sur du papier à bandes perforées ;
-			\item<+->  via une imprimante rapide ;
-			\item<+->  ou une machine à écrire électrique.
-						\item<+->  la police de caractères était l'unique police de l'imprimante ou de la machine à écrire !
-		\end{itemize}
-{\textsc{On n'avait donc pas la possibilité :}}
-		\begin{itemize}
-			\item<+-> d'avoir des polices proportionnelles ;
-			\item<+-> ni d'avoir du gras, de l'italique ;
-			\item<+-> ni des caractères de différentes tailles, indices, exposants\dots
-		\end{itemize}
-{\textsc{Ensuite sont arrivés les écrans individuels :}}
-		\begin{itemize}
-			\item<+-> la police de caractères était \textit{bitmap} et unique ;
-			\item<+-> en mémoire dans l'écran qui fonctionnait en mode \textit{texte} ;
-			\item<+-> on avait 20 à 25 lignes de 40 ou 80 caractères\dots
-			\item<+-> Tout ceci codé en \textsc{ascii}, 1963, à la norme étendue flottante\dots
-		\end{itemize}
-		
-		{\textsc{les imprimantes à aiguilles :}}
-		\begin{itemize}
-			\item<+-> travaillaient en mode \textit{texte} ou \textit{graphique} ;
-			\item<+-> avaient 9 puis 24 \textit{aiguilles}, les lignes en fait\dots
-		\end{itemize}
-	{\textsc{L'apparition de TeX !}
-	 {\textsc{Donald \textsc{Knuth}\dots}}
-		\begin{itemize}
-			\item<+-> crée en 1978 la première version de TeX avec des caractères crées par une ébauche de Metafont ;
-			\item<+-> l'idée est déjà d'avoir un système autonome et léger de créations de documents ;
-			\item<+-> à l'époque, rien n'existait\dots
-		\end{itemize}	
-	{\textsc{MetafontLes bases}
-	{\textsc{Le principe est celui du roseau fendu}}
-		\begin{itemize}
-			\item<+-> ou de la plume Sergent Major ;
-			\item<+-> qui permet de créer des pleins et des déliés\dots
-		\end{itemize}	
-		
-	{\textsc{Comme en calligraphie}}
-		\begin{itemize}
-			\item<+-> la plume suit une courbe orientée ;
-			\item<+-> en étant plus ou moins inclinée ;
-			\item<+-> cette inclinaison est variable au besoin\dots
-			\item<+-> On utilise des courbes de Bézier, sur lesquelles on reviendra\dots
-		\end{itemize}	
-
-{\textsc{Une telle police :}}
-		\begin{itemize}
-			\item<+-> est ensuite convertie en bitmap haute précision pour impression,
-				la puissance des machines à ce moment interdisait de faire cela à la volée ;
-			\item<+-> on lui adjoint des instructions de crénage, rapprocher ou éloigner deux caractères
-				qui s'emboîtent plus ou moins bien ;
-			\item<+-> et des instructions de ligature, réunir deux caractères qui se suivent en un seul\dots
-			\item<+-> est limitée à 256 caractères !
-			\item<+-> Bien qu'au final, dans le document, c'est du bitmap, les polices Metafont sont les premières polices vectorielles !
-			\end{itemize}	
-			
-		{Un exemple de police non optique}
-	\begin{verbatim}
-	{\fontfamily{jkp}\selectfont
-	\newcommand{\PO}{Police non optique}
-	\scalebox{4}{\fontsize{6}{6}\selectfont\PO}\\[1ex]
-	\scalebox{2}{\fontsize{12}{12}\selectfont\PO}\\[1ex]
-	\scalebox{.75}{\fontsize{32}{32}\selectfont\PO}}
-	\end{verbatim}
-	{\fontfamily{jkp}\selectfont
-	\newcommand{\PO}{Police non optique}
-		\scalebox{4}{\fontsize{6}{6}\selectfont\PO}\\[1ex]
-		\scalebox{2}{\fontsize{12}{12}\selectfont\PO}\\[1ex]
-		\scalebox{.75}{\fontsize{32}{32}\selectfont\PO}}	
-	{Un exemple de polices optiques}
-	\begin{verbatim}
-	{\fontfamily{cmr}\selectfont
-	\newcommand{\PO}{Police optique}
-	\scalebox{4}{\fontsize{6}{6}\selectfont\PO}\\[1ex]
-	\scalebox{2}{\fontsize{12}{12}\selectfont\PO}\\[1ex]
-	\scalebox{.75}{\fontsize{32}{32}\selectfont\PO}}
-	\end{verbatim}
-	{\fontfamily{cmr}\selectfont
-		\newcommand{\PO}{Police optique}
-		\scalebox{4}{\fontsize{6}{6}\selectfont\PO}\\[1ex]
-		\scalebox{2}{\fontsize{12}{12}\selectfont\PO}\\[1ex]
-		\scalebox{.75}{\fontsize{32}{32}\selectfont\PO}}		
-	{\textsc{Une telle police :}}
-		\begin{itemize}
-			\item<+-> en 12 pt : {\fontsize{12}{14}\fontfamily{jkp}\selectfont AaBbCc} ;
-			\item<+-> en 25 pt : {\fontsize{25}{28}\fontfamily{jkp}\selectfont AaBbCc} ;
-			\item<+-> le caractère agrandi parait plus gras\dots
-			\item<+-> Metafont permet facilement de créer des polices optiques en modifiant le crayon !
-			\item<+-> Mais aujourd'hui, les polices optiques ont presque complètement disparues, on en reparlera\dots		
-			\end{itemize}	
-			{\textsc{Postcript}}
-		\begin{itemize}
-			\item<+-> est un langage de chez Adobe apparu en 1982 ;
-			\item<+-> puis en 1984 pour les polices.
-		\end{itemize}
-{\textsc{Un caractère Postcript de type 1}}
-		\begin{itemize}
-			\item<+-> est formé de contours fermés orientés ;
-			\item<+-> assemblage de courbes de Bézier cubiques ;
-			\item<+-> et on noircit ce qui est à droite de ces contours\dots
-		\end{itemize}
-	\textsc{Un exemple :}}
-  	\begin{center}\begin{tikzpicture}
-  		\filldraw [pink] (1,2) circle (2pt)
-  		                 (0,1) circle (2pt);
-  		\filldraw [green](0,0) circle (2pt)
-  		                 (5,2) circle (2pt);
-  		\draw [->] (0,0) .. controls (0,1) and (1,2) .. (5,2) ;
-  		\draw	[gray,->] (0,0) -- (0,1) ;
-  		\draw	[gray,->] (5,2) -- (1,2) ;
-  	\end{tikzpicture}\end{center}	
-
-	On a symbolisé les extrémités en vert et les deux points de contrôle en rose
-	
-	On assemble des courbes de ce type pour obtenir un ou des chemins fermés.
-	
-	On remplit alors \textsl{à droite} des chemins fermés.				Une Bezier cubique se décompose en deux Beziers cubiques !
-	
-	 	\begin{center}\begin{tikzpicture}
-  		\draw [->] (.59,3.36) .. controls (.88,4.11) and (1.50,4.58) .. (2.40,4.58) ;
-  		\draw [red] (.59,3.36) -- (.88,4.11) -- (1.50,4.58) -- (2.40,4.58)
-  					-- (2.71,4.58) -- (3.78,3.97) -- (3.78,2.98) --(3.78,.94) -- (3.78,.42) -- (4.05,.32) 
-  					-- (4.47,.43) -- (4.51,.17) -- (4.51,.17) -- (3.72,.04) -- (3.25,-.07) 
-  					-- (2.97,-.07) -- (3.00,.68) -- (3.00,.68) -- (2.13,-.12) -- (1.58,-.12) --
-  					(.87,-.12) -- (.35,.33) -- (.35,1.07) -- (.35,1.88) -- (.97,2.12) -- (1.70,2.37)
-  					-- (3.00,2.81) -- (3.00,3.58) -- (2.78,4.13) -- (1.91,4.10) -- (1.46,4.07) -- 
-  					(1.17,3.60) -- (.94,3.16) ;
-  		\draw [->] (2.40,4.58) .. controls (2.71,4.58) and (3.78,3.97) .. (3.78,2.98) ;
-  		\draw [->] (3.78,2.98) -- (3.78,.94) ;
-  		\draw [->] (3.78,.94) .. controls (3.78,.42) and (4.05,.32) .. (4.47,.43) ;
-  		\draw [->] (4.47,.43) -- (4.51,.17) ;
-  		\draw [->] (4.51,.17) .. controls (4.51,.17) and (3.72,.04) .. (3.25,-.07) ;
-  		\draw [->] (3.25,-.07) .. controls (2.97,-.07) and (3.00,.68) .. (3.00,.68) ;
-  		\draw [->] (3.00,.68) .. controls (2.13,-.12) .. (1.58,-.12) ;
-  		\draw [->] (1.58,-.12) .. controls (.87,-.12) and (.35,.33) .. (.35,1.07) ;
-  		\draw [->] (.35,1.07) .. controls (.35,1.88) and (.97,2.12) .. (1.70,2.37) ;
-  		\draw [->] (1.70,2.37) -- (3.00,2.81) ;
-  		\draw [->] (3.00,2.81) .. controls (3.00,3.58) and (2.78,4.13) .. (1.91,4.10) ;
-  		\draw [->] (1.91,4.10) .. controls (1.46,4.07) and (1.17,3.60) .. (.94,3.16) ;
-  		\draw [->] (.94,3.16) -- (.59,3.36) ;
-  		\draw [red] (3.00,1.03) -- (2.77,.76) -- (2.28,.44) -- (1.91,.44) -- (1.48,.44) -- (1.20,.81) --
-  		      (1.20,1.23) -- (1.20,1.95) -- (3.00,2.49) -- (3.00,2.49) ;
-  		\draw [<-] (3.00,2.49) -- (3.00,1.03) ;
-  		\draw [<-] (3.00,1.03) .. controls (2.77,.76) and (2.28,.44) .. (1.91,.44) ;
-  		\draw [<-] (1.91,.44) .. controls (1.48,.44) and (1.20,.81) .. (1.20,1.23) ;
-  		\draw [<-] (1.20,1.23) .. controls (1.20,1.95) and (3.00,2.49) .. (3.00,2.49) ;
-  	\end{tikzpicture}\end{center}
-	
-		Notez les sens de parcours !
-	\begin{itemize}
-			\item<+-> la notion de police définie par des contours, ce qui rend les polices optiques difficiles à écrire ;
-			\item<+-> tous les caractères on un nom, \textit{agrave} pour \textit{à}, ce qui permet de dépasser la limite des 256 caractères,
-				ceci restera vrai dans les polices suivantes\dots
-			\item<+-> Cependant, il ne peut, par exemple, exister qu'un seul \textit{a} utilisable très facilement !
-			\item<+-> Le fichier de dessin des caractères doit s'accompagner d'un fichier de métriques, ligatures et crénages.
-		\end{itemize}
-		
-\section{TrueType -- .ttf}		
-	{\textsc{Les polices TrueType}}
-		\begin{itemize}
-			\item<+-> sont une création d'Apple, apparues à la fin des années 80 ;
-			\item<+-> dans le but de concurrencer les polices Postscript.
-		\end{itemize}	
-	{\textsc{Un caractère TrueType}}
-		\begin{itemize}
-			\item<+-> est formé de contours fermés orientés ;
-			\item<+-> assemblage de courbes de Bézier quadratiques ;
-			\item<+-> et on noircit ce qui est à droite de ces contours\dots
-		\end{itemize}	
-{\textsc{Grande nouveauté}}
-		\begin{itemize}
-			\item<+-> les métriques sont intégrées au fichier .ttf ;
-			\item<+-> un seul fichier suffit donc !
-		\end{itemize}	
-{\textsc{La guerre des polices n'aura pas lieu}}
-		\begin{itemize}
-			\item<+-> Adobe et Apple se mettront d'accord pour développer les polices TrueType et suivantes ensemble !
-		\end{itemize}		
-
-
-Utilisation dans pdf\LaTeX		
-{\textsc{Possible assez facilement}}
-		\begin{itemize}
-			\item<+-> mais il faut fabriquer les fichiers nécessaires ;
-			\item<+-> Font Definition -- .fd
-			\item<+-> TeX Font Metrics -- .tfm, voire peut-être -- .vf
-			\item<+-> le fichier .map et au besoin le ou les fichiers d'encodage -- .enc !
-		\end{itemize}
-{\textsc{Les polices OpenType}}
-		\begin{itemize}
-			\item<+-> ont été crées en 1996 ;
-			\item<+-> sont développées conjointement par Adobe et Apple.
-		\end{itemize}
-		
-	{\textsc{Un caractère OpenType}}
-		\begin{itemize}
-			\item<+-> est formé de contours fermés orientés ;
-			\item<+-> assemblage de courbes de Bézier cubiques, ou quadratiques parfois ;
-			\item<+-> et on noircit ce qui est à droite de ces contours\dots
-			\item<+-> Rien de nouveau pour le moment !
-		\end{itemize}	
-		
-		
-		
-		
-{\textsc{Les polices OpenType}}
-		\begin{itemize}
-			\item<+-> sont dites \textit{intelligentes} ;
-			\item<+-> on leur passe des commandes pour fournir à la même demande des résultats différents !
-			\item<+-> Par exemple, on a souvent 4 caractère \ogla 1 \fgla{} différents :
-			\begin{itemize}
-				\item<+-> le {\fontfamily{jkp}\selectfont 1}, en largeur fixe ou proportionnelle ;
-				\item<+-> le {\fontfamily{jkp}\selectfont \oldstylenums{1}} elzévirien, en largeur fixe ou proportionnelle.
-			\end{itemize}
-			\item<+-> Par défaut, c'est le premier, mais on aura des commandes pour passer en proportionnel et en elzévirien !
-		\end{itemize}
-		
-				
-		
-		
-		{\textsc{Les commandes}}
-			\begin{itemize}
-				\item<+->  Elles correspondent des scripts exécutables gérant :
-				\begin{itemize}
-					\item<+-> les corps optiques ;
-					\item<+-> le crénage ;
-					\item<+-> les substitutions ;
-					\item<+-> mais aussi les substitutions contextuelles !
-				\end{itemize}
-				\item<+->  Ce qui permet d'avoir par exemple sans modification du source :
-				
-			
-				{\fontfamily{jkpvos}\selectfont\itshape
-				Quelles= superbes= questions= !}
-				
-	
-%%{\fontfamily{jkp}\selectfont\scslshape Quelles superbes questions !}
-			
-				
-				Regardez attentivement petites capitales penchées et les \ogla s \fgla !
-				
-				Il faut, bien sûr, que la fonte considérée le permette !
-				\item<+->  En principe, les polices OpenType \textit{PRO} contiennent des variantes optiques !
+\begin{itemize}
+\item  via un lecteur de cartes perforées ;
+\item  ou un clavier de machine à écrire électrique.
 \end{itemize}
-{\textsc{Commandes courantes}}
-			
-			\begin{itemize}
-				\item<+-> Les commandes de ces polices sont des mots de 4 lettres, certaines, souvent toutes, sont prédéfinies :
-				\begin{itemize}
-					\item<+-> \texttt{onum} et \texttt{pnum} pour les nombres elzéviriens et proportionnels ;
-					\item<+-> \texttt{smcp} pour les petites capitales\dots
-				\end{itemize}
-			\end{itemize}		
-		
-		
-	{Trouver les spécifications d'une fontes OpenType}	
-{\textsc{Cela dépend du système !}}
-  \begin{itemize}
-  \item Sous Linux, installer \textit{Fontforge} par exemple :
-			\begin{itemize}
-				\item<+-> Suivre \textit{View}, \textit{Display Substitutions}\dots
-			\end{itemize}
-	\item Sous Mac OS ou Windows, installer la version de démonstration de \textit{FontLab Studio} :
-			\begin{itemize}
-				\item<+-> l'info est sur le panneau \textit{OpenType}, qu'on peut rendre visible au besoin,
-				\item<+-> en suivant \textit{Window}, \textit{Panels}, \textit{OpenType}\dots
-			\end{itemize}
-			Sous Mac, c'est aussi dans les propriétés de la police.
-	\end{itemize}		
-		
-		
-		{\textsc{Liste des commandes standard et leur sens !}}
-			
-			\begin{itemize}
-				\item<+-> On trouve la liste des commandes possibles sur \verb=http://en.wikipedia.org/wiki/=
-				
-				\qquad\qquad\qquad\verb=List_of_typographic_features=
-				\item<+-> ou encore \begin{verbatim}
-				http://www.adobe.com/devnet/opentype/afdko/
-				           topic_feature_file_syntax.html
-				\end{verbatim}
-			\end{itemize}
-		
-		
-	section{OpenType et \LuaLaTeX}	
-		
-		
-	{\textsc{Des nombres :}}
-			\begin{verbatim}
+
+
+
+\begin{itemize}
+\item  sur du papier à bandes perforées ;
+\item  via une imprimante rapide ;
+\item  ou une machine à écrire électrique.
+\item  la fonte de caractères était l'unique fonte de l'imprimante ou de la machine à écrire !
+\end{itemize}
+    {\textsc{On n'avait donc pas la possibilité :}}
+    \begin{itemize}
+    \item d'avoir des fontes proportionnelles ;
+    \item ni d'avoir du gras, de l'italique ;
+    \item ni des caractères de différentes tailles, indices, exposants\dots
+    \end{itemize}
+        {\textsc{Ensuite sont arrivés les écrans individuels :}}
+	\begin{itemize}
+	\item la fonte de caractères était \textit{bitmap} et unique ;
+	\item en mémoire dans l'écran qui fonctionnait en mode \textit{texte} ;
+	\item on avait 20 à 25 lignes de 40 ou 80 caractères\dots
+	\item Tout ceci codé en \textsc{ascii}, 1963, à la norme étendue flottante\dots
+	\end{itemize}
+	
+	{\textsc{les imprimantes à aiguilles :}}
+	\begin{itemize}
+	\item travaillaient en mode \textit{texte} ou \textit{graphique} ;
+	\item avaient 9 puis 24 \textit{aiguilles}, les lignes en fait\dots
+	\end{itemize}
+	    {\textsc{L'apparition de TeX !}
+	      {\textsc{Donald \textsc{Knuth}\dots}}
+	      \begin{itemize}
+	      \item crée en 1978 la première version de TeX avec des caractères crées par une ébauche de Metafont ;
+	      \item l'idée est déjà d'avoir un système autonome et léger de créations de documents ;
+	      \item à l'époque, rien n'existait\dots
+	      \end{itemize}	
+	          {\textsc{MetafontLes bases}
+	            {\textsc{Le principe est celui du roseau fendu}}
+		    \begin{itemize}
+		    \item ou de la plume Sergent Major ;
+		    \item qui permet de créer des pleins et des déliés\dots
+		    \end{itemize}	
+		    
+	            {\textsc{Comme en calligraphie}}
+		    \begin{itemize}
+		    \item la plume suit une courbe orientée ;
+		    \item en étant plus ou moins inclinée ;
+		    \item cette inclinaison est variable au besoin\dots
+		    \item On utilise des courbes de Bézier, sur lesquelles on reviendra\dots
+		    \end{itemize}	
+
+                    {\textsc{Une telle fonte :}}
+		    \begin{itemize}
+		    \item est ensuite convertie en bitmap haute précision pour impression,
+		      la puissance des machines à ce moment interdisait de faire cela à la volée ;
+		    \item on lui adjoint des instructions de crénage, rapprocher ou éloigner deux caractères
+		      qui s'emboîtent plus ou moins bien ;
+		    \item et des instructions de ligature, réunir deux caractères qui se suivent en un seul\dots
+		    \item est limitée à 256 caractères !
+		    \item Bien qu'au final, dans le document, c'est du bitmap, les fontes Metafont sont les premières fontes vectorielles !
+		    \end{itemize}	
+		    
+		    {Un exemple de fonte non optique}
+\begin{verbatim}
+  {\fontfamily{jkp}\selectfont
+    \newcommand{\PO}{Fonte non optique}
+    \scalebox{4}{\fontsize{6}{6}\selectfont\PO}\\[1ex]
+    \scalebox{2}{\fontsize{12}{12}\selectfont\PO}\\[1ex]
+    \scalebox{.75}{\fontsize{32}{32}\selectfont\PO}}
+\end{verbatim}
+    {\fontfamily{jkp}\selectfont
+      \newcommand{\PO}{Fonte non optique}
+      \scalebox{4}{\fontsize{6}{6}\selectfont\PO}\\[1ex]
+      \scalebox{2}{\fontsize{12}{12}\selectfont\PO}\\[1ex]
+      \scalebox{.75}{\fontsize{32}{32}\selectfont\PO}}	
+    {Un exemple de fontes optiques}
+\begin{verbatim}
+  {\fontfamily{cmr}\selectfont
+    \newcommand{\PO}{Fonte optique}
+    \scalebox{4}{\fontsize{6}{6}\selectfont\PO}\\[1ex]
+    \scalebox{2}{\fontsize{12}{12}\selectfont\PO}\\[1ex]
+    \scalebox{.75}{\fontsize{32}{32}\selectfont\PO}}
+\end{verbatim}
+    {\fontfamily{cmr}\selectfont
+      \newcommand{\PO}{Fonte optique}
+      \scalebox{4}{\fontsize{6}{6}\selectfont\PO}\\[1ex]
+      \scalebox{2}{\fontsize{12}{12}\selectfont\PO}\\[1ex]
+      \scalebox{.75}{\fontsize{32}{32}\selectfont\PO}}		
+    {\textsc{Une telle fonte :}}
+    \begin{itemize}
+    \item en 12 pt : {\fontsize{12}{14}\fontfamily{jkp}\selectfont AaBbCc} ;
+    \item en 25 pt : {\fontsize{25}{28}\fontfamily{jkp}\selectfont AaBbCc} ;
+    \item le caractère agrandi parait plus gras\dots
+    \item Metafont permet facilement de créer des fontes optiques en modifiant le crayon !
+    \item Mais aujourd'hui, les fontes optiques ont presque complètement disparues, on en reparlera\dots		
+    \end{itemize}	
+	{\textsc{Postcript}}
+	\begin{itemize}
+	\item est un langage de chez Adobe apparu en 1982 ;
+	\item puis en 1984 pour les fontes.
+	\end{itemize}
+            {\textsc{Un caractère Postcript de type 1}}
+	    \begin{itemize}
+	    \item est formé de contours fermés orientés ;
+	    \item assemblage de courbes de Bézier cubiques ;
+	    \item et on noircit ce qui est à droite de ces contours\dots
+	    \end{itemize}
+	    \textsc{Un exemple :}}
+  	          \begin{center}\begin{tikzpicture}
+  		      \filldraw [pink] (1,2) circle (2pt)
+  		      (0,1) circle (2pt);
+  		      \filldraw [green](0,0) circle (2pt)
+  		      (5,2) circle (2pt);
+  		      \draw [->] (0,0) .. controls (0,1) and (1,2) .. (5,2) ;
+  		      \draw	[gray,->] (0,0) -- (0,1) ;
+  		      \draw	[gray,->] (5,2) -- (1,2) ;
+  	          \end{tikzpicture}\end{center}	
+
+	          On a symbolisé les extrémités en vert et les deux points de contrôle en rose
+	          
+	          On assemble des courbes de ce type pour obtenir un ou des chemins fermés.
+	          
+	          On remplit alors \textsl{à droite} des chemins fermés.				Une Bezier cubique se décompose en deux Beziers cubiques !
+	          
+	 	  \begin{center}\begin{tikzpicture}
+  		      \draw [->] (.59,3.36) .. controls (.88,4.11) and (1.50,4.58) .. (2.40,4.58) ;
+  		      \draw [red] (.59,3.36) -- (.88,4.11) -- (1.50,4.58) -- (2.40,4.58)
+  		      -- (2.71,4.58) -- (3.78,3.97) -- (3.78,2.98) --(3.78,.94) -- (3.78,.42) -- (4.05,.32) 
+  		      -- (4.47,.43) -- (4.51,.17) -- (4.51,.17) -- (3.72,.04) -- (3.25,-.07) 
+  		      -- (2.97,-.07) -- (3.00,.68) -- (3.00,.68) -- (2.13,-.12) -- (1.58,-.12) --
+  		      (.87,-.12) -- (.35,.33) -- (.35,1.07) -- (.35,1.88) -- (.97,2.12) -- (1.70,2.37)
+  		      -- (3.00,2.81) -- (3.00,3.58) -- (2.78,4.13) -- (1.91,4.10) -- (1.46,4.07) -- 
+  		      (1.17,3.60) -- (.94,3.16) ;
+  		      \draw [->] (2.40,4.58) .. controls (2.71,4.58) and (3.78,3.97) .. (3.78,2.98) ;
+  		      \draw [->] (3.78,2.98) -- (3.78,.94) ;
+  		      \draw [->] (3.78,.94) .. controls (3.78,.42) and (4.05,.32) .. (4.47,.43) ;
+  		      \draw [->] (4.47,.43) -- (4.51,.17) ;
+  		      \draw [->] (4.51,.17) .. controls (4.51,.17) and (3.72,.04) .. (3.25,-.07) ;
+  		      \draw [->] (3.25,-.07) .. controls (2.97,-.07) and (3.00,.68) .. (3.00,.68) ;
+  		      \draw [->] (3.00,.68) .. controls (2.13,-.12) .. (1.58,-.12) ;
+  		      \draw [->] (1.58,-.12) .. controls (.87,-.12) and (.35,.33) .. (.35,1.07) ;
+  		      \draw [->] (.35,1.07) .. controls (.35,1.88) and (.97,2.12) .. (1.70,2.37) ;
+  		      \draw [->] (1.70,2.37) -- (3.00,2.81) ;
+  		      \draw [->] (3.00,2.81) .. controls (3.00,3.58) and (2.78,4.13) .. (1.91,4.10) ;
+  		      \draw [->] (1.91,4.10) .. controls (1.46,4.07) and (1.17,3.60) .. (.94,3.16) ;
+  		      \draw [->] (.94,3.16) -- (.59,3.36) ;
+  		      \draw [red] (3.00,1.03) -- (2.77,.76) -- (2.28,.44) -- (1.91,.44) -- (1.48,.44) -- (1.20,.81) --
+  		      (1.20,1.23) -- (1.20,1.95) -- (3.00,2.49) -- (3.00,2.49) ;
+  		      \draw [<-] (3.00,2.49) -- (3.00,1.03) ;
+  		      \draw [<-] (3.00,1.03) .. controls (2.77,.76) and (2.28,.44) .. (1.91,.44) ;
+  		      \draw [<-] (1.91,.44) .. controls (1.48,.44) and (1.20,.81) .. (1.20,1.23) ;
+  		      \draw [<-] (1.20,1.23) .. controls (1.20,1.95) and (3.00,2.49) .. (3.00,2.49) ;
+  	          \end{tikzpicture}\end{center}
+	          
+		  Notez les sens de parcours !
+	          \begin{itemize}
+		  \item la notion de fonte définie par des contours, ce qui rend les fontes optiques difficiles à écrire ;
+		  \item tous les caractères on un nom, \textit{agrave} pour \textit{à}, ce qui permet de dépasser la limite des 256 caractères,
+		    ceci restera vrai dans les fontes suivantes\dots
+		  \item Cependant, il ne peut, par exemple, exister qu'un seul \textit{a} utilisable très facilement !
+		  \item Le fichier de dessin des caractères doit s'accompagner d'un fichier de métriques, ligatures et crénages.
+		  \end{itemize}
+		  
+                  \section{TrueType -- .ttf}		
+	                  {\textsc{Les fontes TrueType}}
+		          \begin{itemize}
+			  \item sont une création d'Apple, apparues à la fin des années 80 ;
+			  \item dans le but de concurrencer les fontes Postscript.
+		          \end{itemize}	
+	                      {\textsc{Un caractère TrueType}}
+		              \begin{itemize}
+			      \item est formé de contours fermés orientés ;
+			      \item assemblage de courbes de Bézier quadratiques ;
+			      \item et on noircit ce qui est à droite de ces contours\dots
+		              \end{itemize}	
+                                  {\textsc{Grande nouveauté}}
+		                  \begin{itemize}
+			          \item les métriques sont intégrées au fichier .ttf ;
+			          \item un seul fichier suffit donc !
+		                  \end{itemize}	
+                                      {\textsc{La guerre des fontes n'aura pas lieu}}
+		                      \begin{itemize}
+			              \item Adobe et Apple se mettront d'accord pour développer les fontes TrueType et suivantes ensemble !
+		                      \end{itemize}		
+
+
+                                      Utilisation dans pdf\LaTeX		
+                                      {\textsc{Possible assez facilement}}
+		                      \begin{itemize}
+			              \item mais il faut fabriquer les fichiers nécessaires ;
+			              \item Font Definition -- .fd
+			              \item TeX Font Metrics -- .tfm, voire peut-être -- .vf
+			              \item le fichier .map et au besoin le ou les fichiers d'encodage -- .enc !
+		                      \end{itemize}
+                                          {\textsc{Les fontes OpenType}}
+		                          \begin{itemize}
+			                  \item ont été crées en 1996 ;
+			                  \item sont développées conjointement par Adobe et Apple.
+		                          \end{itemize}
+		                          
+	                                  {\textsc{Un caractère OpenType}}
+		                          \begin{itemize}
+			                  \item est formé de contours fermés orientés ;
+			                  \item assemblage de courbes de Bézier cubiques, ou quadratiques parfois ;
+			                  \item et on noircit ce qui est à droite de ces contours\dots
+			                  \item Rien de nouveau pour le moment !
+		                          \end{itemize}	
+		                          
+		                          
+		                          
+		                          
+                                          {\textsc{Les fontes OpenType}}
+		                          \begin{itemize}
+			                  \item sont dites \textit{intelligentes} ;
+			                  \item on leur passe des commandes pour fournir à la même demande des résultats différents !
+			                  \item Par exemple, on a souvent 4 caractère \ogla 1 \fgla{} différents :
+			                    \begin{itemize}
+				            \item le {\fontfamily{jkp}\selectfont 1}, en largeur fixe ou proportionnelle ;
+				            \item le {\fontfamily{jkp}\selectfont \oldstylenums{1}} elzévirien, en largeur fixe ou proportionnelle.
+			                    \end{itemize}
+			                  \item Par défaut, c'est le premier, mais on aura des commandes pour passer en proportionnel et en elzévirien !
+		                          \end{itemize}
+		                          
+				          
+		                          
+		                          
+		                          {\textsc{Les commandes}}
+			                  \begin{itemize}
+				          \item  Elles correspondent des scripts exécutables gérant :
+				            \begin{itemize}
+					    \item les corps optiques ;
+					    \item le crénage ;
+					    \item les substitutions ;
+					    \item mais aussi les substitutions contextuelles !
+				            \end{itemize}
+				          \item  Ce qui permet d'avoir par exemple sans modification du source :
+				            
+			                    
+				            {\fontfamily{jkpvos}\selectfont\itshape
+				              Quelles= superbes= questions= !}
+				            
+	                                    
+                                            %%{\fontfamily{jkp}\selectfont\scslshape Quelles superbes questions !}
+			                    
+				            
+				            Regardez attentivement petites capitales penchées et les \ogla s \fgla !
+				            
+				            Il faut, bien sûr, que la fonte considérée le permette !
+				          \item  En principe, les fontes OpenType \textit{PRO} contiennent des variantes optiques !
+                                          \end{itemize}
+                                          {\textsc{Commandes courantes}}
+			                  
+			                  \begin{itemize}
+				          \item Les commandes de ces fontes sont des mots de 4 lettres, certaines, souvent toutes, sont prédéfinies :
+				            \begin{itemize}
+					    \item \texttt{onum} et \texttt{pnum} pour les nombres elzéviriens et proportionnels ;
+					    \item \texttt{smcp} pour les petites capitales\dots
+				            \end{itemize}
+			                  \end{itemize}		
+		                          
+		                          
+	                                  {Trouver les spécifications d'une fontes OpenType}	
+                                          {\textsc{Cela dépend du système !}}
+                                          \begin{itemize}
+                                          \item Sous Linux, installer \textit{Fontforge} par exemple :
+			                    \begin{itemize}
+				            \item Suivre \textit{View}, \textit{Display Substitutions}\dots
+			                    \end{itemize}
+	                                  \item Sous Mac OS ou Windows, installer la version de démonstration de \textit{FontLab Studio} :
+			                    \begin{itemize}
+				            \item l'info est sur le panneau \textit{OpenType}, qu'on peut rendre visible au besoin,
+				            \item en suivant \textit{Window}, \textit{Panels}, \textit{OpenType}\dots
+			                    \end{itemize}
+			                    Sous Mac, c'est aussi dans les propriétés de la fonte.
+	                                  \end{itemize}		
+		                          
+		                          
+		                          {\textsc{Liste des commandes standard et leur sens !}}
+			                  
+			                  \begin{itemize}
+				          \item On trouve la liste des commandes possibles sur \verb=http://en.wikipedia.org/wiki/=
+				            
+				            \qquad\qquad\qquad\verb=List_of_typographic_features=
+				          \item ou encore \begin{verbatim}
+  http://www.adobe.com/devnet/opentype/afdko/
+  topic_feature_file_syntax.html
+\end{verbatim}
+			                  \end{itemize}
+		                          
+		                          
+	                                  section{OpenType et \LuaLaTeX}	
+		                          
+		                          
+	                                  {\textsc{Des nombres :}}
+\begin{verbatim}
+  \fontspec{TeX Gyre Pagella}00011123456789
+
+  \fontspec[Numbers={Proportional}]
+           {TeX Gyre Pagella}00011123456789
+
+           \fontspec[Numbers={OldStyle}]
+                    {TeX Gyre Pagella}00011123456789
+\end{verbatim}	
+
+
 \fontspec{TeX Gyre Pagella}00011123456789
 
 \fontspec[Numbers={Proportional}]
-                  {TeX Gyre Pagella}00011123456789
+         {TeX Gyre Pagella}00011123456789
 
-\fontspec[Numbers={OldStyle}]
-                  {TeX Gyre Pagella}00011123456789
-			\end{verbatim}	
-		
-		
-		\fontspec{TeX Gyre Pagella}00011123456789
-		
-		\fontspec[Numbers={Proportional}]
-                  {TeX Gyre Pagella}00011123456789
-
-\fontspec[Numbers={OldStyle}]
+         \fontspec[Numbers={OldStyle}]
                   {TeX Gyre Pagella}00011123456789			
                   
                   
                   
                   
                   
- {\textsc{À noter :}}
+                  {\textsc{À noter :}}
+                  \begin{itemize}
+                  \item	\begin{verbatim}
+  \usepackage[utf8]{inputenc} % ou latin1...
+  \usepackage[T1]{fontenc}     % ou OT1...
+\end{verbatim}
+  disparaissent...
+\item	\begin{verbatim}
+  \usepackage{fontspec}
+\end{verbatim}
+  est obligatoire !
+\item	Si on veut utiliser Beamer :
+\begin{verbatim}
+  \usepackage{luatextra}
+\end{verbatim}
+est obligatoire !
+\item	On peut continuer à utiliser \texttt{babel} ;
+\item	Réglez au départ votre éditeur pour utiliser l'encodage \texttt{utf8} par défaut, c'est obligatoire !
+                  \end{itemize}                 
+                  
+                  
+                  {\textsc{Pas besoin de nouveau package !}}
+                  \begin{itemize}
+                  \item Pour un document ou une partie de document, on utilise les commandes :
+		    \begin{itemize}
+		    \item \verb=\setmainfont[spécifications]{Nom de Fonte}=
+		    \item \verb=\setsansfont[spécifications]{Nom de Fonte}=
+		    \item \verb=\setmonofont[spécifications]{Nom de Fonte}=
+		    \item \verb=\fontspec[spécifications]{Nom de Fonte}=
+		    \item \verb=\newfontfamily\mafonte=
+		      
+		      \hfill\verb=[spécifications]{Nom de Fonte}=
+		    \item \verb=\addfontfeature{specifications}=
+		    \item \dots
+		    \end{itemize}
+	          \item Pas de package, mais les fontes ont, ou devraient avoir, une doc qui précise les spécifications admises...
+		    et qu'il faut lire !
+	          \end{itemize}              
+                  
+                  
+                  {\textsc{Mathématiques en OpenType}}
+		  \begin{itemize}
+		  \item  On a déjà vu que le texte en OpenType et les mathématiques habituelles de \LaTeX cohabitent sans problème !
+		  \item  Le package \texttt{unicode-math} permet de composer avec les fontes mathématiques OpenType existantes :
+		    \begin{itemize}
+		    \item Cambria Math (avec \textit{Microsoft Office})
+		    \item Minion Math (fonte commerciale \texttt{typoma})
+		      \begin{itemize}
+		      \item ou bien le package \texttt{MnSymbol}, mais\dots
+		      \end{itemize}
+		    \item Latin Modern Math
+		    \item TeX Gyre Pagella Math, et autres TeX Gyre : Bonum, Schola,Termes
+		    \item Asana Math
+		    \item Neo Euler
+		    \item STIX
+		    \item XITS\dots
+		    \end{itemize}
+		  \end{itemize}              
+                  
+                  {\textsc{Un préambule minimum :}}
+\begin{verbatim}
+  \documentclass[12pt]{article}
+  \usepackage[frenchb]{babel}
+  \usepackage{unicode-math}
+  \setmainfont{TeX Gyre Termes}
+  \setmathfont{TeX Gyre Termes Math}
+  \begin{document}
+  ...
+  \end{document}
+\end{verbatim}               
+
+
+{\textsc{D'autre part :}}
 \begin{itemize}
-\item<+->	\begin{verbatim}
-			\usepackage[utf8]{inputenc} % ou latin1...
-			\usepackage[T1]{fontenc}     % ou OT1...
-			\end{verbatim}
-			disparaissent...
-\item<+->	\begin{verbatim}
-			\usepackage{fontspec}
-			\end{verbatim}
-			est obligatoire !
-\item<+->	Si on veut utiliser Beamer :
-			\begin{verbatim}
-			\usepackage{luatextra}
-			\end{verbatim}
-			est obligatoire !
-\item<+->	On peut continuer à utiliser \texttt{babel} ;
-\item<+->	Réglez au départ votre éditeur pour utiliser l'encodage \texttt{utf8} par défaut, c'est obligatoire !
+\item  les fontes historiques de \LaTeXe{} sont les fontes \textit{metafont}, fichiers \texttt{mf,pk} ;
+\item  les autres fontes vectorielles sont:
+  \begin{itemize}
+  \item les fontes \textit{postscript}, en \texttt{.pfb} le plus souvent ;
+  \item les fontes \textit{true type}, en \texttt{.ttf} ;
+  \item les fontes \textit{open type}, en \texttt{.otf} ;
+  \end{itemize}
+\item  \texttt{dvips} gère les fontes \textit{postscipt};
+\item  \texttt{pdfTeX} gère aussi les fontes \textit{true type} et \textit{open type};
+\item  \texttt{XeTeX} gère aussi \textit{directement} les fontes \texttt{ttf} et surtout \texttt{otf} ;
+\item  comme \texttt{LuaTeX} devrait le faire bientôt.
 \end{itemize}                 
-                  
-                  
-    {\textsc{Pas besoin de nouveau package !}}
-  \begin{itemize}
-  \item Pour un document ou une partie de document, on utilise les commandes :
-			\begin{itemize}
-				\item<+-> \verb=\setmainfont[spécifications]{Nom de Police}=
-				\item<+-> \verb=\setsansfont[spécifications]{Nom de Police}=
-				\item<+-> \verb=\setmonofont[spécifications]{Nom de Police}=
-				\item<+-> \verb=\fontspec[spécifications]{Nom de Police}=
-				\item<+-> \verb=\newfontfamily\mapolice=
-				
-				\hfill\verb=[spécifications]{Nom de Police}=
-				\item<+-> \verb=\addfontfeature{specifications}=
-				\item<+-> \dots
-			\end{itemize}
-	\item Pas de package, mais les polices ont, ou devraient avoir, une doc qui précise les spécifications admises...
-			et qu'il faut lire !
-	\end{itemize}              
-                  
-                  
-    {\textsc{Mathématiques en OpenType}}
-			\begin{itemize}
-				\item<+->  On a déjà vu que le texte en OpenType et les mathématiques habituelles de \LaTeX cohabitent sans problème !
-				\item<+->  Le package \texttt{unicode-math} permet de composer avec les polices mathématiques OpenType existantes :
-				\begin{itemize}
-					\item Cambria Math (avec \textit{Microsoft Office})
-					\item Minion Math (police commerciale \texttt{typoma})
-					\begin{itemize}
-					\item ou bien le package \texttt{MnSymbol}, mais\dots
-					\end{itemize}
-					\item Latin Modern Math
-					\item TeX Gyre Pagella Math, et autres TeX Gyre : Bonum, Schola,Termes
-					\item Asana Math
-					\item Neo Euler
-					\item STIX
-					\item XITS\dots
-				\end{itemize}
-			\end{itemize}              
-                  
-   {\textsc{Un préambule minimum :}}
-			\begin{verbatim}
-			\documentclass[12pt]{article}
-			\usepackage[frenchb]{babel}
-			\usepackage{unicode-math}
-			\setmainfont{TeX Gyre Termes}
-			\setmathfont{TeX Gyre Termes Math}
-			\begin{document}
-			...
-			\end{document}
-			\end{verbatim}               
-                  
-                  
- {\textsc{D'autre part :}}
-		\begin{itemize}
-			\item<+->  les polices historiques de \LaTeXe{} sont les polices \textit{metafont}, fichiers \texttt{mf,pk} ;
-			\item<+->  les autres polices vectorielles sont:
-			\begin{itemize}
-				\item<+-> les polices \textit{postscript}, en \texttt{.pfb} le plus souvent ;
-				\item<+-> les polices \textit{true type}, en \texttt{.ttf} ;
-				\item<+-> les polices \textit{open type}, en \texttt{.otf} ;
-			\end{itemize}
-			\item<+->  \texttt{dvips} gère les polices \textit{postscipt};
-			\item<+->  \texttt{pdfTeX} gère aussi les polices \textit{true type} et \textit{open type};
-			\item<+->  \texttt{XeTeX} gère aussi \textit{directement} les polices \texttt{ttf} et surtout \texttt{otf} ;
-			\item<+->  comme \texttt{LuaTeX} devrait le faire bientôt.
-		\end{itemize}                 
-           {\textsc{Et enfin :}}
-		\begin{itemize}
-			\item<+->  \textit{fontinst} permet d'installer (assez) facilement des polices Postscript ;
-			\item<+->  \textit{fontools} permet d'installer (assez) facilement des polices \texttt{ttf} et surtout \texttt{otf} ;
-		\end{itemize}   
-		
-	\section{\textsc{Les familles}}
+    {\textsc{Et enfin :}}
+    \begin{itemize}
+    \item  \textit{fontinst} permet d'installer (assez) facilement des fontes Postscript ;
+    \item  \textit{fontools} permet d'installer (assez) facilement des fontes \texttt{ttf} et surtout \texttt{otf} ;
+    \end{itemize}   
+    
+    \section{\textsc{Les familles}}
 
-\subsection{Texte}	
-		
-		
-	{\textsc{Les 3 familles (prédéfinies) de polices}   \LaTeX{} \textsc{sont}}
-			\begin{itemize}
-				\item<+->  \textrm{Les polices romaines : rm} ;
-				\item<+->  Les polices sans-serif : sf ;
-				\item<+->  \texttt{Les polices machine à écrire : tt}.
-				\end{itemize}	
-		
-	\textsc{Comment modifier une famille par défaut ?}}
-	
-		
-	{\textsc{En utilisant un Package}}
-			\begin{itemize}
-				\item<+-> \textit{bookman, newcent, times, palatino} modifient les 3 familles de polices,
-				
-								 avec la police titre en romaine ;
-				\item<+-> \textit{helvet, avant} modifient les familles sans-serif ;
-				\item<+-> \textit{courier, luximono} modifient les familles télétype ;
-				\item<+-> \dots  
-				\item<+-> \textit{helvet, luximono} prennent en option un coefficient de taille pour s'adapter à toutes	
-								les polices romaines.
-			\end{itemize}	
-		
-	{\textsc{Sans utiliser de Package}}
-  \begin{itemize}
-  \item<+-> Pour un document ou une partie de document, on utilise les commandes :
-			\begin{itemize}
-				\item<+-> \verb=\renewcommand{\rmdefault}{=\textsl{jkp}\texttt{\}}
-				\item<+-> \verb=\renewcommand{\sfdefault}{=\textsl{jkpss}\texttt{\}}  
-				\item<+-> \verb=\renewcommand{\ttdefault}{=\textsl{jkptt}\texttt{\}}
-				\item<+-> \verb=\renewcommand{\familydefault}{=\textsl{jkpss}\texttt{\}}
-			\end{itemize}
-	\item<+-> on décrira plus loin comment avoir une modification \ogla plus locale \fgla.
-	\end{itemize}	
-		
-	\subsection{Math}	
-		
-	{\textsc{On a toujours au moins les familles :}}
-			\begin{itemize}
-				\item<+-> \textit{operators}, pour $0123\;+-=\;\Gamma\Delta\dots$
-				\item<+-> \textit{letters} pour $abc\;\alpha\beta\gamma\dots$
-				\item<+-> \textit{symbols} pour les symboles de base, comme $\to\;\mapsto\;\Rightarrow\;\exists\dots$
-				\item<+-> \textit{largesymbols} pour les symboles mathématiques de taille variable, (et de base) 
-									$\sum\;\displaystyle\sum$ $\int\;\displaystyle\int\dots$
-			\end{itemize}	
-	\textsc{Comment modifier une famille par défaut ?}
-	
-	{\textsc{En utilisant un Package}}
-			\begin{itemize}
-				\item<+-> \textit{txfonts} utilise \textit{times}, en texte et en math \ogla letters \fgla ;
-				\item<+-> \textit{pxfonts} utilise \textit{palatino} en\dots ;
-				\item<+-> \textit{fourier} utilise \textit{utopia} ;
-				\item<+-> \textit{euler} modifie les polices mathématiques, souvent utilisé avec \textit{concrete} en texte ;
-				\item<+-> \textit{kpfonts} utilise ses polices originales et modifie tout ;
-				\item<+-> voir aussi \textit{mathdesign} qui prend en option une des polices romaines : 
-								\textit{utopia, garamond, charter}\dots
-			\end{itemize}
-	\textsc{Comment modifier une police mathématiques ?}
-	
-	{\textsc{A partir de polices de texte}}
-			\begin{itemize}
-				\item<+-> Vous utilisez \textit{fourier}, par exemple, 
-				et vous voulez avoir \textit{courier} comme police \texttt{télétype}, 
-				tant en mode texte qu'en mode mathématique :
-				\begin{itemize}
-					\item<+-> \verb=\renewcommand{\ttdefault}{pcr}=
+    \subsection{Texte}	
+    
+    
+    {\textsc{Les 3 familles (prédéfinies) de fontes}   \LaTeX{} \textsc{sont}}
+    \begin{itemize}
+    \item  \textrm{Les fontes romaines : rm} ;
+    \item  Les fontes sans-serif : sf ;
+    \item  \texttt{Les fontes machine à écrire : tt}.
+    \end{itemize}	
+    
+    \textsc{Comment modifier une famille par défaut ?}}
+	    
+	    
+	    {\textsc{En utilisant un Package}}
+	    \begin{itemize}
+	    \item \textit{bookman, newcent, times, palatino} modifient les 3 familles de fontes,
+	      
+	      avec la fonte titre en romaine ;
+	    \item \textit{helvet, avant} modifient les familles sans-serif ;
+	    \item \textit{courier, luximono} modifient les familles télétype ;
+	    \item \dots  
+	    \item \textit{helvet, luximono} prennent en option un coefficient de taille pour s'adapter à toutes	
+	      les fontes romaines.
+	    \end{itemize}	
+	    
+	    {\textsc{Sans utiliser de Package}}
             \begin{itemize}
+            \item Pour un document ou une partie de document, on utilise les commandes :
+	      \begin{itemize}
+	      \item \verb=\renewcommand{\rmdefault}{=\textsl{jkp}\texttt{\}}
+	      \item \verb=\renewcommand{\sfdefault}{=\textsl{jkpss}\texttt{\}}  
+	      \item \verb=\renewcommand{\ttdefault}{=\textsl{jkptt}\texttt{\}}
+	      \item \verb=\renewcommand{\familydefault}{=\textsl{jkpss}\texttt{\}}
+	      \end{itemize}
+	    \item on décrira plus loin comment avoir une modification \ogla plus locale \fgla.
+	    \end{itemize}	
+	    
+	    \subsection{Math}	
+	    
+	    {\textsc{On a toujours au moins les familles :}}
+	    \begin{itemize}
+	    \item \textit{operators}, pour $0123\;+-=\;\Gamma\Delta\dots$
+	    \item \textit{letters} pour $abc\;\alpha\beta\gamma\dots$
+	    \item \textit{symbols} pour les symboles de base, comme $\to\;\mapsto\;\Rightarrow\;\exists\dots$
+	    \item \textit{largesymbols} pour les symboles mathématiques de taille variable, (et de base) 
+	      $\sum\;\displaystyle\sum$ $\int\;\displaystyle\int\dots$
+	    \end{itemize}	
+	    \textsc{Comment modifier une famille par défaut ?}
+	    
+	    {\textsc{En utilisant un Package}}
+	    \begin{itemize}
+	    \item \textit{txfonts} utilise \textit{times}, en texte et en math \ogla letters \fgla ;
+	    \item \textit{pxfonts} utilise \textit{palatino} en\dots ;
+	    \item \textit{fourier} utilise \textit{utopia} ;
+	    \item \textit{euler} modifie les fontes mathématiques, souvent utilisé avec \textit{concrete} en texte ;
+	    \item \textit{kpfonts} utilise ses fontes originales et modifie tout ;
+	    \item voir aussi \textit{mathdesign} qui prend en option une des fontes romaines : 
+	      \textit{utopia, garamond, charter}\dots
+	    \end{itemize}
+	    \textsc{Comment modifier une fonte mathématiques ?}
+	    
+	    {\textsc{A partir de fontes de texte}}
+	    \begin{itemize}
+	    \item Vous utilisez \textit{fourier}, par exemple, 
+	      et vous voulez avoir \textit{courier} comme fonte \texttt{télétype}, 
+	      tant en mode texte qu'en mode mathématique :
+	      \begin{itemize}
+	      \item \verb=\renewcommand{\ttdefault}{pcr}=
+                \begin{itemize}
             	\item pour le mode texte ;
-            \end{itemize}
-					\item<+-> \verb=\DeclareMathAlphabet{\mathtt}{T1}{pcr}{m}{n}=
-					\item<+-> \verb=\SetMathAlphabet{\mathtt}{bold}{T1}{pcr}{b}{n}=
-            \begin{itemize}
+                \end{itemize}
+	      \item \verb=\DeclareMathAlphabet{\mathtt}{T1}{pcr}{m}{n}=
+	      \item \verb=\SetMathAlphabet{\mathtt}{bold}{T1}{pcr}{b}{n}=
+                \begin{itemize}
             	\item pour le mode mathématique ;
-            \end{itemize}
-				\end{itemize}
-				\item<+-> \`A placer dans le préambule, bien sûr\dots
-			\end{itemize}
-	
-	Vous pouvez aussi de la même façon ajouter un \verb=\mathsc=, par exemple
-	\textsc{Comment ajouter une police mathématique ?}
-	{\textsc{A partir de polices mathématiques}}
-			\begin{itemize}
-				\item<+-> Vous voulez ajouter la police \verb=\mathscr= de \textit{kpfonts}, vous tapez :
-				\item<+-> \verb=\DeclareMathAlphabet{\mathscr}{U}=
-									
-									\hfill\verb={jkpsyd}{m}{n}=
-				\item<+-> \verb=\SetMathAlphabet{\mathscr}{bold}{U}=
-									
-									\hfill\verb={jkpsyd}{b}{n}=
-				\item<+-> On a déclaré une nouvelle commande \verb=\mathscr= , utilisable aussi en gras\dots
-			\end{itemize}
-		Les informations nécessaires sont prises dans les fichiers \textit{sty} des packages utilisés.
-		
-		
-		\textsc{Comment ajouter une police de symboles ?}
-		
-		
-		{\textsc{Quand utiliser ceci ?}}
-			\begin{itemize}
-				\item<+-> Vous voulez avoir le \verb=\int= droit de \textit{kpfonts} :
-				\begin{itemize}
-					\item<+-> \verb=\DeclareSymbolFont{kpint}{OMX}{jkp}{m}{n}=
-					\item<+-> \verb=\SetSymbolFont{kpint}{bold}{OMX}{jkp}{bx}{n}=
-					\item<+-> \verb=\let\intop\undefined=
-					\item<+-> \verb=\DeclareMathSymbol{\intop}{\mathop}{kpint}{82}=
-					\item<+-> \verb=\def\int{\intop\nolimits}=
-				\end{itemize}
-				\item<+-> \`A placer dans le préambule, bien sûr\dots
-				\item<+-> Le nom \textsl{kpint} est arbitraire ;
-				\item<+-> Il faudrait le refaire pour les intégrales doubles etc
-			\end{itemize}
-		
-		
-	\section{\textsc{Les attributs}}
-{\textsc{Les 5 attributs d'une police   \LaTeX{}}}
-			\begin{itemize}
-				\item<+->  Le codage : ot1, t1, ts1, oml, oms, omx\dots 
-				\item<+->  La famille : cmr, cmss, ptm, ppl, jkp, jkpss\dots
-				\item<+->  La graisse : m, b, bx\dots
-				\item<+->  La forme : n, it, sc, sl\dots
-					\begin{itemize}
-						\item<+->  Ce qui empèche d'avoir des petites capitales italiques !
-						\item<+->  \textscsl{mais KPFONTS en a quand même (forme scsl)}\dots
-					\end{itemize}
-				\item<+->  La taille en points.
-			\end{itemize}
-\subsection{Texte}
-	
-		
-		
-		{\textsc{Modifier les attributs d'une police de texte}}
-  \begin{itemize}
-		\item<+-> Les instructions sont les suivantes :
-			\begin{itemize}
-				\item<+->  l'encodage : \verb=\fontencoding{...}=
-				\item<+->  la famille : \verb=\fontfamily{...}=
-				\item<+->  la graisse : \verb=\fontseries{...}=
-				\item<+->  la forme : \verb=\fontshape{...}=
-				\item<+->  la taille : \verb=\fontsize{=\textit{taille}\verb=}{=\textit{saut de ligne}\verb=}=
-			\end{itemize}
-		\item<+-> toujours suivis de \verb=\selectfont=\dots
-		\item<+-> Ceci s'ajoute aux commandes de haut niveau que vous connaissez !
-	\end{itemize}
-	
-	
-	{\textsc{Mathématiques : passer en gras}}
-  \begin{itemize}
-		\item<+-> En mode texte :
-			\begin{itemize}
-				\item<+->  tapez : \verb=\mathversion{bold}=
-				\item<+->  et tapez : \verb=\mathversion{normal}= 
-				
-							pour quitter le mode gras.
-			\end{itemize}
-		\item<+-> Le package \textit{bm} permet de passer en gras dans une partie de formule ;
-		\item<+-> il y a aussi la police \verb=\mathbf=
-	\end{itemize}
-	
-	
-	
-	
-	\subsection{Fichier \texttt{.fd}}
-	
-	
-	
-	{\textsc{Trouver le bon fichier} \texttt{.fd}}
-			\begin{itemize}
-				\item<+->  \`A partir du codage, par exemple \texttt{t1} ; 
-				\item<+->  et de la famille, par exemple \texttt{jkp} ;
-				\item<+->    \LaTeX{} cherche le fichier \texttt{t1jkp.fd}.
-			\end{itemize}
-	
-	
-{\textsc{Le fichier} \texttt{.fd}}
-\begin{itemize}
-	\item<+->  Le fichier \texttt{.fd} contient :
-			\begin{itemize}
-				\item<+->  une ligne de déclaration de famille :
-				
-							\verb=\DeclareFontFamily{T1}{jkp}{}=
-				\item<+->  des lignes de déclarations de forme :
-				
-							\verb=\DeclareFontshape{T1}{jkp}{m}{n}{<->jkpmn8t}{}=
-							
-				\item<+->  des lignes de substitution :
-				
-							\verb=\DeclareFontshape{T1}{jkp}{m}{it}=
-							
-							\hfill\verb+{<->ssub * jkp/m/sl}{}+
-			\end{itemize}
-	\item<+->  remarquons qu'on a ici \texttt{jkpmn8t}, le nom interne d'une \textit{police}   \LaTeX{}.
-	\item<+->  On a des choses équivalentes en math avec les \verb=\Declare=\dots{} déjà vus.
-	
-	Les packages de polices mathématiques ont aussi leurs fichiers \texttt{.fd}.
-\end{itemize}	
-	
-	
-	
-	
-	{\textsc{Polices réelles ou virtuelles}}
-\begin{itemize}
-	\item<+-> Les noms internes de police   \LaTeX{} correspondent à des polices rélles ou virtuelles :
-			\begin{itemize}
-				\item<+->  une police réelle correspond à un fichier \texttt{.tfm} ;
-				\item<+->  une police virtuelle correspond à un fichier \texttt{.tfm} et un fichier \texttt{.vf} ;
-					\begin{itemize}
-						\item<+->  \texttt{.tfm} = TeX Font Metric ;
-						\item<+->  \texttt{.vf} = Virtual Font.
-					\end{itemize}
-				\item<+->  Leurs formats lisibles sont les fichiers \texttt{.pl} et \texttt{.vpl} :
-					\begin{itemize}
-						\item<+->  un fichier \texttt{.pl} correspond au fichier \texttt{.tfm};
-						\item<+->  un fichier \texttt{.vpl} correspond aux 2 fichiers \texttt{.tfm} et \texttt{.vf}.
-					\end{itemize}
-			\end{itemize}
-	\item<+-> Pour l'instant, aucun de ces fichiers ne contient de dessin de caractère !
-\end{itemize}
-	
-	
-	
-	
-	
-\subsection{Fichiers \texttt{.pl .vpl}}
-	
-	
-	
-	
-	
-	
-	
-Un fichier \texttt{.pl} ou \texttt{.vpl} contient des lignes du type :
+                \end{itemize}
+	      \end{itemize}
+	    \item \`A placer dans le préambule, bien sûr\dots
+	    \end{itemize}
+	    
+	    Vous pouvez aussi de la même façon ajouter un \verb=\mathsc=, par exemple
+	    \textsc{Comment ajouter une fonte mathématique ?}
+	           {\textsc{A partir de fontes mathématiques}}
+		   \begin{itemize}
+		   \item Vous voulez ajouter la fonte \verb=\mathscr= de \textit{kpfonts}, vous tapez :
+		   \item \verb=\DeclareMathAlphabet{\mathscr}{U}=
+		     
+		     \hfill\verb={jkpsyd}{m}{n}=
+		   \item \verb=\SetMathAlphabet{\mathscr}{bold}{U}=
+		     
+		     \hfill\verb={jkpsyd}{b}{n}=
+		   \item On a déclaré une nouvelle commande \verb=\mathscr= , utilisable aussi en gras\dots
+		   \end{itemize}
+		   Les informations nécessaires sont prises dans les fichiers \textit{sty} des packages utilisés.
+		   
+		   
+		   \textsc{Comment ajouter une fonte de symboles ?}
+		   
+		   
+		   {\textsc{Quand utiliser ceci ?}}
+		   \begin{itemize}
+		   \item Vous voulez avoir le \verb=\int= droit de \textit{kpfonts} :
+		     \begin{itemize}
+		     \item \verb=\DeclareSymbolFont{kpint}{OMX}{jkp}{m}{n}=
+		     \item \verb=\SetSymbolFont{kpint}{bold}{OMX}{jkp}{bx}{n}=
+		     \item \verb=\let\intop\undefined=
+		     \item \verb=\DeclareMathSymbol{\intop}{\mathop}{kpint}{82}=
+		     \item \verb=\def\int{\intop\nolimits}=
+		     \end{itemize}
+		   \item \`A placer dans le préambule, bien sûr\dots
+		   \item Le nom \textsl{kpint} est arbitraire ;
+		   \item Il faudrait le refaire pour les intégrales doubles etc
+		   \end{itemize}
+		   
+		   
+	           \section{\textsc{Les attributs}}
+                           {\textsc{Les 5 attributs d'une fonte   \LaTeX{}}}
+			   \begin{itemize}
+			   \item  Le codage : ot1, t1, ts1, oml, oms, omx\dots 
+			   \item  La famille : cmr, cmss, ptm, ppl, jkp, jkpss\dots
+			   \item  La graisse : m, b, bx\dots
+			   \item  La forme : n, it, sc, sl\dots
+			     \begin{itemize}
+			     \item  Ce qui empèche d'avoir des petites capitales italiques !
+			     \item  \textscsl{mais KPFONTS en a quand même (forme scsl)}\dots
+			     \end{itemize}
+			   \item  La taille en points.
+			   \end{itemize}
+                           \subsection{Texte}
+	                   
+		           
+		           
+		           {\textsc{Modifier les attributs d'une fonte de texte}}
+                           \begin{itemize}
+		           \item Les instructions sont les suivantes :
+			     \begin{itemize}
+			     \item  l'encodage : \verb=\fontencoding{...}=
+			     \item  la famille : \verb=\fontfamily{...}=
+			     \item  la graisse : \verb=\fontseries{...}=
+			     \item  la forme : \verb=\fontshape{...}=
+			     \item  la taille : \verb=\fontsize{=\textit{taille}\verb=}{=\textit{saut de ligne}\verb=}=
+			     \end{itemize}
+		           \item toujours suivis de \verb=\selectfont=\dots
+		           \item Ceci s'ajoute aux commandes de haut niveau que vous connaissez !
+	                   \end{itemize}
+	                   
+	                   
+	                   {\textsc{Mathématiques : passer en gras}}
+                           \begin{itemize}
+		           \item En mode texte :
+			     \begin{itemize}
+			     \item  tapez : \verb=\mathversion{bold}=
+			     \item  et tapez : \verb=\mathversion{normal}= 
+			       
+			       pour quitter le mode gras.
+			     \end{itemize}
+		           \item Le package \textit{bm} permet de passer en gras dans une partie de formule ;
+		           \item il y a aussi la fonte \verb=\mathbf=
+	                   \end{itemize}
+	                   
+	                   
+	                   
+	                   
+	                   \subsection{Fichier \texttt{.fd}}
+	                   
+	                   
+	                   
+	                   {\textsc{Trouver le bon fichier} \texttt{.fd}}
+			   \begin{itemize}
+			   \item  \`A partir du codage, par exemple \texttt{t1} ; 
+			   \item  et de la famille, par exemple \texttt{jkp} ;
+			   \item    \LaTeX{} cherche le fichier \texttt{t1jkp.fd}.
+			   \end{itemize}
+	                   
+	                   
+                           {\textsc{Le fichier} \texttt{.fd}}
+                           \begin{itemize}
+	                   \item  Le fichier \texttt{.fd} contient :
+			     \begin{itemize}
+			     \item  une ligne de déclaration de famille :
+			       
+			       \verb=\DeclareFontFamily{T1}{jkp}{}=
+			     \item  des lignes de déclarations de forme :
+			       
+			       \verb=\DeclareFontshape{T1}{jkp}{m}{n}{<->jkpmn8t}{}=
+			       
+			     \item  des lignes de substitution :
+			       
+			       \verb=\DeclareFontshape{T1}{jkp}{m}{it}=
+			       
+			       \hfill\verb+{<->ssub * jkp/m/sl}{}+
+			     \end{itemize}
+	                   \item  remarquons qu'on a ici \texttt{jkpmn8t}, le nom interne d'une \textit{fonte}   \LaTeX{}.
+	                   \item  On a des choses équivalentes en math avec les \verb=\Declare=\dots{} déjà vus.
+	                     
+	                     Les packages de fontes mathématiques ont aussi leurs fichiers \texttt{.fd}.
+                           \end{itemize}	
+	                   
+	                   
+	                   
+	                   
+	                   {\textsc{Fontes réelles ou virtuelles}}
+                           \begin{itemize}
+	                   \item Les noms internes de fonte   \LaTeX{} correspondent à des fontes rélles ou virtuelles :
+			     \begin{itemize}
+			     \item  une fonte réelle correspond à un fichier \texttt{.tfm} ;
+			     \item  une fonte virtuelle correspond à un fichier \texttt{.tfm} et un fichier \texttt{.vf} ;
+			       \begin{itemize}
+			       \item  \texttt{.tfm} = TeX Font Metric ;
+			       \item  \texttt{.vf} = Virtual Font.
+			       \end{itemize}
+			     \item  Leurs formats lisibles sont les fichiers \texttt{.pl} et \texttt{.vpl} :
+			       \begin{itemize}
+			       \item  un fichier \texttt{.pl} correspond au fichier \texttt{.tfm};
+			       \item  un fichier \texttt{.vpl} correspond aux 2 fichiers \texttt{.tfm} et \texttt{.vf}.
+			       \end{itemize}
+			     \end{itemize}
+	                   \item Pour l'instant, aucun de ces fichiers ne contient de dessin de caractère !
+                           \end{itemize}
+	                   
+	                   
+	                   
+	                   
+	                   
+                           \subsection{Fichiers \texttt{.pl .vpl}}
+	                   
+	                   
+	                   
+	                   
+	                   
+	                   
+	                   
+                           Un fichier \texttt{.pl} ou \texttt{.vpl} contient des lignes du type :
 
-\texttt{(FONTDIMEN ...)}
-{\fontfamily{jkptt}\selectfont 
+                           \texttt{(FONTDIMEN ...)}
+                                  {\fontfamily{jkptt}\selectfont 
 
-{\color[rgb]{0,.5,0}(MAPFONT D 0 (FONTNAME ...))
+                                    {\color[rgb]{0,.5,0}(MAPFONT D 0 (FONTNAME ...))
 
-(MAPFONT D 1 (FONTNAME ...))}
+                                      (MAPFONT D 1 (FONTNAME ...))}
 
-   (LIGTABLE
+                                    (LIGTABLE
 
-		...
-		
-   (LABEL O 55)(LIG O 55 O 173)(STOP)
-   
-   ...
-   
-   (LABEL C A)(KRN C V R -0.12)(STOP)
-   
-   ...)}
-   
-{\fontfamily{jkptt}\selectfont ...
+		                    ...
+		                    
+                                    (LABEL O 55)(LIG O 55 O 173)(STOP)
+                                    
+                                    ...
+                                    
+                                    (LABEL C A)(KRN C V R -0.12)(STOP)
+                                    
+                                    ...)}
+                                  
+                                  {\fontfamily{jkptt}\selectfont ...
 
-(CHARACTER O 20
+                                    (CHARACTER O 20
 
-   (CHARWD R 0.314)(CHARHT R 0.4625)
-   
-   (CHARDP R 0.00475)(CHARIC R 0.053)
-   
-   {\color[rgb]{0,.5,0}(MAP (SELECTFONT D 1) (SETCHAR O 20)))}
-   
-...}
-	
-	
-	
-	{\textsc{Les lignes d'un fichier} \texttt{.pl,.vpl} \textsc{en mode math}}
-\begin{itemize}
-	\item<+-> Dans une police mathématique, on peut aussi trouver :
-\begin{itemize}
-	\item<+-> \texttt{NEXTLARGER}, pour les symboles à dimension variable ;
-	\item<+-> et, pour les symboles à extention infinie, 
-	
-	\texttt{VARCHAR}, puis :
-	\begin{itemize}
-	\item<+-> \texttt{REP}, répétition ;
-	\item<+-> \texttt{TOP}, haut ;
-	\item<+-> \texttt{BOT}, bas ;
-	\item<+-> \texttt{MID}, milieu.
-	\end{itemize}
-	\item<+-> Les accolades, par exemple, nécessitent l'ensemble de ces éléments.
-\end{itemize}
-\end{itemize}
-	
-	Les polices référencées dans le fichier \texttt{.vpl} sont aussi réelles ou virtuelles
-Mais on finit par arriver sur une police réelle !
+                                    (CHARWD R 0.314)(CHARHT R 0.4625)
+                                    
+                                    (CHARDP R 0.00475)(CHARIC R 0.053)
+                                    
+                                    {\color[rgb]{0,.5,0}(MAP (SELECTFONT D 1) (SETCHAR O 20)))}
+                                    
+                                    ...}
+	                          
+	                          
+	                          
+	                          {\textsc{Les lignes d'un fichier} \texttt{.pl,.vpl} \textsc{en mode math}}
+                                  \begin{itemize}
+	                          \item Dans une fonte mathématique, on peut aussi trouver :
+                                    \begin{itemize}
+	                            \item \texttt{NEXTLARGER}, pour les symboles à dimension variable ;
+	                            \item et, pour les symboles à extention infinie, 
+	                              
+	                              \texttt{VARCHAR}, puis :
+	                              \begin{itemize}
+	                              \item \texttt{REP}, répétition ;
+	                              \item \texttt{TOP}, haut ;
+	                              \item \texttt{BOT}, bas ;
+	                              \item \texttt{MID}, milieu.
+	                              \end{itemize}
+	                            \item Les accolades, par exemple, nécessitent l'ensemble de ces éléments.
+                                    \end{itemize}
+                                  \end{itemize}
+	                          
+	                          Les fontes référencées dans le fichier \texttt{.vpl} sont aussi réelles ou virtuelles
+                                  Mais on finit par arriver sur une fonte réelle !
 
-  \LaTeX{} cherche alors la police dans un fichier \texttt{.map}
-	
-	{\textsc{Les lignes d'un fichier} \texttt{.map} \textsc{contiennent}}
-			\begin{itemize}
-				\item<+->  \texttt{jkpmsl8r} : le nom   \LaTeX{} de la police (fichier tfm) ;
-				\item<+->  \texttt{Kp-Regular} : le nom postscript de la police ;
-				\item<+->  \texttt{<8r.enc} : le réencodage
-				 ;
-				\item<+->  \texttt{<jkpmn8a.pfb} : le nom du fichier des dessins des caractères ;
-				\item<+->  \texttt{" TeXBase1Encoding ReEncodeFont}
-				
-									\hfill\texttt{0.167 SlantFont "} :
-				
-									encodage et transformations pour \textit{dvips} ou \textit{pdfTeX}.
-			\end{itemize}
-	
-	
-	\subsection{Fichier \texttt{.enc}}
-	
-	{\textsc{Un fichier} \texttt{.enc}}
-			\begin{itemize}
-				\item<+->  fait le lien :
-				\begin{itemize}
-					\item<+->  entre les slots (positions, de 0 à 255) utilisés par \TeX ;
-					\item<+->  et les noms \textit{postscript} des caractères dans le \texttt{.pfb};
-				\end{itemize}
-				\item<+->  et permet :
-				\begin{itemize}
-					\item<+->  d'utiliser des polices \texttt{.pfb} de plus de 256 caractères ;
-					\item<+->  la recherche de mots dans les fichiers \texttt{.ps} ou \texttt{.pdf},
-					           le nom des caractères y est inséré ;
-				\end{itemize}
-				\item<+->  et c'est souvent absent dans les polices de symboles\dots
-			\end{itemize}
-	
-	\section{\textsc{Métriques}}
+                                  \LaTeX{} cherche alors la fonte dans un fichier \texttt{.map}
+	                          
+	                          {\textsc{Les lignes d'un fichier} \texttt{.map} \textsc{contiennent}}
+			          \begin{itemize}
+				  \item  \texttt{jkpmsl8r} : le nom   \LaTeX{} de la fonte (fichier tfm) ;
+				  \item  \texttt{Kp-Regular} : le nom postscript de la fonte ;
+				  \item  \texttt{<8r.enc} : le réencodage
+				    ;
+				  \item  \texttt{<jkpmn8a.pfb} : le nom du fichier des dessins des caractères ;
+				  \item  \texttt{" TeXBase1Encoding ReEncodeFont}
+				    
+				    \hfill\texttt{0.167 SlantFont "} :
+				    
+				    encodage et transformations pour \textit{dvips} ou \textit{pdfTeX}.
+			          \end{itemize}
+	                          
+	                          
+	                          \subsection{Fichier \texttt{.enc}}
+	                          
+	                          {\textsc{Un fichier} \texttt{.enc}}
+			          \begin{itemize}
+				  \item  fait le lien :
+				    \begin{itemize}
+				    \item  entre les slots (positions, de 0 à 255) utilisés par \TeX ;
+				    \item  et les noms \textit{postscript} des caractères dans le \texttt{.pfb};
+				    \end{itemize}
+				  \item  et permet :
+				    \begin{itemize}
+				    \item  d'utiliser des fontes \texttt{.pfb} de plus de 256 caractères ;
+				    \item  la recherche de mots dans les fichiers \texttt{.ps} ou \texttt{.pdf},
+				      le nom des caractères y est inséré ;
+				    \end{itemize}
+				  \item  et c'est souvent absent dans les fontes de symboles\dots
+			          \end{itemize}
+	                          
+	                          \section{\textsc{Métriques}}
 
-\subsection{Fontdim}
+                                  \subsection{Fontdim}
 
-	
-	{\textsc{Les dimensions d'une police de texte sont :}}
-	\begin{enumerate}
-		\item<+->  \texttt{SLANT}, son inclinaison ;
-		\item<+->  \texttt{SPACE}, la largeur de l'espace ;
-		\item<+->  \texttt{STRETCH}, la dilatation possible de l'espace ;
-		\item<+->  \texttt{SHRINK}, sa compression possible ;
-		\item<+->  \texttt{XHEIGHT}, la hauteur du \ogla x\fgla ;
-		\item<+->  \texttt{QUAD}, la largeur du \texttt{quad}, aussi égale à \texttt{1 em} ;
-		\item<+->  \texttt{EXTRASPACE}, l'espace supplémentaire en début de phrase.
-	\end{enumerate}
-		Les polices mathématiques \textsc{symbols} et \textsc{largesymbols} contiennent respectivement 22 et 13 dimensions,
-	
-	qui servent à construire les formules mathématiques. 
-	
-	On peut voir un exemple de placement d'indice plus loin.
-	
-	\subsection{Ligatures}
-\textsc{Ligatures et Crénages}
-	
-	{\textsc{Ligatures}}
-  \begin{itemize}
-  \item<+-> Une \textit{ligature} est le regroupement de deux caractères consécutifs en un troisième.
-  \item<+-> Une ligature peut être :
-		\begin{itemize}
-			\item<+-> technique comme {-}- qui donne -- ;
-			\item<+-> classique comme {f}i qui donne fi ;
-			\item<+-> ou désuette comme {\fontfamily{jkpos}\selectfont {c}t} qui donne {\fontfamily{jkpos}\selectfont ct}.
-		\end{itemize}
-  \item<+-> En général, on n'utilise pas de ligature en mode math.
-	\end{itemize}
-	
-\subsection{Crénages}	
-	
-	
-	{\textsc{Crénages}}
-  \begin{itemize}
-  \item<+-> Un \textit{crénage} est la façon dont deux caractères se rapprochent ou s'éloignent selon leur dessin :
-		\begin{itemize}
-			\item<+-> On a \ogla Tout \fgla{} et non \ogla {T}out \fgla{} ;
-			\item<+-> Et on a \ogla dîme \fgla{} et non \ogla {d}îme \fgla.
-		\end{itemize}
-  \item<+-> En général, on n'utilise pas de crénage en mode math.
-	\end{itemize}
-	
-	\subsection{Caractères}
-	
-	
-{\textsc{Métriques des caractères}}
-	 \begin{itemize}
-		 \item<+->  La métrique d'un caractère a 4 éléments :
-		\begin{itemize}
-			\item<+-> \texttt{CHARWD}, sa largeur ;
-			\item<+-> \texttt{CHARHT}, sa hauteur au dessus de la ligne de base ;
-			\item<+-> \texttt{CHARDP}, sa profondeur en dessous de la ligne de base ;
-			\item<+-> \texttt{CHARIC}, sa correction italique.
-		\end{itemize}
-		 \item<+->  Le sens de la largeur et de la correction italique n'est pas le même en mode texte ou en mode math.
-	 \end{itemize}	
-	
-	
-{\textsc{Métriques des caractères en texte}}
-	 \begin{itemize}
-		 \item<+->  Pour un caractère en mode texte :
-		\begin{itemize}
-			\item<+-> \texttt{CHARWD}, sa largeur est sa largeur ;
-			\item<+-> \texttt{CHARIC}, sa correction italique est appliquée quand on quitte l'italique.
-		\end{itemize}
-		 \item<+->  On va voir cela dans 40 secondes\dots
-	 \end{itemize}	
-	
-	{\textsc{Métriques des caractères en mode math}}
-	 \begin{itemize}
-		 \item<+->  En mode math, pour un caractère :
-		\begin{itemize}
-			\item<+-> \texttt{CHARWD}, sa largeur sert à placer l'indice ;
-			\item<+-> \texttt{CHARWD+CHARIC}, sert à placer l'exposant, et,
-			
-			est la largeur effective du caractère, 
-			
-			sauf en cas de présence d'exposant ou d'indice assez large.
-		\end{itemize}
-		 \item<+->  On va voir cela dans 10 secondes\dots
-	 \end{itemize}
-	
-	
-	{\textsc{Métriques des caractères en mode texte et math}}
-  	\begin{center}\begin{tikzpicture}
-  		\filldraw [green] (1.5,0.2) -- (1.5,3.5) -- (0.2,3.5) -- (0.2,3.8) -- (3.1,3.8) -- (3.1,3.5) -- (1.8,3.5) -- (1.8,0.2) -- cycle ;
-  		\filldraw [blue] (6,0.2) -- (6,3.5) -- (4.7,3.5) -- (4.7,3.8) -- (7.6,3.8) -- (7.6,3.5) -- (6.3,3.5) -- (6.3,0.2) -- cycle ;
-  		\draw	[red] (0,0.2) -- (3.3,0.2) -- (3.3,3.8) -- (0,3.8) -- cycle ;
-  		\draw	[red] (4.3,0.2) -- (8,0.2) -- (8,3.8) -- (4.3,3.8) -- cycle ;
-  		\draw	[red] (6.8,0.2) -- (6.8,3.8) ;
-  		\draw	[gray,<->] (0,1) -- (3.3,1) ; \draw [gray] (1.55,1.2) node {CHARWD};
-  		\draw	[gray,<->] (4.3,1) -- (6.8,1) ; \draw [gray] (5.55,1.2) node {CHARWD};
-  		\draw	[gray,<->] (6.8,2) -- (8,2) ; \draw [gray] (7.4,2.2) node {CHARIC};
-  		\draw	[gray,<->] (3.8,.2) -- (3.8,3.8) ; \draw [gray] (3.8,2) node {CHARHT};
-  		\draw	[gray,<->] (3.8,.2) -- (3.8,-1.3) ; \draw [gray] (3.8,-.5) node {CHARDP (=0 ici)};\draw (2.8,-1.3) -- (4.8,-1.3) ;
-  		\draw [thick] (-.2,0.2) -- (10,0.2) ; 
-  		\filldraw [white] (6.8,-1) -- (8.8,-1) -- (8.8,1) -- (6.8,1) -- cycle ; \draw [gray] (7.8,0) node {Indice};
-  		\draw [red] (6.8,-1) -- (8.8,-1) -- (8.8,1) -- (6.8,1) -- cycle ; 
-  		\filldraw [white] (8,3) -- (8,5) -- (10,5) -- (10,3) -- cycle ; \draw [gray] (9,4) node {Exposant}; 
-  		\draw [red] (8,3) -- (8,5) -- (10,5) -- (10,3) -- cycle ;
-  		\draw [red] (1.65,4.5) node {Texte};
-  		\draw [red] (6.15,4.5) node {Math};
-  		\draw [gray] (2.75,0.35) node {base line};
-  	\end{tikzpicture}\end{center} 
-	
-	
-	
-	
-	{  \LaTeX{} \textsc{ajoute des espaces en mode math}}
-	 \begin{itemize}
-		 \item<+->  Il y a 8 types de symboles, comme \texttt{mathord} et \texttt{mathbin} ;
-		 \item<+->  entre 2 symboles,   \LaTeX{} ajoute éventuellement de l'espace.
-		 \item<+->  Il y a trois espaces possibles :
-		\begin{itemize}
-			\item<+-> \verb=\thinmuskip= ou \verb=\,= qui vaut 3\,mu ;
-			\item<+-> \verb=\medmuskip= ou \verb=\:= qui vaut 4\,mu plus 2\,mu minus 4\,mu ;
-			\item<+-> \verb=\thickmuskip= ou \verb=\;= qui vaut 5\,mu plus 5\,mu ;
-		\end{itemize}
-		 \item<+->  Certains espaces entre symboles ne sont pas ajoutés quand on est en indice :
-		 \[\textstyle\sum\limits_{i=1}^ni=\dfrac{n(n+1)}{2}\]
-	 \end{itemize}
-	
-	
-	{\textsc{On peut modifier ces espacements}}
-	 \begin{itemize}
-		 \item<+->  Pour modifier ces espaces, par exemple :
-		\begin{itemize}
-			\item<+-> \verb+\thinmuskip=2mu+
-			\item<+-> \verb+\medmuskip=3mu minus 1mu+
-			\item<+-> \verb+\thickmuskip=4mu plus 1mu minus 1mu+
-		\end{itemize}
-		 \item<+->  Ici, on a réduit l'espacement et l'élasticité.
-	 \end{itemize}
-	
-	
-	{\textsc{On peut modifier les tailles des indices et exposants}}
-	 \begin{itemize}
-		 \item<+->  Cela se fait de 2 façons :
-		\begin{itemize}
-			\item<+-> \verb+\DeclareMathSizes{1}{2}{3}{4}+ avec les tailles des polices :
-\begin{enumerate}
-	\item<+-> de texte, qui sert ici de base ;
-	\item<+-> math principale, souvent égale à celle de texte ;
-	\item<+-> math indice ou exposant, plus petite ;
-	\item<+-> math indice ou exposant d'indice ou exposant ou \dots
-	
-						encore plus petite (ensuite, on garde la même taille) ;
-\end{enumerate}
-			\item<+-> On peut aussi déclarer :
-\begin{itemize}
-	\item<+-> \verb=\def\defaultscriptratio{.78}=
-	\item<+-> \verb=\def\defaultscriptscriptratio{.62}=
-	
-						 par exemple.
-	\item<+-> Cela donne des tailles d'indices pour toutes les tailles de caractères.
-\end{itemize}
-   \end{itemize}
-   \end{itemize}
-	
-	
-	
-	{\textsc{Placer un indice en présence d'exposant}}
-	 \begin{itemize}
-		 \item<+->  Placer un indice \texttt{I} à un caractère \texttt{C} en présence d'un exposant \texttt{E} :
-	 \begin{itemize}
-		 \item<+->  depuis la ligne de base, descendre de \texttt{max(p+S19,S17)} 
-		 						où \texttt{p} est la profondeur de \texttt{C}.
-		 \item<+->  Calculer \texttt{h} le haut de \texttt{I} ;
-				\begin{itemize}
-					\item<+-> s'il le faut, descendre \texttt{I} de façon telle que $\mathtt{h}\leqslant4/5\times\mathtt{S5}$ ;
-					\item<+-> s'il le faut, descendre \texttt{I} et monter \texttt{E} de façon telle que
-										le haut de \texttt{I} et le bas de \texttt{E} soient distants d'au moins $4\times\mathtt{X8}$.
-				\end{itemize}
-		 \item<+->  Remarques :
-				\begin{itemize}
-					 \item<+->  \texttt{S} désigne les dimensions de \ogla \textsc{symbols} \fgla;
-					 \item<+->  \texttt{X} désigne les dimensions de \ogla \textsc{largesymbols} \fgla;
-					 \item<+->  \texttt{S5} est \texttt{xHeight}, la hauteur du \ogla x \fgla ;
-					 \item<+->  \texttt{X8} est la hauteur de la barre de fraction.
-				\end{itemize}
-	 \end{itemize}
-	 \end{itemize}
-	
-	\section{\textsc{Glyphes}}
+	                          
+	                          {\textsc{Les dimensions d'une fonte de texte sont :}}
+	                          \begin{enumerate}
+		                  \item  \texttt{SLANT}, son inclinaison ;
+		                  \item  \texttt{SPACE}, la largeur de l'espace ;
+		                  \item  \texttt{STRETCH}, la dilatation possible de l'espace ;
+		                  \item  \texttt{SHRINK}, sa compression possible ;
+		                  \item  \texttt{XHEIGHT}, la hauteur du \ogla x\fgla ;
+		                  \item  \texttt{QUAD}, la largeur du \texttt{quad}, aussi égale à \texttt{1 em} ;
+		                  \item  \texttt{EXTRASPACE}, l'espace supplémentaire en début de phrase.
+	                          \end{enumerate}
+		                  Les fontes mathématiques \textsc{symbols} et \textsc{largesymbols} contiennent respectivement 22 et 13 dimensions,
+	                          
+	                          qui servent à construire les formules mathématiques. 
+	                          
+	                          On peut voir un exemple de placement d'indice plus loin.
+	                          
+	                          \subsection{Ligatures}
+                                  \textsc{Ligatures et Crénages}
+	                          
+	                          {\textsc{Ligatures}}
+                                  \begin{itemize}
+                                  \item Une \textit{ligature} est le regroupement de deux caractères consécutifs en un troisième.
+                                  \item Une ligature peut être :
+		                    \begin{itemize}
+			            \item technique comme {-}- qui donne -- ;
+			            \item classique comme {f}i qui donne fi ;
+			            \item ou désuette comme {\fontfamily{jkpos}\selectfont {c}t} qui donne {\fontfamily{jkpos}\selectfont ct}.
+		                    \end{itemize}
+                                  \item En général, on n'utilise pas de ligature en mode math.
+	                          \end{itemize}
+	                          
+                                  \subsection{Crénages}	
+	                          
+	                          
+	                          {\textsc{Crénages}}
+                                  \begin{itemize}
+                                  \item Un \textit{crénage} est la façon dont deux caractères se rapprochent ou s'éloignent selon leur dessin :
+		                    \begin{itemize}
+			            \item On a \ogla Tout \fgla{} et non \ogla {T}out \fgla{} ;
+			            \item Et on a \ogla dîme \fgla{} et non \ogla {d}îme \fgla.
+		                    \end{itemize}
+                                  \item En général, on n'utilise pas de crénage en mode math.
+	                          \end{itemize}
+	                          
+	                          \subsection{Caractères}
+	                          
+	                          
+                                  {\textsc{Métriques des caractères}}
+	                          \begin{itemize}
+		                  \item  La métrique d'un caractère a 4 éléments :
+		                    \begin{itemize}
+			            \item \texttt{CHARWD}, sa largeur ;
+			            \item \texttt{CHARHT}, sa hauteur au dessus de la ligne de base ;
+			            \item \texttt{CHARDP}, sa profondeur en dessous de la ligne de base ;
+			            \item \texttt{CHARIC}, sa correction italique.
+		                    \end{itemize}
+		                  \item  Le sens de la largeur et de la correction italique n'est pas le même en mode texte ou en mode math.
+	                          \end{itemize}	
+	                          
+	                          
+                                  {\textsc{Métriques des caractères en texte}}
+	                          \begin{itemize}
+		                  \item  Pour un caractère en mode texte :
+		                    \begin{itemize}
+			            \item \texttt{CHARWD}, sa largeur est sa largeur ;
+			            \item \texttt{CHARIC}, sa correction italique est appliquée quand on quitte l'italique.
+		                    \end{itemize}
+		                  \item  On va voir cela dans 40 secondes\dots
+	                          \end{itemize}	
+	                          
+	                          {\textsc{Métriques des caractères en mode math}}
+	                          \begin{itemize}
+		                  \item  En mode math, pour un caractère :
+		                    \begin{itemize}
+			            \item \texttt{CHARWD}, sa largeur sert à placer l'indice ;
+			            \item \texttt{CHARWD+CHARIC}, sert à placer l'exposant, et,
+			              
+			              est la largeur effective du caractère, 
+			              
+			              sauf en cas de présence d'exposant ou d'indice assez large.
+		                    \end{itemize}
+		                  \item  On va voir cela dans 10 secondes\dots
+	                          \end{itemize}
+	                          
+	                          
+	                          {\textsc{Métriques des caractères en mode texte et math}}
+  	                          \begin{center}\begin{tikzpicture}
+  		                      \filldraw [green] (1.5,0.2) -- (1.5,3.5) -- (0.2,3.5) -- (0.2,3.8) -- (3.1,3.8) -- (3.1,3.5) -- (1.8,3.5) -- (1.8,0.2) -- cycle ;
+  		                      \filldraw [blue] (6,0.2) -- (6,3.5) -- (4.7,3.5) -- (4.7,3.8) -- (7.6,3.8) -- (7.6,3.5) -- (6.3,3.5) -- (6.3,0.2) -- cycle ;
+  		                      \draw	[red] (0,0.2) -- (3.3,0.2) -- (3.3,3.8) -- (0,3.8) -- cycle ;
+  		                      \draw	[red] (4.3,0.2) -- (8,0.2) -- (8,3.8) -- (4.3,3.8) -- cycle ;
+  		                      \draw	[red] (6.8,0.2) -- (6.8,3.8) ;
+  		                      \draw	[gray,<->] (0,1) -- (3.3,1) ; \draw [gray] (1.55,1.2) node {CHARWD};
+  		                      \draw	[gray,<->] (4.3,1) -- (6.8,1) ; \draw [gray] (5.55,1.2) node {CHARWD};
+  		                      \draw	[gray,<->] (6.8,2) -- (8,2) ; \draw [gray] (7.4,2.2) node {CHARIC};
+  		                      \draw	[gray,<->] (3.8,.2) -- (3.8,3.8) ; \draw [gray] (3.8,2) node {CHARHT};
+  		                      \draw	[gray,<->] (3.8,.2) -- (3.8,-1.3) ; \draw [gray] (3.8,-.5) node {CHARDP (=0 ici)};\draw (2.8,-1.3) -- (4.8,-1.3) ;
+  		                      \draw [thick] (-.2,0.2) -- (10,0.2) ; 
+  		                      \filldraw [white] (6.8,-1) -- (8.8,-1) -- (8.8,1) -- (6.8,1) -- cycle ; \draw [gray] (7.8,0) node {Indice};
+  		                      \draw [red] (6.8,-1) -- (8.8,-1) -- (8.8,1) -- (6.8,1) -- cycle ; 
+  		                      \filldraw [white] (8,3) -- (8,5) -- (10,5) -- (10,3) -- cycle ; \draw [gray] (9,4) node {Exposant}; 
+  		                      \draw [red] (8,3) -- (8,5) -- (10,5) -- (10,3) -- cycle ;
+  		                      \draw [red] (1.65,4.5) node {Texte};
+  		                      \draw [red] (6.15,4.5) node {Math};
+  		                      \draw [gray] (2.75,0.35) node {base line};
+  	                          \end{tikzpicture}\end{center} 
+	                          
+	                          
+	                          
+	                          
+	                          {  \LaTeX{} \textsc{ajoute des espaces en mode math}}
+	                          \begin{itemize}
+		                  \item  Il y a 8 types de symboles, comme \texttt{mathord} et \texttt{mathbin} ;
+		                  \item  entre 2 symboles,   \LaTeX{} ajoute éventuellement de l'espace.
+		                  \item  Il y a trois espaces possibles :
+		                    \begin{itemize}
+			            \item \verb=\thinmuskip= ou \verb=\,= qui vaut 3\,mu ;
+			            \item \verb=\medmuskip= ou \verb=\:= qui vaut 4\,mu plus 2\,mu minus 4\,mu ;
+			            \item \verb=\thickmuskip= ou \verb=\;= qui vaut 5\,mu plus 5\,mu ;
+		                    \end{itemize}
+		                  \item  Certains espaces entre symboles ne sont pas ajoutés quand on est en indice :
+		                    \[\textstyle\sum\limits_{i=1}^ni=\dfrac{n(n+1)}{2}\]
+	                          \end{itemize}
+	                          
+	                          
+	                          {\textsc{On peut modifier ces espacements}}
+	                          \begin{itemize}
+		                  \item  Pour modifier ces espaces, par exemple :
+		                    \begin{itemize}
+			            \item \verb+\thinmuskip=2mu+
+			            \item \verb+\medmuskip=3mu minus 1mu+
+			            \item \verb+\thickmuskip=4mu plus 1mu minus 1mu+
+		                    \end{itemize}
+		                  \item  Ici, on a réduit l'espacement et l'élasticité.
+	                          \end{itemize}
+	                          
+	                          
+	                          {\textsc{On peut modifier les tailles des indices et exposants}}
+	                          \begin{itemize}
+		                  \item  Cela se fait de 2 façons :
+		                    \begin{itemize}
+			            \item \verb+\DeclareMathSizes{1}{2}{3}{4}+ avec les tailles des fontes :
+                                      \begin{enumerate}
+	                              \item de texte, qui sert ici de base ;
+	                              \item math principale, souvent égale à celle de texte ;
+	                              \item math indice ou exposant, plus petite ;
+	                              \item math indice ou exposant d'indice ou exposant ou \dots
+	                                
+					encore plus petite (ensuite, on garde la même taille) ;
+                                      \end{enumerate}
+			            \item On peut aussi déclarer :
+                                      \begin{itemize}
+	                              \item \verb=\def\defaultscriptratio{.78}=
+	                              \item \verb=\def\defaultscriptscriptratio{.62}=
+	                                
+					par exemple.
+	                              \item Cela donne des tailles d'indices pour toutes les tailles de caractères.
+                                      \end{itemize}
+                                    \end{itemize}
+                                  \end{itemize}
+	                          
+	                          
+	                          
+	                          {\textsc{Placer un indice en présence d'exposant}}
+	                          \begin{itemize}
+		                  \item  Placer un indice \texttt{I} à un caractère \texttt{C} en présence d'un exposant \texttt{E} :
+	                            \begin{itemize}
+		                    \item  depuis la ligne de base, descendre de \texttt{max(p+S19,S17)} 
+		 		      où \texttt{p} est la profondeur de \texttt{C}.
+		                    \item  Calculer \texttt{h} le haut de \texttt{I} ;
+				      \begin{itemize}
+				      \item s'il le faut, descendre \texttt{I} de façon telle que $\mathtt{h}\leqslant4/5\times\mathtt{S5}$ ;
+				      \item s'il le faut, descendre \texttt{I} et monter \texttt{E} de façon telle que
+					le haut de \texttt{I} et le bas de \texttt{E} soient distants d'au moins $4\times\mathtt{X8}$.
+				      \end{itemize}
+		                    \item  Remarques :
+				      \begin{itemize}
+				      \item  \texttt{S} désigne les dimensions de \ogla \textsc{symbols} \fgla;
+				      \item  \texttt{X} désigne les dimensions de \ogla \textsc{largesymbols} \fgla;
+				      \item  \texttt{S5} est \texttt{xHeight}, la hauteur du \ogla x \fgla ;
+				      \item  \texttt{X8} est la hauteur de la barre de fraction.
+				      \end{itemize}
+	                            \end{itemize}
+	                          \end{itemize}
+	                          
+	                          \section{\textsc{Glyphes}}
 
-\subsection{Type 1}
+                                  \subsection{Type 1}
 
-	
-	{\textsc{Les courbes de Bézier sont :}}
-	\begin{enumerate}
-		\item<+->  de la forme : $\overrightarrow{OM}=\sum\limits_{k=0}^n\binom{n}{k}t^k(1-t)^{(n-k)}\overrightarrow{OA_k}$ ;
-		\item<+->  $A_0$ et $A_n$ sont les extrémités ;
-		\item<+->  les autres points sont les points de contrôle ;
-		\item<+->  la tangente aux extrémités est dirigée vers le premier point de contrôle ;
-		\item<+->  dans les polices, $n=3$, on a deux points de contrôle.
-	\end{enumerate}
-	
-	
-	
-	{\textsc{Un exemple :}}
-  	\begin{center}\begin{tikzpicture}
-  		\filldraw [pink] (1,2) circle (2pt)
-  		                 (0,1) circle (2pt);
-  		\filldraw [green](0,0) circle (2pt)
-  		                 (5,2) circle (2pt);
-  		\draw [->] (0,0) .. controls (0,1) and (1,2) .. (5,2) ;
-  		\draw	[gray,->] (0,0) -- (0,1) ;
-  		\draw	[gray,->] (5,2) -- (1,2) ;
-  	\end{tikzpicture}\end{center}
-	On a symbolisé les extrémités en vert et les deux points de contrôle en rose
-	
-	On assemble des courbes de ce type pour obtenir un ou des chemins fermés.
-	
-	On remplit alors \textsl{à droite} des chemins fermés.
-	
-	
-	{\textsc{Un exemple complet :}}
-  \bigskip
-  	\begin{center}\begin{tikzpicture}
-  		\draw [->] (.59,3.36) .. controls (.88,4.11) and (1.50,4.58) .. (2.40,4.58) ;
-  		\draw [red] (.59,3.36) -- (.88,4.11) -- (1.50,4.58) -- (2.40,4.58)
-  					-- (2.71,4.58) -- (3.78,3.97) -- (3.78,2.98) --(3.78,.94) -- (3.78,.42) -- (4.05,.32) 
-  					-- (4.47,.43) -- (4.51,.17) -- (4.51,.17) -- (3.72,.04) -- (3.25,-.07) 
-  					-- (2.97,-.07) -- (3.00,.68) -- (3.00,.68) -- (2.13,-.12) -- (1.58,-.12) --
-  					(.87,-.12) -- (.35,.33) -- (.35,1.07) -- (.35,1.88) -- (.97,2.12) -- (1.70,2.37)
-  					-- (3.00,2.81) -- (3.00,3.58) -- (2.78,4.13) -- (1.91,4.10) -- (1.46,4.07) -- 
-  					(1.17,3.60) -- (.94,3.16) ;
-  		\draw [->] (2.40,4.58) .. controls (2.71,4.58) and (3.78,3.97) .. (3.78,2.98) ;
-  		\draw [->] (3.78,2.98) -- (3.78,.94) ;
-  		\draw [->] (3.78,.94) .. controls (3.78,.42) and (4.05,.32) .. (4.47,.43) ;
-  		\draw [->] (4.47,.43) -- (4.51,.17) ;
-  		\draw [->] (4.51,.17) .. controls (4.51,.17) and (3.72,.04) .. (3.25,-.07) ;
-  		\draw [->] (3.25,-.07) .. controls (2.97,-.07) and (3.00,.68) .. (3.00,.68) ;
-  		\draw [->] (3.00,.68) .. controls (2.13,-.12) .. (1.58,-.12) ;
-  		\draw [->] (1.58,-.12) .. controls (.87,-.12) and (.35,.33) .. (.35,1.07) ;
-  		\draw [->] (.35,1.07) .. controls (.35,1.88) and (.97,2.12) .. (1.70,2.37) ;
-  		\draw [->] (1.70,2.37) -- (3.00,2.81) ;
-  		\draw [->] (3.00,2.81) .. controls (3.00,3.58) and (2.78,4.13) .. (1.91,4.10) ;
-  		\draw [->] (1.91,4.10) .. controls (1.46,4.07) and (1.17,3.60) .. (.94,3.16) ;
-  		\draw [->] (.94,3.16) -- (.59,3.36) ;
-  		\draw [red] (3.00,1.03) -- (2.77,.76) -- (2.28,.44) -- (1.91,.44) -- (1.48,.44) -- (1.20,.81) --
-  		      (1.20,1.23) -- (1.20,1.95) -- (3.00,2.49) -- (3.00,2.49) ;
-  		\draw [<-] (3.00,2.49) -- (3.00,1.03) ;
-  		\draw [<-] (3.00,1.03) .. controls (2.77,.76) and (2.28,.44) .. (1.91,.44) ;
-  		\draw [<-] (1.91,.44) .. controls (1.48,.44) and (1.20,.81) .. (1.20,1.23) ;
-  		\draw [<-] (1.20,1.23) .. controls (1.20,1.95) and (3.00,2.49) .. (3.00,2.49) ;
-  	\end{tikzpicture}\end{center}
-	
-	
-	
-	
-	
-		
-		\[ e^{ \scriptscriptstyle\frac{A}{B}+ 1} \quad e^{\tfrac{\textscsl{a}}{\raisebox{0.3ex}{\textscsl{\scriptsize b}}} + 1} \quad e^{\tfrac{A}{B} + 1}\]%
-		
-		
-		\[ % start display-style math mode 
-e^{{\displaystyle\frac{A}{B}} + 1} % awful  
-   \quad 
-e^{\displaystyle\frac{A}{B}+1} 
-   \quad
-e^{\textstyle\frac{A}{B}+1} 
-   \quad
-e^{\frac{A}{B}+1} % "\scriptstyle" is default math mode
-   \quad
-e^{\scriptscriptstyle\frac{A}{B}+1} 
-   \quad
-e^{(\mkern-1.5muA/\mkern-2.5mu B+1)} % apply some (negative) kerning
-   \quad
-\exp\Bigl(\frac{A}{B}+1\Bigr) 
-\]
-		
-		
-		\begin{gather*}
- \mbox{\scriptsize%
-    $A = \begin{bmatrix} a & b & c \\ d & e & f \\ g & h & i \end{bmatrix}$}\\
-    A = \begin{bmatrix} a & b & c \\ d & e & f \\ g & h & i \end{bmatrix}
-\end{gather*}
-		
-		
-		
- 
+	                          
+	                          {\textsc{Les courbes de Bézier sont :}}
+	                          \begin{enumerate}
+		                  \item  de la forme : $\overrightarrow{OM}=\sum\limits_{k=0}^n\binom{n}{k}t^k(1-t)^{(n-k)}\overrightarrow{OA_k}$ ;
+		                  \item  $A_0$ et $A_n$ sont les extrémités ;
+		                  \item  les autres points sont les points de contrôle ;
+		                  \item  la tangente aux extrémités est dirigée vers le premier point de contrôle ;
+		                  \item  dans les fontes, $n=3$, on a deux points de contrôle.
+	                          \end{enumerate}
+	                          
+	                          
+	                          
+	                          {\textsc{Un exemple :}}
+  	                          \begin{center}\begin{tikzpicture}
+  		                      \filldraw [pink] (1,2) circle (2pt)
+  		                      (0,1) circle (2pt);
+  		                      \filldraw [green](0,0) circle (2pt)
+  		                      (5,2) circle (2pt);
+  		                      \draw [->] (0,0) .. controls (0,1) and (1,2) .. (5,2) ;
+  		                      \draw	[gray,->] (0,0) -- (0,1) ;
+  		                      \draw	[gray,->] (5,2) -- (1,2) ;
+  	                          \end{tikzpicture}\end{center}
+	                          On a symbolisé les extrémités en vert et les deux points de contrôle en rose
+	                          
+	                          On assemble des courbes de ce type pour obtenir un ou des chemins fermés.
+	                          
+	                          On remplit alors \textsl{à droite} des chemins fermés.
+	                          
+	                          
+	                          {\textsc{Un exemple complet :}}
+                                  \bigskip
+  	                          \begin{center}\begin{tikzpicture}
+  		                      \draw [->] (.59,3.36) .. controls (.88,4.11) and (1.50,4.58) .. (2.40,4.58) ;
+  		                      \draw [red] (.59,3.36) -- (.88,4.11) -- (1.50,4.58) -- (2.40,4.58)
+  				      -- (2.71,4.58) -- (3.78,3.97) -- (3.78,2.98) --(3.78,.94) -- (3.78,.42) -- (4.05,.32) 
+  				      -- (4.47,.43) -- (4.51,.17) -- (4.51,.17) -- (3.72,.04) -- (3.25,-.07) 
+  				      -- (2.97,-.07) -- (3.00,.68) -- (3.00,.68) -- (2.13,-.12) -- (1.58,-.12) --
+  				      (.87,-.12) -- (.35,.33) -- (.35,1.07) -- (.35,1.88) -- (.97,2.12) -- (1.70,2.37)
+  				      -- (3.00,2.81) -- (3.00,3.58) -- (2.78,4.13) -- (1.91,4.10) -- (1.46,4.07) -- 
+  				      (1.17,3.60) -- (.94,3.16) ;
+  		                      \draw [->] (2.40,4.58) .. controls (2.71,4.58) and (3.78,3.97) .. (3.78,2.98) ;
+  		                      \draw [->] (3.78,2.98) -- (3.78,.94) ;
+  		                      \draw [->] (3.78,.94) .. controls (3.78,.42) and (4.05,.32) .. (4.47,.43) ;
+  		                      \draw [->] (4.47,.43) -- (4.51,.17) ;
+  		                      \draw [->] (4.51,.17) .. controls (4.51,.17) and (3.72,.04) .. (3.25,-.07) ;
+  		                      \draw [->] (3.25,-.07) .. controls (2.97,-.07) and (3.00,.68) .. (3.00,.68) ;
+  		                      \draw [->] (3.00,.68) .. controls (2.13,-.12) .. (1.58,-.12) ;
+  		                      \draw [->] (1.58,-.12) .. controls (.87,-.12) and (.35,.33) .. (.35,1.07) ;
+  		                      \draw [->] (.35,1.07) .. controls (.35,1.88) and (.97,2.12) .. (1.70,2.37) ;
+  		                      \draw [->] (1.70,2.37) -- (3.00,2.81) ;
+  		                      \draw [->] (3.00,2.81) .. controls (3.00,3.58) and (2.78,4.13) .. (1.91,4.10) ;
+  		                      \draw [->] (1.91,4.10) .. controls (1.46,4.07) and (1.17,3.60) .. (.94,3.16) ;
+  		                      \draw [->] (.94,3.16) -- (.59,3.36) ;
+  		                      \draw [red] (3.00,1.03) -- (2.77,.76) -- (2.28,.44) -- (1.91,.44) -- (1.48,.44) -- (1.20,.81) --
+  		                      (1.20,1.23) -- (1.20,1.95) -- (3.00,2.49) -- (3.00,2.49) ;
+  		                      \draw [<-] (3.00,2.49) -- (3.00,1.03) ;
+  		                      \draw [<-] (3.00,1.03) .. controls (2.77,.76) and (2.28,.44) .. (1.91,.44) ;
+  		                      \draw [<-] (1.91,.44) .. controls (1.48,.44) and (1.20,.81) .. (1.20,1.23) ;
+  		                      \draw [<-] (1.20,1.23) .. controls (1.20,1.95) and (3.00,2.49) .. (3.00,2.49) ;
+  	                          \end{tikzpicture}\end{center}
+	                          
+	                          
+	                          
+	                          
+	                          
+		                  
+		                  \[ e^{ \scriptscriptstyle\frac{A}{B}+ 1} \quad e^{\tfrac{\textscsl{a}}{\raisebox{0.3ex}{\textscsl{\scriptsize b}}} + 1} \quad e^{\tfrac{A}{B} + 1}\]%
+		                  
+		                  
+		                  \[ % start display-style math mode 
+                                  e^{{\displaystyle\frac{A}{B}} + 1} % awful  
+                                  \quad 
+                                  e^{\displaystyle\frac{A}{B}+1} 
+                                  \quad
+                                  e^{\textstyle\frac{A}{B}+1} 
+                                  \quad
+                                  e^{\frac{A}{B}+1} % "\scriptstyle" is default math mode
+                                  \quad
+                                  e^{\scriptscriptstyle\frac{A}{B}+1} 
+                                  \quad
+                                  e^{(\mkern-1.5muA/\mkern-2.5mu B+1)} % apply some (negative) kerning
+                                  \quad
+                                  \exp\Bigl(\frac{A}{B}+1\Bigr) 
+                                  \]
+		                  
+		                  
+		                  \begin{gather*}
+                                    \mbox{\scriptsize%
+                                      $A = \begin{bmatrix} a & b & c \\ d & e & f \\ g & h & i \end{bmatrix}$}\\
+                                    A = \begin{bmatrix} a & b & c \\ d & e & f \\ g & h & i \end{bmatrix}
+                                  \end{gather*}
+		                  
+		                  
+		                  
+                                  
 
-\tabulinestyle{on 2pt off 2pt}
-$\begin{tabu}{cc|cc|cc|c}
-  1 & -1 & 0 & & & & 0 \\
-  -1 & 1 & 0 & 0 & 0 & & \\ \tabucline-
-  0 & 0 & \bullet & \bullet & 0 & &\\
-  & 0 & \bullet & \bullet & 0 & 0 & \\ \tabucline-
-  &  & 0 & 0 & \bullet & \bullet & 0 \\
-  &  &  & 0 & \bullet & \bullet & 0 \\ \tabucline-
-  0 &  &  & 0 & 0 &0 & \ddots
-\end{tabu}$
+                                  \tabulinestyle{on 2pt off 2pt}
+                                  $\begin{tabu}{cc|cc|cc|c}
+                                    1 & -1 & 0 & & & & 0 \\
+                                    -1 & 1 & 0 & 0 & 0 & & \\ \tabucline-
+                                    0 & 0 & \bullet & \bullet & 0 & &\\
+                                    & 0 & \bullet & \bullet & 0 & 0 & \\ \tabucline-
+                                    &  & 0 & 0 & \bullet & \bullet & 0 \\
+                                    &  &  & 0 & \bullet & \bullet & 0 \\ \tabucline-
+                                    0 &  &  & 0 & 0 &0 & \ddots
+                                  \end{tabu}$
 
-		
+		                  
 
-	
-		totot
-		lalal
-		
-		\[
-		%% \let\nmatrix\bracketMatrixstack or \parenMatrixstack \braceMatrixstack, \vertMatrixstack, and simply \Matrixstack
-		%% \fixTABwidth{<T or F>} 
-		%% An optional argument exists to set the column alignment as l, c, or r
-		%% 
-	\nmatrix{1,2,3;4,5,6}
-	\]
-		
-\[
-\begin{matrix}
-\framebox[3.\width]{J} &
-\begin{matrix}
-0 & 0  \\
-0 & 0
-\end{matrix}
-& \\
-\begin{matrix}
-0 & 0 \\
-0 & 0
-\end{matrix}
-& \framebox[3.\width]{J} &
-\end{matrix}
-\]
-		    
+	                          
+		                  totot
+		                  lalal
+		                  
+		                  \[
+		                  %% \let\nmatrix\bracketMatrixstack or \parenMatrixstack \braceMatrixstack, \vertMatrixstack, and simply \Matrixstack
+		                  %% \fixTABwidth{<T or F>} 
+		                  %% An optional argument exists to set the column alignment as l, c, or r
+		                  %% 
+	                          \nmatrix{1,2,3;4,5,6}
+	                          \]
+		                  
+                                  \[
+                                  \begin{matrix}
+                                    \framebox[3.\width]{J} &
+                                    \begin{matrix}
+                                      0 & 0  \\
+                                      0 & 0
+                                    \end{matrix}
+                                    & \\
+                                    \begin{matrix}
+                                      0 & 0 \\
+                                      0 & 0
+                                    \end{matrix}
+                                    & \framebox[3.\width]{J} &
+                                  \end{matrix}
+                                  \]
+		                  
 \end{document}

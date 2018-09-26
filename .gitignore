@@ -45,3 +45,7 @@ doc/*.log
 /doc/skelete-fig3.pdf
 skelete-fig*.pdf
 /doc/.skelete.tex.swp
+/doc/*.jpg
+/doc/*.gif
+*.aux
+/doc/laby.pdf
