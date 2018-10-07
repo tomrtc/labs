@@ -9,6 +9,11 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(DEFAULT_BUILD_TYPE "Release")
 
 
+#For CMake based projects, compile_commands.json generation  auto-generated in the build tree. 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+# cli alternative:  cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .
+
+
 project(lab1)
 
 
