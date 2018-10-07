@@ -1,0 +1,98 @@
+\documentclass[tikz,convert=false]{standalone}
+\usepackage{forest}
+\usetikzlibrary{shapes.geometric,patterns}
+\forestset{
+  *|/.style={
+    parent anchor=south,
+    for descendants={
+      edge path={
+        \noexpand\path[\forestoption{edge}]
+        (!u.parent anchor-|.child anchor) -- (.child anchor)\forestoption{edge label};
+      }
+    }
+  },
+  normal width/.initial=.5cm,
+  normal height/.initial=.5cm,
+  every forest node/.style={
+    draw,
+    minimum width=\pgfkeysvalueof{/forest/normal width},
+    minimum height=\pgfkeysvalueof{/forest/normal height},
+    inner sep=+0pt,
+    anchor=south,
+  },
+  tria/.style={
+    every forest node,
+    shape=isosceles triangle,
+    shape border rotate=90,
+    isosceles triangle apex angle=60,
+%    isosceles triangle stretches=true
+  },
+  rect/.style={
+    every forest node,
+    shape=rectangle,
+    minimum width=(#1)*(\pgfkeysvalueof{/forest/normal width})+(#1+1)*(\forestove{s sep})-(#1)*(\pgfkeysvalueof{/pgf/outer xsep}),
+  },
+  rect/.default=3,
+  circ/.style={
+    every forest node,
+    shape=circle
+  },
+  dots/.style={
+    no edge,
+    content=\ldots,
+    every forest node,
+    shape=rectangle,
+    draw=none,
+  },
+  patt/.style args={#1:#2}{
+    node options={
+      /tikz/path picture={
+        \pgfsetfillpattern{north east lines}{black}
+        \pgfpathrectanglecorners
+          {\pgfpointlineattime{#1}
+            {\pgfpointanchor{path picture bounding box}{north west}}
+            {\pgfpointanchor{path picture bounding box}{north east}}}
+          {\pgfpointlineattime{#2}
+            {\pgfpointanchor{path picture bounding box}{south west}}
+            {\pgfpointanchor{path picture bounding box}{south east}}}
+         \pgfusepath{fill}
+%      \draw[green,ultra thick] (path picture bounding box.north west) -- coordinate[pos={#1}] (@aux1) (path picture bounding box.north east)
+%                               (path picture bounding box.south west) -- coordinate[pos={#2}] (@aux2) (path picture bounding box.south east);
+%      \fill[draw,pattern=north east lines] (@aux1) rectangle (@aux2);
+%%      \fill[blue] (@aux1) circle (2pt);
+%%      \fill[red] (@aux2) circle (1pt);
+      }
+    }
+  },
+  patt/.default=0:1
+}
+\begin{document}
+\begin{forest} for tree={child anchor=north}
+  [,circ,
+    [, tria]
+    [, dots]
+    [, tria]
+    [, rect=6, patt=.5:1, *|, alias=XY
+      [, tria]
+      [, dots]
+      [, tria]
+      [, tria, patt]
+      [, dots]
+      [, tria, patt, alias=XX]
+    ]
+    [, tria, patt]
+    [, dots]
+    [, tria, patt]
+    [, rect=6, patt=0:.5, *|
+      [, tria, patt]
+      [, dots]
+      [, tria, patt]
+      [, tria]
+      [, dots]
+      [, tria]
+    ]
+  ]
+% just to show that they are aligned correctly
+  \draw[opacity=.5] (XY.south east) -- (XX.right corner);
+\end{forest}
+\end{document}

@@ -1,0 +1,62 @@
+\documentclass{article}
+\usepackage{forest}
+\usetikzlibrary{arrows.meta}
+\forestset{
+  wg/.style={
+    for tree={
+      no edge,
+      draw,
+      outer ysep=1pt,
+    },
+    copy label/.style={
+      for children={
+        if content={}{
+            content/.pgfmath={content("!u")},
+            calign with current,
+            edge={draw,{-Triangle[open,reversed]}},
+            copy label,
+            !u.content/.pgfmath={content},
+            !u.content+=',
+        }{
+          copy label,
+        }
+      }
+    },
+    delay={
+      copy label,
+      for tree={name/.pgfmath={content}},
+    },
+    for tree={content format={\strut\forestoption{content}}},
+    where n children={0}{
+      tier=word,
+    }{},
+  },
+}
+\tikzset{deparrow/.style={-Latex,blue}}
+\begin{document}
+\begin{forest}
+  wg
+  [were
+    [children
+      [
+        [small]
+        []
+      ]
+    ]
+    [
+      []
+    ]
+    [playing
+      [
+        []
+        [outside]
+      ]
+    ]
+  ]
+  \draw[deparrow] (were'') to[out=west, in=north] (children'');
+  \draw[deparrow] (children') to[out=west, in=north] (small);
+  \draw[deparrow] (were') to[out=60, in=120] (playing'');
+  \draw[deparrow] (playing'') to[out=220, in=east] (children');
+  \draw[deparrow] (playing') to[out=east, in=north] (outside);
+\end{forest}
+\end{document}

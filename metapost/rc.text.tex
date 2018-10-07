@@ -1,0 +1,147 @@
+ 
+ \startMPdefinitions
+  input mp-sketch;
+  input boxes;
+\stopMPdefinitions
+
+\starttext
+\startMPpage[offset=3mm]
+  sketchypaths;
+
+  boxit.one   (btex One etex);
+  boxit.two   (btex Two etex);
+  boxit.three (btex Three etex);
+
+  three.w - two.e = two.w - one.e = (1cm,0);
+  one.c = origin;
+
+  drawboxed (one, two, three);
+
+  drawarrow one.e -- lft two.w;
+  drawarrow two.e -- lft three.w;
+
+\stopMPpage
+\stoptext
+ 
+ \starttext
+  \startMPenvironment
+    color lightgray ; lightgray := (.8,.8,.8) ;
+    color darkgray ; darkgray := (.2,.2,.2) ;
+  \stopMPenvironment
+
+  Pen based on a circle:
+  \startMPcode
+    z0 = (0.5cm,1.5cm) ; z1 = (2.5cm,2.5cm) ;
+    z2 = (6.5cm,0.5cm) ; z3 = (3.0cm,1.5cm) ;
+
+    pickup pencircle xscaled 2mm yscaled 4mm rotated 30 ;
+    draw z0..z1..z2..z3..z0..cycle withcolor lightgray ;
+  \stopMPcode
+
+  \bigskip
+  Pen based on a diamond:
+  \startMPcode
+    z0 = (0.5cm,1.5cm) ; z1 = (2.5cm,2.5cm) ;
+    z2 = (6.5cm,0.5cm) ; z3 = (3.0cm,1.5cm) ;
+
+    pickup pensquare xyscaled 2mm rotated 45 ;
+    draw z0..z1..z2..z3...z0..cycle withcolor darkgray ;
+  \stopMPcode
+\stoptext
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+   \usetypescriptfile[euler]
+\definetypeface[mainfont][rm][specserif][ComicNeue][default]
+\definetypeface[mainfont][mm][math] [pagellaovereuler][default]
+\setupbodyfont[mainfont,12pt]
+
+% Set upright style for Euler Math
+\appendtoks \rm \to \everymathematics
+\setupmathematics
+  [lcgreek=normal, ucgreek=normal]
+
+\startMPinclusions
+  input rboxes;
+  input mp-sketch;
+\stopMPinclusions
+
+\defineframed
+  [labelframe]
+  [
+    background=color,
+    backgroundcolor=gray,
+    frame=off,
+  ]
+
+\starttext
+\startMPpage[offset=3mm]
+  sketchypaths;
+
+  defaultdx := 16bp;
+  defaultdy := 16bp;
+  circmargin := 5bp;
+  sketch_amount := 2bp;
+
+  u := 1cm;
+  drawoptions(withpen pencircle scaled 1bp);
+
+  boxit.system("SYSTEM");
+  boxit.model ("MODEL");
+  circleit.adder("$\cdot$");
+
+  system.c = origin;
+  system.s - model.n = (0, 3u);
+
+  z.0 = system.w - (2u, 0);
+  z.1 = 0.5[  z.0, system.w ];
+  z.2 = (x.1, ypart model.w);
+  z.3 = system.e + (u, 0);
+  z.4 = system.e + (2u, 0);
+  z.5 = (x.4, y.2);
+
+  adder.c = (x.3, ypart model.c);
+
+  drawboxed(system, model, adder);
+
+  z.6 = 0.5[system.s, model.n];
+  stripe_path_n
+    (withpen pencircle scaled 2 withcolor 0.5white)
+    (draw)
+    fullsquare xyscaled(x.3 - x.1 + u, 2*LineHeight) 
+    shifted z.6 dashed evenly;
+
+  label("\labelframe{Measurement}", z.6);
+
+
+  % Reduce the amount of randomness for the lines
+  sketch_amount := bp;
+
+  drawarrow z.0 -- lft system.w;
+  drawarrow z.1 -- z.2 -- lft model.w;
+  drawarrow system.e -- z.4 ;
+  drawarrow model.e -- lft adder.w ;
+  drawarrow z.3 -- top adder.n ;
+  drawarrow adder.e -- z.5 ;
+
+  label.urt("$-$", adder.n);
+  label.llft("$+$", adder.w);
+
+  label.top("$u'$", z.1);
+  label.top("$t'$", z.3);
+  label.top("$ε$", 0.5[adder.e, z.5]);
+
+  dx := 12bp;
+  label.urt("$t$", adder.n + (0, dx));
+  label.urt("$u$", z.2 + (0, dx));
+
+\stopMPpage
+\stoptext

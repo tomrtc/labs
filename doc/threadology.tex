@@ -1,0 +1,2210 @@
+"That's a lot of cores. And while 80-core floating point monsters like that aren't likely to show up in an iMac any time soon, multicore chips in multiprocessor computers are here today. Single chip machines are so 2004. Programmers better get crackin'. The megahertz free ride is over - and we have work to do."
+
+There, that's the noisome little pitch everyone's been spreading like so much thermal paste. As if multiprocessing is something new! But of course it's not - heck, I remember Apple shipping dualies more than ten years ago, as the Power Macintosh 9500. Multiprocessing is more accessible (read: cheaper) now, but it's anything save new. It's been around long enough that we should have it figured out by now.
+
+So what's my excuse? I admit it - I don't get multiprocessing, not, you know, really get it, and that's gone on long enough. It's time to get to the bottom of it - or if not to the bottom, at least deep enough that my ears start popping.
+Threadinology
+
+Where to start, where to start...well, let's define our terms. Ok, here's the things I mean when I say the following, uh, things:
+
+    Threads are just preemptively scheduled contexts of execution that share an address space. But you already know what threads are. Frankly, for my purposes, they're all pretty much the same whether you're using Objective-C or C++ or Java on Mac OS X or Linux or Windows...
+    Threading means creating multiple threads. But you often create multiple threads for simpler control flow or to get around blocking system calls, not to improve performance through true simultaneous execution.
+    Multithreading is the physically simultaneous execution of multiple threads for increased performance, which requires a dualie or more. Now things get hard. 
+
+Yeah, I know. "Multithreading is hard" is a cliché, and it bugs me, because it is not some truism describing a fundamental property of nature, but it's something we did. We made multithreading hard because we optimized so heavily for the single threaded case.
+
+What do I mean? Well, processor speeds outrun memory so much that we started guessing at what's in memory so the processor doesn't have to waste time checking. "Guessing" is a loaded term; a nicer phrase might be "make increasingly aggressive assumptions" about the state of memory. And by "we," I mean both the compiler and the processor - both make things hard, as we'll see. We'll figure this stuff out - but they're going to try to confuse us. Oh well. Right or wrong, this is the bed we've made, and now we get to lie in it.
+
+Blah blah. Let's look at some code. We have two variables, variable1 and variable2, that both start out at 0. The writer thread will do this:
+Writer thread
+
+while (1) {
+   variable1++;
+   variable2++;
+}
+
+They both started out at zero, so therefore variable1, at every point in time, will always be the same as variable2, or larger - but never smaller. Right?
+
+The reader thread will do this:
+
+Reader thread
+
+while (1) {
+   local2 = variable2;
+   local1 = variable1;
+   if (local2 > local1) {
+      print("Error!");
+   }
+}
+
+That's odd - why does the reader thread load the second variable before the first? That's the opposite order from the writer thread! But it makes sense if you think about it.
+
+See, it's possible that variable1 and/or variable2 will be incremented by the writer thread between the loads from the reader thread. If variable2 gets incremented, that doesn't matter - variable2 has already been read. If variable1 gets incremented, then that makes variable1 appear larger. So we conclude that variable2 should never be seen as larger than variable1, in the reader thread. If we loaded variable1 before variable2, then variable2 might be incremented after the load of variable1, and we would see variable 2 as larger. 
+Analogy to the rescue. Imagine some bratty kid playing polo while his uptight father looks on with a starched collar and monocle (which can only see one thing at a time, and not even very well, dontcha know). The kid smacks the ball, and then gallops after it, and so on. Now the squinting, snobby father first finds the ball, then looks around for his sproggen. But! If in the meantime, the kid hits it and takes off after it, Dad will find the kid ahead of where he first found the ball. Dad doesn't realize the ball has moved, and concludes that his budding athlete is ahead of the ball, and running the wrong way! If, however, Dad finds the kid first, and then the ball, things will always appear in the right order, if not the right place. The order of action (move ball, move kid) has to be the opposite from the order of observation (find kid, find ball).
+Threadalogy
+
+So we've got two threads operating on two variables, and we think we know what'll happen. Let's try it out, on my G5:
+
+unsigned variable1 = 0;
+unsigned variable2 = 0;
+#define ITERATIONS 50000000
+void *writer(void *unused) {
+        for (;;) {
+                variable1 = variable1 + 1;
+                variable2 = variable2 + 1;
+        }
+}
+void *reader(void *unused) {
+        struct timeval start, end;
+        gettimeofday(&start;, NULL);
+        unsigned i, failureCount = 0;
+        for (i=0; i < ITERATIONS; i++) {
+                unsigned v2 = variable2;
+                unsigned v1 = variable1;
+                if (v2 > v1) failureCount++;
+        }
+        gettimeofday(&end;, NULL);
+        double seconds = end.tv_sec + end.tv_usec / 1000000. - start.tv_sec - start.tv_usec / 1000000.;
+        printf("%u failure%s (%2.1f percent of the time) in %2.1f seconds\n",
+               failureCount, failureCount == 1 ? "" : "s",
+               (100. * failureCount) / ITERATIONS, seconds);
+        exit(0);
+        return NULL;
+}
+int main(void) {
+        pthread_t thread1, thread2;
+        pthread_create(&thread1;, NULL, writer, NULL);
+        pthread_create(&thread2;, NULL, reader, NULL);
+        for (;;) sleep(1000000);
+        return 0;
+}
+
+What do we get when we run this?
+
+fish ) ./a.out
+0 failures (0.0 percent of the time) in 0.1 seconds
+How do we know that the reader thread won't see a variable in some intermediate state, midway through being updated? We have to know that these particular operations are atomic. On PowerPC and x86 machines, 32 bit writes to aligned addresses are guaranteed atomic. Other types of memory accesses are not always atomic - in particular, 64 bit writes (say, of a double precision floating point value) on a 32 bit PowerPC are not atomic. We have to check the documentation to know.
+Our expectations were confirmed! The writer thread ordered its writes so that the first variable would always be at least as big as the second, and the reader thread ordered its reads the opposite way to preserve that invariant, and everything worked as planned.
+
+But we might just be getting lucky, right? I mean, if thread1 and thread2 were always scheduled on the same processor, then we wouldn't see any failures - a processor is always self-consistent with how it appears to order reads and writes. In other words, a particular processor remembers where and what it pretends to have written, so if you read from that location with that same processor, you get what you expect. It's only when you read with processor1 from the same address where processor2 wrote - or pretended to write - that you might get into trouble.
+
+So let's try to force thread1 and thread2 to run on separate processors. We can do that with the utilBindThreadToCPU() function, in the CHUD framework. That function should never go in a shipping app, but it's useful for debugging. Here it is:
+
+void *writer(void *unused) {
+        utilBindThreadToCPU(0);
+        for (;;) {
+                variable1 = variable1 + 1;
+                variable2 = variable2 + 1;
+        }
+}
+void *reader(void *unused) {
+        utilBindThreadToCPU(1);
+        struct timeval start, end;
+        gettimeofday(&start;, NULL);
+        ...
+int main(void) {
+        pthread_t thread1, thread2;
+        chudInitialize();
+        unsigned variable2 = 0;
+        pthread_create(&thread1;, NULL, writer, &variable2;);
+        pthread_create(&thread2;, NULL, reader, &variable2;);
+        while (1) sleep(1000000);
+        return 0;
+}
+
+To run it:
+
+fish ) ./a.out
+0 failures (0.0 percent of the time) in 0.1 seconds
+
+NOW are we done?
+
+Still no failures. Hmm... But wait - processors operate on cache lines, and variable1 and variable2 are right next to each other, so they probably share the same cache line - that is, they get brought in together and treated the same by each processor. What if we separate them? We'll put one on the stack and leave the other where it is.
+
+unsigned variable1 = 0;
+#define ITERATIONS 50000000
+void *writer(unsigned *variable2) {
+        utilBindThreadToCPU(0);
+        for (;;) {
+                variable1 = variable1 + 1;
+                *variable2 = *variable2 + 1;
+        }
+        return NULL;
+}
+void *reader(unsigned *variable2) {
+        utilBindThreadToCPU(1);
+        struct timeval start, end;
+        gettimeofday(&start;, NULL);
+        unsigned i;
+        unsigned failureCount = 0;
+        for (i=0; i < ITERATIONS; i++) {
+                unsigned v2 = *variable2;
+                unsigned v1 = variable1;
+                if (v2 > v1) failureCount++;
+        }
+        gettimeofday(&end;, NULL);
+        double seconds = end.tv_sec + end.tv_usec / 1000000. - start.tv_sec - start.tv_usec / 1000000.;
+        printf("%u failure%s (%2.1f percent of the time) in %2.1f seconds\n", failureCount, failureCount == 1 ? "" : "s", (100. * failureCount) / ITERATIONS, seconds);
+        exit(0);
+        return NULL;
+}
+int main(void) {
+        pthread_t thread1, thread2;
+        unsigned variable2 = 0;
+        chudInitialize();
+        pthread_create(&thread1;, NULL, writer, &variable2;);
+        pthread_create(&thread2;, NULL, reader, &variable2;);
+        while (1) sleep(1000000);
+        return 0;
+}
+
+So now, one variable is way high up on the stack and the other is way down low in the .data section. Does this change anything?
+
+fish ) ./a.out
+0 failures (0.0 percent of the time) in 0.1 seconds
+
+Still nothing! I'm not going to have an article after all! Arrrghhh **BANG BANG BANG BANG**
+
+fish ) ./a.out
+0 failures (0.0 percent of the time) in 0.1 seconds
+fish ) ./a.out
+0 failures (0.0 percent of the time) in 0.1 seconds
+fish ) ./a.out
+0 failures (0.0 percent of the time) in 0.1 seconds
+fish ) ./a.out
+50000000 failures (100.0 percent of the time) in 0.1 seconds
+
+Hey, there it is! Most of the time, every test passes, but that last time, every test failed.
+Our Enemy the Compiler
+
+The lesson here is something you already knew, but I'll state it anyways: Multithreading bugs are very delicate. There is a real bug here, but it was masked by the fact that the kernel scheduled them on the same processor, and then by the fact that the variables were too close together in memory, and once those two issues were removed, (un)lucky timing usually masked the bug anyways. In fact, if I didn't know there was a bug there, I'd never have found it - and I still have my doubts!
+
+So first of all, why would every test pass or every test fail? If there's a subtle timing bug, we'd expect most tests to pass, with a few failing - not all or nothing. Let's look at what gcc is giving us for the reader function:
+
+        lis r9,0x2fa
+        ori r2,r9,61568
+        mtctr r2
+L8:
+        bdnz L8
+        lis r2,0x2fa
+        ori r2,r2,61568
+        mullw r2,r0,r2
+
+Hey! The entire extent of that big long 50 million iteration loop has been hoisted out, leaving just the blue bits - essentially fifty million no-ops. Instead of adding one or zero each time through the loop, it calculates the one or zero once, and then multiplies it by 50 million.
+
+gcc is loading from variable1 and variable2 exactly once, and comparing them exactly once, and assuming their values do not change throughout the function - which would be a fine assumption if there weren't also other threads manipulating those variables.
+
+This is an example of what I mentioned above, about the compiler making things difficult by optimizing so aggressively for the single threaded case.
+
+Well, you know the punchline - to stop gcc from optimizing aggressively, you use the volatile keyword. So let's do that:
+
+volatile unsigned variable1 = 0;
+#define ITERATIONS 50000000
+void *writer(volatile unsigned *variable2) {
+        utilBindThreadToCPU(0);
+        for (;;) {
+                variable1 = variable1 + 1;
+                *variable2 = *variable2 + 1;
+        }
+        return NULL;
+}
+void *reader(volatile unsigned *variable2) {
+        utilBindThreadToCPU(1);
+        struct timeval start, end;
+        ...
+
+What does this change get us?
+
+fish ) ./a.out
+12462711 failures (24.9 percent of the time) in 3.7 seconds
+
+It's much slower (expected, since volatile defeats optimizations), but more importantly, it fails intermittently instead of all or nothing. Inspection of the assembly shows that gcc is generating the straightforward sequence of loads and stores that you'd expect.
+Our Enemy the Processor
+
+Is this really the cross-processor synchronization issues we're trying to investigate? We can find out by binding both threads to the same CPU:
+
+void *writer(unsigned *variable2) {
+        utilBindThreadToCPU(0);
+        ...
+void *reader(unsigned *variable2) {
+        utilBindThreadToCPU(0);
+        ...
+
+fish ) ./a.out
+0 failures (0.0 percent of the time) in 0.4 seconds
+
+The tests pass all the time - this really is a cross-processor issue.
+
+So somehow variable2 is becoming larger than variable1 even though variable1 is always incremented first. How's that possible? It's possible that the writer thread, on processor 0, is writing in the wrong order - it's writing variable2 before variable1 even though we explicitly say to write variable1 first. It's also possible that the reader thread, on processor 1, is reading variable1 before variable 2, even though we tell it to do things in the opposite order. In other words, the processors could be reading and writing those variables in any order they feel like instead of the order we tell them to. 
+
+Pop and Lock?
+
+What's the usual response to cross-processor synchronization issues like this? A mutex! Let's try it.
+
+fish ) ./a.out
+0 failures (0.0 percent of the time) in 479.5 seconds
+
+It made the tests pass, all right - but it was 130 times slower! A spinlock does substantially better, at 20 seconds, but that's still 440% worse than no locking - and spinlocks won't scale. Surely we can do better. 
+Even the kitchen
+
+Our problem is this: our processors are doing things in a different order than we tell them to, and not informing each other. Each processor is only keeping track of its own shenanigans! For shame! We know of two super-horrible ways to fix this: force both threads onto the same CPU, which is a very bad idea, or to use a lock, which is a very slow idea. So what's the right way to make this work?
+
+What we really want is a way to turn off the reordering for that particular sequence of loads and stores. They don't call it "turn off reordering", of course, because that might imply that reordering is bad. So instead they call it just plain "ordering". We want to order the reads and writes. Ask and ye shall receive - the mechanism for that is called a "memory barrier".
+
+And boy, does the PowerPC have them. I count at least three: sync, lwsync, and the hilariously named eieio. Here's what they do:
+
+    sync is the sledgehammer of the bunch - it orders all reads and writes, no matter what. It works, but it's slow.
+    lwsync (for "lightweight sync") is the newest addition. It's limited to plain ol' system memory, but it's also faster than sync.
+    eieio ("Enforce In-Order execution of I/O") is weird - it orders writes to "device" memory (like a memory mapped peripheral) and regular ol' system memory, but each separately. We only care about system memory, and IBM says not to use eieio just for that. Nevertheless, it should still order our reads and writes like we want.
+
+Because we're not working with devices, lwsync is what we're after. Processor 0 is writing variable2 after variable1, so we'll insert a memory barrier to prevent that: 
+
+volatile unsigned variable1 = 0;
+#define barrier() __asm__ volatile ("lwsync")
+#define ITERATIONS 50000000
+void *writer(volatile unsigned *variable2) {
+        utilBindThreadToCPU(0);
+        for (;;) {
+                variable1 = variable1 + 1;
+                barrier();
+                *variable2 = *variable2 + 1;
+        }
+        return NULL;
+}
+
+So! Let's run it!
+
+fish ) ./a.out
+260 failures (0.0 percent of the time) in 0.9 seconds
+
+
+
+
+Do we need a memory barrier after the write to variable2 as well? No - that would guard against the possibility of the next increment landing on variable1 before the previous increment hits variable2. But the goal is to make sure that variable1 is larger than variable2, so it's OK if that happens.
+So we reduced the failure count from 12462711 to 260. Much better, but still not perfect. Why are we still failing at times? The answer, of course, is that just because processor 0 writes in the order we want is no guarantee that processor1 will read in the desired order. Processor 1 may issue the reads in the wrong order, and processor 0 would write in between those two reads. We need a memory barrier in the reader thread, to force the reads into the right order as well:
+
+void *reader(volatile unsigned *variable2) {
+        struct timeval start, end;
+        utilBindThreadToCPU(1);
+        gettimeofday(&start;, NULL);
+        unsigned i;
+        unsigned failureCount = 0;
+        for (i=0; i < ITERATIONS; i++) {
+                unsigned v2 = *variable2;
+                barrier();
+                unsigned v1 = variable1;
+                if (v2 > v1) failureCount++;
+        }
+        gettimeofday(&end;, NULL);
+        double seconds = end.tv_sec + end.tv_usec / 1000000. - start.tv_sec - start.tv_usec / 1000000.;
+        printf("%u failure%s (%2.1f percent of the time) in %2.1f seconds\n",
+               failureCount, failureCount == 1 ? "" : "s",
+               (100. * failureCount) / ITERATIONS, seconds);
+        exit(0);
+        return NULL;
+}
+
+fish ) ./a.out
+0 failures (0.0 percent of the time) in 4.2 seconds
+
+That did it!
+
+The lesson here is that if you care about the order of reads or writes by one thread, it's because you care about the order of writes or reads by another thread. Both threads need a memory barrier. Memory barriers always come in pairs, or triplets or more. (Of course, if both threads are in the same function, there may only be one memory barrier that appears in your code - as long as both threads execute it.)
+
+This should not come as a surprise: locks have the same behavior. If only one thread ever locks, it's not a very useful lock.
+31 Flavors
+
+What's that? You noticed that the PowerPC comes with three different kinds of memory barriers. Right - as reads and writes get scheduled increasingly out of order, the more expensive it becomes to order them - so the PowerPC allows you to request various less expensive partial orderings, for performance. Processors that schedule I/O out of order more aggressively offer even more barrier flavors. At the extreme end is the DEC Alpha, that sports read barriers with device memory ordering, read barriers without, write barriers with, write barriers without, page table barriers, and various birds in fruit trees. The Alpha's memory model guarantees so little that it is said to define the Linux kernel memory model - that is, the set of available barriers in the kernel source match the Alpha's instruction set. (Of course, many of them get compiled out when targetting a different processor.) 
+And on the other end, we have strongly ordered memory models that do very little reordering, like the - here it comes - x86. No matter how many times I run that code, even on a double-dualie Intel Mac Pro, I never saw any failures. Why not? My understanding (and here it grows fuzzy) is that early multiprocessing setups were strongly ordered because modern reordering tricks weren't that useful - memory was still pretty fast, y'know, relatively speaking, so there wasn't much win to be had. So developers blithely assumed the good times would never end, and we've been wearing the backwards compatibility shackles ever since.
+
+But that doesn't answer the question of why x86_64, y'know, the 64 bit x86 implementation in the Core 2s and all, isn't more weakly ordered - or at least, reserve the right to be weaker. That's what IA64 - remember Itanium? - did: early models were strongly ordered, but the official memory model was weak, for future proofing. Why didn't AMD follow suit with x86_64? My only guess (emphasis on guess) is that it was a way of jockeying for position against Itanium, when the 64 bit future for the x86 was still fuzzy. AMD's strongly ordered memory model means better compatibility and less hair-pulling when porting x86 software to 64 bit, and that made x86_64 more attractive compared to the Itanium. A pity, at least for Apple, since of course all of Apple's software runs on the weak PowerPC - there's no compatibility benefit to be had. So it goes. Is my theory right? 
+Actually - and here my understanding is especially thin - while x86 is strongly ordered in general, I believe that Intel has managed to slip some weakly ordered operations in sideways, through the SIMD unit. These are referred to as "streaming" or "nontemporal" instructions. And when writing to specially tagged "write combining" memory, like, say, memory mapped VRAM, the rules are different still.
+Makin' a lock, checkin' it twice
+
+Ok! I think we're ready to take on that perennial bugaboo of Java programmers - the double checked lock. How does it go again? Let's see it in Objective-C:
+
++ getSharedObject {
+    static id sharedObject;
+    if (! sharedObject) {
+        LOCK;
+        if (! sharedObject) {
+            sharedObject = [[self alloc] init];
+        }
+        UNLOCK;
+    }
+    return sharedObject;
+}
+
+What's the theory? We want to create a single shared object, exactly once, while preventing conflict between multiple threads. The hope is that we can do a quick test to avoid taking the expensive lock. If the static variable is set, which it will be most of the time, we can return the object immediately, without taking the lock. 
+Sometimes memory barriers are needed to guard against past or future reads and writes that occur in, say, the function that's calling your function. Reordering can cross function and library boundaries!
+
+This sounds good, but of course you already know it's not. Why not? Well, if you're creating this object, you're probably initializing it in some way - at the very least, you're setting its isa (class) pointer. And then you're turning around and writing it back to the sharedObject variable. But these can happen in any order, as seen from another processor - so when the getSharedObject method is called from some other processor, it can see the sharedObject variable as set, and happily return the object before its class pointer is even valid. Cripes.
+
+But now you know we have the know-how to make this work, no? How? The problem is that we need to order the writes within the alloc and init methods relative to the write to the sharedObject variable - the alloc and init writes must come first, the write to sharedObject last. So we store the object into a temporary local variable, insert a memory barrier, and then copy from the temporary to the shared object. This time, I'll use Apple's portable memory barrier function: 
++ getSharedObject {
+    static id sharedObject;
+    if (! sharedObject) {
+        LOCK;
+        if (! sharedObject) {
+            id temp = [[self alloc] init];
+            OSMemoryBarrier();
+            sharedObject = temp;
+        }
+        UNLOCK;
+    }
+    return sharedObject;
+}
+
+There! Now we're guaranteed that the initializing thread really will write to sharedObject after the object is fully initialized. All done.
+
+Hmm? Oh, nuts! I forgot my rule - write barriers come in pairs. If thread A initializes the object, it goes through a memory barrier, but if thread B then comes along, it will see the object and return it without any barrier at all. Our rule tells us that something is wrong, but what? Why's that bad?
+
+Well, thread B's going to do something with the shared object, like send it a message, and that requires at the very least accessing the isa class pointer. But we know the isa pointer really was written to memory first, before the sharedObject pointer, and thread B got ahold of the sharedObject pointer, so logically, the isa pointer should be written, right? The laws of physics require it! Isn't that, like, you put an object in a box and hand it to me, and then I open the box to find that you haven't put something into it yet! It's a temporal paradox!
+
+The answer is that, yes, amazingly, dependent reads like that can be performed seemingly out of order, but not on any processors that Apple ships. I've only heard of it happening in the - you guessed it - the Alpha. Crazy, huh?
+
+So where should the memory barrier go? The goal is to order future reads - reads that occur after this sharedObject function returns - against the read from the sharedObject variable. So it's gotta go here:
+
++ getSharedObject {
+    static id sharedObject;
+    if (! sharedObject) {
+        LOCK;
+        if (! sharedObject) {
+            id temp = [[self alloc] init];
+            OSMemoryBarrier();
+            sharedObject = temp;
+        }
+        UNLOCK;
+    }
+    OSMemoryBarrier();
+    return sharedObject;
+
+Now, this differs slightly from the usual solution, which stores the static variable into a temporary in all cases. However, for the life of me I can't figure out why that's necessary - the placement of the second memory barrier above seems correct to me, assuming the compiler doesn't hoist the final read of sharedObject above the memory barrier (which it shouldn't). If I screwed it up, let me know how, please!
+Do we want it?
+
+That second memory barrier makes the double checked lock correct - but is it wise? As we discussed, it's not technically necessary on any machine you or I are likely to encounter. And, after all, it does incur a real performance hit if we leave it in. What to do?
+
+The Linux kernel defines a set of fine-grained barrier macros that get compiled in or out appropriately (we would want a "data dependency barrier" in that case). You could go that route, but my suggestion is to just leave a semi-standard comment to help you locate these places in the future. That will help future-proof your code, but more importantly, it forces you to reason carefully about the threading issues, and to record your thoughts. You're more likely to get it right.
+
++ getSharedObject {
+    static id sharedObject;
+    if (! sharedObject) {
+        LOCK;
+        if (! sharedObject) {
+            id temp = [[self alloc] init];
+            OSMemoryBarrier();
+            sharedObject = temp;
+        }
+        UNLOCK;
+    }
+    /* data dependency memory barrier here */
+    return sharedObjec
+
+Locks are like tanks - powerful, slow, safe, expensive, and prone to getting you stuck. 
+
+Now are we done?
+
+I think so, Mr. Subheading. Let's see if we can summarize all this: 
+
+    The compiler and the processor both conspire to defeat your threads by moving your code around! Be warned and wary! You will have to do battle with both.
+    Even so, it is very easy to mask serious threading bugs. We had to work hard, even in highly contrived circumstances, to get our bug to poke its head out even occasionally.
+    Ergo, testing probably won't catch these types of bugs. That makes it more important to get it right the first time.
+    Locks are the heavy tanks of threading tools - powerful, but slow and expensive, and if you're not careful, you'll get yourself stuck in a deadlock.
+    Memory barriers are a faster, non-blocking, deadlock free alternative to locks. They take more thought, and aren't always applicable, but your code'll be faster and scale better.
+    Memory barriers always come in logical pairs or more. Understanding where the second barrier has to go will help you reason about your code, even if that particular architecture doesn't require a second barrier.
+
+Further reading
+Seriously? You want to know more? Ok - the best technical source I know of is actually a document called "memory-barriers.txt" that comes with the Linux kernel source. You can get it here. Thanks to my co-worker for finding it and directing me to it. 
+Things I wanna know
+I'm still scratching my head about some things. Maybe you can help me out.
+
+    Why is x86_64 strongly ordered? Is my theory about gaining a competitive edge over Itanium reasonable?
+    Is my double checked lock right, even though it doesn't use a temporary variable in the usual place?
+    What's up with the so-called "nontemporal" streaming instructions on x86?
+
+Leave a comment if you know! Thanks! 
+String searching
+
+Having exhausted all my trash-talking avenues, it's time to get to work. Now, everyone knows that without some sort of preflighting, the fastest string search you can do still takes linear time. Since my program is supposed to work on dozens of gigabytes, preflighting is impossible - there's no place to put all the data that preflighting generates, and nobody wants to sit around while I generate it. So I am resigned to the linear algorithms. The best known is Boyer-Moore (I won't insult your intelligence with a Wikipedia link, but the article there gives a good overview).
+
+Boyer-Moore works like this: you have some string you're looking for, which we'll call the needle, and some string you want to find it in, which we'll call the haystack. Instead of starting the search at the beginning of needle, you start at the end. If your needle character doesn't match the character you're looking at in haystack, you can move needle forwards in haystack until haystack's mismatched character lines up with the same character in needle. If haystack's mismatch isn't in needle at all, then you can skip ahead a whole needle's length.
+
+For example, if you're searching for a string of 100 'a's (needle), you look at the 100th character in haystack. If it's an 'x', well, 'x' doesn't appear anywhere in needle, so you can skip ahead all of needle and look at the 200th character in haystack. A single mismatch allowed us to skip 100 characters!
+I get shot down
+
+For performance, the number of characters you can skip on a mismatch is usually stored in an array indexed by the character value. So the first part of my Boyer-Moore string searching algorithm looked like this:
+
+char haystack_char = haystack[haystack_index];
+if (last_char_in_needle != haystack_char)
+   haystack_index += jump_table[haystack_char];
+
+So we look at the character in haystack and if it's not what we're looking for, we jump ahead by the right distance for that character, which is in jump_table.
+
+"There," I sigh, finishing and sitting back. It may not be faster than grep, but it should be at least as fast, because this is the fastest algorithm known. This should be a good start. So I confidently ran my benchmark, for a 1 gigabyte file...
+
+grep:	2.52 seconds
+Hex Fiend:	3.86 seconds
+
+Ouch. I'm slower, more than 50% slower. grep is leaving me sucking dust. Ultimate Unix Geek chuckles into his xterms.
+Rollin', rollin', rollin'
+
+My eyes darken, my vision tunnels. I break out the big guns. My efforts to vectorize are fruitless (I'm not clever enough to vectorize Boyer-Moore because it has very linear data dependencies.) Shark shows a lot of branching, suggesting I can do better by unrolling the loop. Indeed:
+
+grep:	2.52 seconds
+Hex Fiend (unrolled):	2.68 seconds
+
+But I was still more than 6% slower, and that's as fast as I got. Exhausted, stymied at every turn, I throw up my hands. grep has won.
+grep's dark secret
+
+"How do you do it, Ultimate Unix Geek? How is grep so fast?" I moan at last, crawling forwards into the pale light of his CRT.
+
+"Hmmm," he mumbles. "I suppose you have earned a villian's exposition. Behold!" A blaze of keyboard strokes later and grep's source code is smeared in green-on-black across the screen.
+
+while (tp < = ep)
+	  {
+	    d = d1[U(tp[-1])], tp += d;
+	    d = d1[U(tp[-1])], tp += d;
+	    if (d == 0)
+	      goto found;
+	    d = d1[U(tp[-1])], tp += d;
+	    d = d1[U(tp[-1])], tp += d;
+	    d = d1[U(tp[-1])], tp += d;
+	    if (d == 0)
+	      goto found;
+	    d = d1[U(tp[-1])], tp += d;
+	    d = d1[U(tp[-1])], tp += d;
+	    d = d1[U(tp[-1])], tp += d;
+	    if (d == 0)
+	      goto found;
+	    d = d1[U(tp[-1])], tp += d;
+	    d = d1[U(tp[-1])], tp += d;
+	  }
+
+"You bastard!" I shriek, amazed at what I see. "You sold them out!"
+
+See all those d = d1[U(tp[-1])], tp += d; lines? Well, d1 is the jump table, and it so happens that grep puts 0 in the jump table for the last character in needle. So when grep looks up the jump distance for the character, via haystack_index += jump_table[haystack_char], well, if haystack_char is the last character in needle (meaning we have a potential match), then jump_table[haystack_char] is 0, so that line doesn't actually increase haystack_index.
+
+All that is fine and noble. But do not be fooled! If the characters match, the search location doesn't change - so grep assumes there is no match, up to three times in a row, before checking to see if it actually found a match.
+
+Put another way, grep sells out its worst case (lots of partial matches) to make the best case (few partial matches) go faster. How treacherous! As this realization dawns on me, the room seemed to grow dim and slip sideways. I look up at the Ultimate Unix Geek, spinning slowly in his padded chair, and I hear his cackle "old age and treachery...", and in his flickering CRT there is a face reflected, but it's my ex girlfriend, and the last thing I see before I black out is a patch of yellow cheese powder inside her long tangled beard. 
+What's the win?
+
+Copying that trick brought me from six percent slower to two percent faster, but at what cost? What penalty has grep paid for this treachery? Let us check - we shall make a one gigabyte file with one thousand x's per line, and time grep searching for "yy" (a two character best case) and "yx" (a two character worst case). Then we'll send grep to Over-Optimizers Anonymous and compare how a reformed grep (one that checks for a match after every character) performs.
+
+	Best case	Worst case
+Treacherous grep	2.57 seconds	4.89 seconds
+Reformed grep	2.79 seconds	2.88 seconds
+
+Innnnteresting. The treacherous optimization does indeed squeeze out almost 8% faster searching in the best case, at a cost of nearly 70% slower searching in the worst case. Worth it? You decide! Let me know what you think.
+
+Resolved and refreshed, I plan my next entry. This isn't over, Ultimate Unix Geek. 
+
+    
+Bit Tricks, Part III: Fast Vertical Counter
+
+Carry-save adders can reduce the run time of a vertical counter from log(w) to amortized constant time.
+
+This is part 3 of a series of posts on bit-twiddling tricks and micro-optimizations. This one looks at ways to try to optimize the following function:
+
+"Plain"
+void updateCounters(long bitset) {
+  for (int i=0; i < 64; i++)
+    if ((bitset >> i)&1) table[i]++;
+}
+
+What? Why?
+
+Some algorithms have an inner loop like this:
+
+  for each record r {
+    bucket *b = somefunction(r);
+    if (predicate1(r)) b->counter1++;
+    if (predicate2(r)) b->counter2++;
+    if (predicate3(r)) b->counter3++;
+    if (predicate4(r)) b->counter4++;
+    ...
+  }
+
+If we can organize our data so that we can calculate all the predicates at once, we can replace that code with this:
+
+  for each record r {
+    bucket *b = somefunction(r);
+    long bitmap = computeAllThePredicates(r);
+    b->updateCounters(bitmap);
+  }
+
+  ...
+
+  void updateCounters(long bitset) {
+    for (int i=0; i < 64; i++)
+      if ((bitset >> i)&1) table[i]++;
+  }
+
+The rest of this post is about that 'updateCounters' method.
+Simple improvements
+
+We can improve the original version by avoiding the branch instruction.
+
+"Branchless"
+  for (int i=0;i<64;i++) 
+    count[i] += ((bitmap[i] >> i) & 1);
+
+Or the (possibly) faster operation using the excellent DeBruijn trick (this will deliver the counts out of order, but that can be fixed in postprocessing)...
+
+"DeBruijn"
+  for (int t; (t = mask&-mask); mask ^= t)
+    count[(i * DEBRUIJN_CONSTANT) >> 58]++;
+
+The ordinary vertical counter
+
+A vertical counter lets you do all those counting operations at the same time.
+
+Consider a normal array of integers, where we read the bits horizontally:
+
+       msb<-->lsb
+  x[0]  00000010  = 2
+  x[1]  00000001  = 1
+  x[2]  00000101  = 5
+
+A vertical counter stores the numbers, as the name implies, vertically; that is, a k-bit counter is stored across k words, with a single bit in each word.
+
+  x[0]  00000110   lsb ↑
+  x[1]  00000001       |
+  x[2]  00000100       |
+  x[3]  00000000       |
+  x[4]  00000000   msb ↓
+             5
+
+With the numbers stored like this, we can use bitwise operations to increment any subset of them all at once.
+
+We create a bitmap with a 1 bit in the positions corresponding to the counters we want to increment, and loop through the array from LSB up, updating the bits as we go. The "carries" from one addition becomes the input for the next element of the array.
+
+  input  sum
+   A B   C S
+   0 0   0 0
+   0 1   0 1      sum    = a ^ b
+   1 0   0 1      carry  = a & b
+   1 1   1 1
+
+"Vertical"
+  carry = input;
+  long *p = buffer;
+  while (carry) {
+    a = *p; b = carry;
+    *p++ = a ^ b;
+    carry = a & b;
+  }
+
+For 64-bit words the loop will run 6-7 times on average -- the number of iterations is determined by the longest chain of carries.
+Redundant encoding
+
+A redundant positional number system is one where the individual digits can meet or exceed the radix. In English, this would be like allowing "twenty-ten" as a synonym "thirty".
+
+If we extend the binary system to allow the digit 2, we can use the extra wiggling room to write what I'll for lack of a better word call a "lazy" binary counter.
+
+ordinary    lazy
+  001011  001011 = 11
+  001100  001012 = 12
+  001101  001021 = 13
+  001110  001022 = 14
+  001111  001111 = 15
+  010000  001112 = 16
+  010001  001121 = 17
+  010010  001122 = 18
+
+The digit 2 is only allowed in some positions -- we'll color those red. The rules are:
+
+    Blue digits are always 0 or 1. Red digits may also be 2.
+    In the beginning, all digits are blue.
+    When incrementing a red digit, the result is at most 3. We leave the sum mod 2 as a blue digit, and take a carry to the next bit.
+    When incrementing a blue digit, the result is at most 2. We leave it as a red digit, and stop.
+    As a result, each time the algorithm is run, some number of red digits are turned blue, and [at most] one blue digit is turned red. 
+
+A simple accounting argument shows that the average cost of each run will be at most 2. Since the control flow is independent of the value of the counter, we can run it in parallel.
+Implementation
+
+We use two bits to store each digit. Blue digits are stored as 00 or 01; red digits may be 00, 01, 10 or 11.
+
+To turn a blue digit red, we merely deposit the incoming bits in the left half:
+
+   0 + 00 -> 00
+   1 + 00 -> 10
+   0 + 01 -> 01
+   1 + 01 -> 11
+
+To turn a red digit blue, we use a full adder:
+
+  input  output
+   A  B   C  S
+   0 00   0 00
+   0 01   0 01   t = b0 ^ b1
+   0 10   0 01
+   0 11   1 00   carry = (a & b) ^ (t & c)
+   1 00   0 01   sum1  = 0
+   1 01   1 00   sum0  = a ^ t
+   1 10   1 00
+   1 11   1 01
+
+We don't actually need to store the red/blue status -- if all 64 "left" bits are 0, we consider the digit blue.
+
+"Lazy"
+  word *p = data;
+  long a, b, t;
+  while ((a = *p)) {
+    b = p[1]; 
+    t = a ^ b;
+    *p++ = 0; 
+    *p++ = t ^ carry;
+    carry = (a & b) ^ (t & carry);
+  }
+  *p = carry;
+
+We can also keep the state as a separate register. This is slightly faster, presumably since the branch is easier to predict.
+
+"Scheduled"
+int p = 0, t = ++time;
+while ((t & 1) == 0) {
+    long a = d[p], b = d[p + 1], s = a ^ b;
+    d[p + 1] = s ^ c;
+    c = (a & b) ^ (c & s);
+    t >>= 1;
+    p += 2;
+}
+d[p] = c;
+
+This last version has an interesting property: It is the only non-contrived program I can think of where you can invert the condition of the while clause, and the code works just as well.
+Benchmarks
+
+This graph shows the runtime of the various algorithms for 64MB of random input of various densities. The runtime of the original one is (again) completely dominated by branch mispredictions.
+
+Bit Tricks, Part II: Enumerating Bits
+
+How to enumerate bits quickly using DeBruijn sequences.
+
+This is part 2 of a series of posts on bit-twiddling tricks and micro-optimizations. This one looks at ways to try to optimize the following function:
+
+"Plain"
+void bitscan(long bitset) {
+  for (int i=0; i < 64; i++)
+    if ((bitset >> i)&1) process(i);
+}
+
+It loops across a word, and performs some action for each 1-bit found.
+
+Updated 20090128: Fixed a typo in two of the code snippets. Thanks, Martin!
+Finding the next bit
+
+The original code tests one bit at a time. This is, of course, a bit slow. Luckily, just about every CPU ever made has specialized hardware for scanning bits: It is used for calculating the carry when adding numbers. This is the classic x &- x operator.
+
+This illustrates why it works. Depending on your fonts, ~ (bitwise not) and - (negation) may look very similar.
+
+00100001010001000   x
+11011110101110111   ~x  
+11011110101111000   ~x + 1         a.k.a. -x       note the carry!
+00000000000001000   x & (~x + 1)   a.k.a. x & -x
+
+Note that this returns the bit as 2i, not i, so the next step is to find i.
+Finding the index
+
+Once we have extracted a single one bit, the next operation is to find its position.
+
+Java comes with a very clever library function for doing this, taken from Hacker's Delight. It's basically a binary search, but with branches merged.
+
+    public static int numberOfTrailingZeros(long i) {
+        // HD, Figure 5-14
+	int x, y;
+	if (i == 0) return 64;
+	int n = 63;
+	y = (int)i; if (y != 0) { n = n -32; x = y; } else x = (int)(i>>>32);
+	y = x <<16; if (y != 0) { n = n -16; x = y; }
+	y = x << 8; if (y != 0) { n = n - 8; x = y; }
+	y = x << 4; if (y != 0) { n = n - 4; x = y; }
+	y = x << 2; if (y != 0) { n = n - 2; x = y; }
+	return n - ((x << 1) >>> 31);
+    }
+
+"Hacker's Delight"
+int table[64];
+void bitscan(long bitset) {
+  while (bitset) {
+     int t = bitset & -bitset;
+     process(Long.numberOfTrailingZeros(t));
+     bitset ^= t;
+  }
+}
+
+This is a little bit faster for most inputs, but still not very good.
+Finding the index, slightly faster
+
+The numberOfTrailingZeros function has 6 conditional branches; it's basically doing a binary search. It's possible to write it in branch-free style, but there's a simpler way to get most of the benefit: We can exploit the fact that
+
+    2n - 1 = 20 + 21 + ... + 2n-1
+
+and thus
+
+    bitCount(2n-1) = n
+
+Also, the bitCount() function (also from Hacker's Delight) is branch free:
+
+     public static int bitCount(long i) {
+        // HD, Figure 5-14
+	i = i - ((i >>> 1) & 0x5555555555555555L);
+	i = (i & 0x3333333333333333L) + ((i >>> 2) & 0x3333333333333333L);
+	i = (i + (i >>> 4)) & 0x0f0f0f0f0f0f0f0fL;
+	i = i + (i >>> 8);
+	i = i + (i >>> 16);
+	i = i + (i >>> 32);
+	return (int)i & 0x7f;
+     }
+
+"Hacker's Delight 2"
+int table[64];
+void bitscan(long bitset) {
+  while (bitset) {
+     int t = bitset & -bitset;
+     process(Long.bitCount(t-1));
+     bitset ^= t;
+  }
+}
+
+Finding the index, fast
+
+By multiplying the single bit (which will have a value of 2i) with a constant, you are essentially shifting the constant left by i bits. Consider the three middle bits here:
+
+001101 *      1 = 000001101
+001101 *     10 = 000011010
+001101 *    100 = 000110100
+001101 *   1000 = 001101000
+001101 *  10000 = 011010000
+001101 * 100000 = 110100000
+
+Notice how the values marked in red are unique. Using this trick, the indexing operation can be performed using a simple multiplication, bit-shift and table lookup, given that we can find a De Bruijn sequence(W).
+
+"DeBruijn"
+int table[64];
+void bitscan(long bitset) {
+  while (bitset) {
+     int t = bitset & -bitset;
+     process(table[(t * 0x0218a392cd3d5dbfL) >>> 58]);
+     bitset ^= t;
+  }
+}
+
+If you can control the input data (which you probably do), and you don't care about the order of the calls to process(), you can pre-shuffle the input to avoid the table lookup altogether.
+
+"DeBruijn 2"
+void bitscan(long bitset) {
+  while (bitset) {
+     int t = bitset & -bitset;
+     process((t * 0x0218a392cd3d5dbfL) >>> 58);
+     bitset ^= t;
+  }
+}
+
+Benchmarks
+
+This graph shows the runtime with various densities (the X axis measures the percentage of 1-bits (randomly distributed) in the input array). Note the runtime for the original version: In the worst case, the "is this bit on" branch will be taken 50% of the time, independently at random, rendering the branch prediction hardware completely useless. 
+Let's go nuts
+
+Later, the case where the function process simply increments a counter:
+
+void process(int i) {
+  table[i]++;
+}
+
+Also, how to avoid all of the above if inline assembly is available.
+Comments
+Have you considered the ffs() function? :-) (On x86, it maps down to bsf, which is fast -- much faster than a multiply.)
+— Steinar H. Gunderson 2009-03-01
+[Indeed. If you can run arbitrary instructions, that's definitely the way to go (this was for a project which had to be Pure Java®). Adding ffs() to the benchmark is now on my List®.]
+XTerm Colors
+
+This is a small script to make xterms distinguishable from one another, by shifting the color map of each terminal window ever so subtly in a random direction.
+
+This is useful if your window manager feels that actual, visible borders are for hoi polloi.
+
+The actual escape codes used, if that's what you're looking for, is
+
+    # example only!
+
+    echo -ne "\033]4;7;#60A7EE\007"    # set color 7 to #60a7ee
+    echo -ne "\033]10;#d00d1e\007"     # set foreground color
+    echo -ne "\033]11;#1D1075\007"     # set background color
+
+
+To try it, download the file below, then type
+
+chmod 755 xtfix
+./xtfix
+
+Then, if you like it, add it to your path (/usr/local/bin) and your .bash_profile.
+
+#!/usr/bin/perl
+
+use strict;
+
+# The command line arguments are:
+
+#   xtfix 004000         set bgcol to greenish
+#   xtfix 000000 555555  set bgcol to a random color between the two given values
+#   xtfix -r             reset the terminal (useful after 'cat /bin/sh' :-)
+#   xtfix -f4            choose font size (3-6 are ok)
+
+# Default args (subtle random shade, reset, font 4):
+
+my $args = "@ARGV" || "080808 202020 -r -f4";
+
+# Basic color map, feel free to edit:
+
+my @cols = qw(000000 cc6666
+	      33cc66 cc9933
+	      3366cc cc33cc
+	      33cccc cccccc
+	      666666 ff6666
+	      66ff66 ffff66
+	      6699ff ff66ff
+	      33ffff ffffff);
+
+
+# Full reset
+
+print "\033c" if $args =~ s/-r//;
+
+# Select font
+
+print "\033]50;#$1\007" if $args =~ s/-f(\d)//;
+
+# Parse the 'black' value
+
+my @ofs = map hex, $args =~ /([0-9a-f]{2})/gi;
+if(@ofs>3) {
+    $ofs[$_] = $ofs[$_] + rand($ofs[$_+3]-$ofs[$_])
+	for 0..2;
+}
+
+for my $i(0..15) {
+    my $c = $cols[$i];
+    my $Z;
+    $c =~ s{..}{
+	my $a = hex $&;
+	my $b = $ofs[$Z++];
+	sprintf("%02x", $a + $b - ($a*$b)/255);
+    }ge;
+    printf "\033[%d;3%dm(%d)", $i/8, $i&7, $i if $args =~ /show/;
+    print "\033]4;$i;#$c\007";
+    print "\033]11;#$c\007" if !$i;   # 0 is also 'background color'
+    print "\033]10;#$c\007" if $i==7; # 7 is also 'plain foreground color'
+}
+
+Evil C
+
+This is a collection of strange C (and some Java) constructs. It's probably best not to use them, but you should know why they work.
+The cast-to-bool operator
+
+        Node *left, *right;
+        int childCount() {
+                return !!left + !!right;
+        }
+
+Logical XOR
+
+A variation on the above. (Note that ^ is bitwise XOR, not logical XOR; 3 ^ 4 does not give 0.)
+
+        int xor(int a, int b) {
+                return !a != !b;
+        }
+
+The "goes toward" operator
+
+        void doStuff(int count) {
+                while(count --> 0) 
+                        fleh();
+        }
+
+Useless but pretty definitions of BOOLs
+
+        #define TRUE  '/'/'/'
+        #define FALSE '-'-'-'
+
+Two (2) readers wrote in to comment that the above is unsafe due to operator precedence.
+
+Yes.
+
+That is true.
+
+If you are doing arithmetic with the above, please seek help.
+Duff's Device for loop unrolling
+
+        switch(c&3) while((c-=4)>=0) {
+                foo(); case 3:
+                foo(); case 2:
+                foo(); case 1:
+                foo(); case 0:
+        }
+
+Struct/class offsets
+
+        int ofs = (int)&((Class*)0)->element;
+
+[Vilhelm S. comments: Note that <stddef.h> provides an offsetof(type, field_name) macro, so you can leave the dirty work of abusing NULL pointers in perverted ways to your standard library implementor! (The typical implementation of it is as above, though...)]
+Fun with comments
+
+This font definition has a bug. Find it.
+
+char font[] = {
+....
+0x00,0x61,0x51,0x49,0x45,0x43,0x00,0x00, // 1 :0x5A Z
+0x70,0x29,0x24,0x22,0x24,0x29,0x70,0x00, // 1 :0x5B [
+0x00,0x3D,0x42,0x42,0x42,0x42,0x3D,0x00, // 1 :0x5C \
+0x00,0x3C,0x41,0x40,0x41,0x40,0x3C,0x00, // 1 :0x5D ]
+...
+
+[Bernd Jendrissek writes: OMG I can't believe you stole code from my ex-job! I actually bumped into the font definition problem... except that two compilers behaved differently! TopSpeed C and GCC, in particular. The former didn't respect the backslash as a line continuation of a comment, so the code worked. Can't blame it too much, I think that compiler predates C99.]
+
+
+Endian magic
+
+This is just plain evil.
+
+        // this is from GMP
+        #define BYTE_OFS(x) (((char *)&internalEndianMagic;)[7-(x)])
+        static double internalEndianMagic = 7.949928895127363e-275;
+
+Yes, it works by exploiting the exact IEEE binary representation of that constant.
+
+2008-09-04: According to Moritz Both the Borland compiler gets the constant wrong. Ouch.
+Another micro-optimization
+
+"If x or y is less than 0" :-) Works with and and xor as well
+
+        if((x|y) < 0) { ... }
+
+[Benoit Hudson comments: Thankfully, gcc -- usually the lowest common denominator among compilers -- implements this optimization. So it's all right to beat your minion programmers with a stick when they do this by hand.]
+Lispy with-foo-bound-to
+
+#define within(obj) for(QWidget *__t = (obj), *parent = __t; parent; parent=0)
+
+within(this) {
+  within(new QSplitter(parent)) {
+     within(new QVBoxWidget(parent)) { 
+       ...
+       ...
+     }
+     within(...) {
+  ...
+
+Dan's lexer tester
+
+/* Test whether compiler supports C++-style comments */
+#define HELPER 0//**/ 
+#define CPLUSPLUS_COMMENTS_SUPPORTED (HELPER+1)
+
+[] is symmetric
+
+thanks sigfpe
+
+int direction = 1;
+char direction_name = direction["nsew"];
+
+Walsh-Moler-Newton inverse square root
+
+Thanks captainfwiffo, gsg and Anders; this one is actually useful (and thus shouldn't really be on this page) but makes up for it by pure IEEE abuse. History here.
+
+float Q_rsqrt( float number )
+{
+  long i;
+  float x2, y;
+  const float threehalfs = 1.5F;
+
+  x2 = number * 0.5F;
+  y  = number;
+  i  = * ( long * ) &y;                       // grab bits
+  i  = 0x5f3759df - ( i >> 1 );               // do magic
+  y  = * ( float * ) &i;
+  y  = y * ( threehalfs - ( x2 * y * y ) );   // improve
+
+  return y * number;
+}
+
+ snoob
+
+This one is for mrkite. Given an integer with n bits set, it will return the next higher number with the same number of bits set. From Hacker's Delight.
+
+unsigned snoob(unsigned x) {
+   unsigned smallest, ripple, ones;
+                                // x = xxx0 1111 0000
+   smallest = x & -x;           //     0000 0001 0000
+   ripple = x + smallest;       //     xxx1 0000 0000
+   ones = x ^ ripple;           //     0001 1111 0000
+   ones = (ones >> 2)/smallest; //     0000 0000 0111
+   return ripple | ones;        //     xxx1 0000 0111
+}
+
+Address Optimization
+
+For some architectures, referencing a global variable by constant address requires two instructions, while referencing the same variable through a pointer requires only one. Even on architectures with full-address-precision addressing modes, it may be faster to use a pointer and offset.
+
+The number of global scalar variables in many programs is relatively small, and often can fit in a global variable pool. For such programs, all of the global scalar variables (and small global arrays) can be accessed via one pointer and an offset, thus avoiding more expensive load and store sequences and reducing code size.
+Example:
+
+In the code fragment below, the three global variables can be placed together in one contiguous memory region (global variable pool) and referenced via one pointer and an offset.
+
+    int a;
+    int b;
+    int c;
+
+    void f (void)
+    {
+      a = 3;
+      b = 5;
+      c = 7;
+      return;
+    }
+
+Below is the code fragment after the global variables have been mapped into a global memory pool.
+
+    int __t1[3];               /* global pool for a, b, c */
+    int *__t2 = &__t1[0];      /* pointer to global pool */
+
+    void f (void)
+    {
+      *__t2 = 3;               /* a = 3; */
+      *(__t2 + 1) = 5;         /* b = 5; */
+      *(__t2 + 2) = 7;         /* c = 7; */
+      return;
+    }
+
+Notes:
+
+This optimization generally requires cooperation between the compiler and the linker to be most effective. In particular, the number of global variables and offsets are not know during compilation.
+
+Some compilers support a command-line option to control the number of global variables and the maximum size of global variables that are allocated to the global variable pool.
+
+Some ABI's define a specific register as a pointer to the global variable pool.
+
+If the ABI does not define a register for the global variable pool, then loading the pointer may be more expensive than addressing the global directly, and the optimization should be controlled by a heuristic, such as number of globals accessed in a function.
+
+
+Alias Optimization (by address)
+
+Two pointers that point to members of different arrays can not be aliases, even if the offsets within arrays are not known.
+Example:
+
+In the code fragment below, the specific objects pointed to by p and q are not known, but they are members of different arrays, and therefore can not be aliased.
+
+    int a[], b[];
+
+    void f (int i, int j)
+    {
+      int *p, *q;
+      int x, y;
+      p = &a[i];
+      q = &b[j];
+      x = *(q + 3);
+      *p = 5;
+      y = *(q + 3);
+      g (x, y);
+    }
+
+Since p and q are not aliased, the second reference to *(q + 3) can be eliminated, as shown below.
+
+    int a[], b[];
+
+    void f(int i, int j)
+    {
+      int *p, *q;
+      int x, y;
+      p = &a[i];
+      q = &b[j];
+      x = *(q + 3);
+      *p = 5;
+      g (x, x);
+    }
+
+    © 1990-2012 Nullstone Corpo
+
+    Alias Optimization (by type)
+
+The ANSI C standard specifies the following regarding the circumstances in which an object may or may not be aliased.
+
+An object shall have its stored value accessed only by an lvalue that has one of the following types:
+
+    the declared type of the object,
+    a qualified version of the declared type of the object,
+    a type that is the signed or unsigned type corresponding to the declared type of the object,
+    a type that is the signed or unsigned type corresponding to a qualified version of the declared type of the object,
+    an aggregate or union type that includes one of the aforementioned types among its members (including, recursively, a member of a sub-aggregate or contained union), or
+    a character type. 
+
+This means, for example, that a compiler can assume that a pointer to an object of type short is not an alias for a pointer to an object of type int, and perform optimizations based on this assumption.
+Example:
+
+In the code fragment below, the lvalues ps and pi have different types, and the compiler can assume they are not aliased.
+
+    void f (short *ps, int *pi)
+    {
+      int i, j;
+      i = *pi;
+      *ps = 3;
+      j = *pi;
+      g (i, j);
+    }
+
+Since ps and pi can not be aliased, the store through ps can not change the object pointed to by pi, and the second reference to the object pointed to by pi can be eliminated, as shown below.
+
+    void f (short *ps, int *pi)
+    {
+      int i, j;
+      i = *pi;
+      *ps = 3;
+      g (i, i);
+    }
+
+Notes:
+Although specified in the ANSI C standard as undefined behavior, some programs use aliasing. To support these programs, some compilers avoid alias optimization by type, or provide user-selectable options to inhibit this optimization.
+
+Alias Optimization (const qualified)
+
+Const-qualified objects can not be modified, and therefore can not be an alias for an lvalue that is used to explicitly modify an object through assignment.
+Example:
+
+In the code fragment below, the address of the object pointed to by p is not known, but q points to a const array, and its members can not be modified. Since p is used to modify an object through assignment, p can not be an alias for q.
+
+    const int const_array[];
+
+    void f (int *p, int i)
+    {
+      int x, y;
+      const int *q = &const_array[i];
+      x = *q;
+      *p = 5;
+      y = *q;
+      g (x, y);
+    }
+
+Since p is not an alias for q, the second reference to the object pointed to by q can be eliminated, as shown below.
+
+    const int const_array[];
+
+    void f (int *p, int i)
+    {
+      int x, y;
+      const int *q = &const_array[i];
+      x = *q;
+      *p = 5;
+      g (x, x);
+    }
+
+Notes:
+
+The optimization above is allowed because it is known that q points to a const object. Note that it is not sufficient that q have type pointer to const. In other words, the ANSI C standard permits a pointer of type pointer to const to point to a non-const object, in which case this optimization could not be performed without more information.
+
+Although supported by a few compilers, this optimization is not very common.
+Bitfield Optimization
+
+Accessing and storing bitfields are relative expensive, since most architectures do not support bit memory operations and require a series of load/shift/mask/store instructions. Run-time performance can be improved through various bitfield optimizations including keeping bitfields in registers, performing constant propagation through bitfields, and combining adjacent bitfield stores into one store.
+Example:
+
+In the code fragment below, the two bitfield assignments can be combined into one store operation, thus eliminating some of the load/shift/mask/store instructions.
+
+    struct
+    {
+      int bit1 : 1;
+      int bit2 : 1;
+    } bits;
+
+    bits.bit1 = 1;
+    bits.bit2 = 1;
+
+In the code fragment below, the compiler has generated a two-bit alias for bit1 and bit2 and combined the two stores into one store.
+
+    struct
+    {
+      int t : 2;   /* compiler-generated alias for bit1 and bit2 */
+    } bits;
+
+    bits.t = 3;
+
+Constant Folding
+
+Expressions with constant operands can be evaluated at compile time, thus improving run-time performance and reducing code size by avoiding evaluation at compile-time.
+Example:
+
+In the code fragment below, the expression (3 + 5) can be evaluated at compile time and replaced with the constant 8.
+
+    int f (void)
+    {
+      return 3 + 5;
+    }
+
+Below is the code fragment after constant folding.
+
+    int f (void)
+    {
+      return 8;
+    }
+
+Notes:
+
+Constant folding is a relatively easy optimization.
+
+Programmers generally do not write expressions such as (3 + 5) directly, but these expressions are relatively common after macro expansion and other optimizations such as constant propagation.
+
+All C compilers can fold integer constant expressions that are present after macro expansion (ANSI C requirement). Most C compilers can fold integer constant expressions that are introduced after other optimizations.
+
+Some environments support several floating-point rounding modes that can be changed dynamically at run time. In these environments, expressions such as (1.0 / 3.0) must be evaluated at run-time if the rounding mode is not known at compile time. 
+Constant Propagation
+
+Constants assigned to a variable can be propagated through the flow graph and substituted at the use of the variable.
+Example:
+
+In the code fragment below, the value of x can be propagated to the use of x.
+
+    x = 3;
+    y = x + 4;
+
+Below is the code fragment after constant propagation and constant folding.
+
+    x = 3;
+    y = 7;
+
+Notes:
+
+Some compilers perform constant propagation within basic blocks; some compilers perform constant propagation in more complex control flow.
+
+Some compilers perform constant propagation for integer constants, but not floating-point constants.
+
+Few compilers perform constant propagation through bitfield assignments.
+
+Few compilers perform constant propagation for address constants through pointer assignments. 
+CSE Elimination
+
+An expression is a Common Subexpression (CSE) if the expression was previously computed and the values of the operands have not changed since the previous computation. Recomputing the expression can be eliminated by using the value of the previous computation.
+Example:
+
+In the code fragment below, the second computation of the expression (x + y) can be eliminated.
+
+    	i = x + y + 1;
+    	j = x + y;
+
+After CSE Elimination, the code fragment is rewritten as follows.
+
+    	t1 = x + y;
+    	i = t1 + 1;
+    	j = t1;
+
+Notes
+
+Some compilers perform CSE Elimination within an expression and within a basic block, while more sophisticated compilers can perform CSE Elimination across basic blocks.
+
+In theory, CSE Elimination can be performed on a wide range of operators, data types, and storage classes. In practice, few compilers perform CSE Elimination on all operators, data types, and storage classes. For example, some commercially popular compilers limit CSE Elimination to a few operators (e.g. addition, subtraction, and multiplication) for the data types int and unsigned int and the storage classes register and auto. 
+Expression Simplification
+
+Some expressions can be simplified by replacing them with an equivalent expression that is more efficient.
+Example:
+
+The code fragment below contains several examples of expressions that can be simplified.
+
+    void f (int i)
+    {
+      a[0] = i + 0;
+      a[1] = i * 0;
+      a[2] = i - i;
+      a[3] = 1 + i + 1;
+    }
+
+Below is the code fragment after expression simplification.
+
+    void f (int i)
+    {
+      a[0] = i;
+      a[1] = 0;
+      a[2] = 0;
+      a[3] = 2 + i;
+    }
+
+Notes:
+
+Programmers generally do not write expressions like (i + 0) directly, but these expressions can be introduced after macro expansion, array index arithmetic expansion, and other optimizations. 
+Forward Store
+
+Stores to global variables in loops can be moved out of the loop to reduce memory bandwidth requirements.
+Example:
+
+In the code fragment below, the load and store to the global variable sum can be moved out of the loop by computing the summation in a register and then storing the result to sum outside the loop.
+
+    int sum;
+
+    void f (void)
+    {
+      int i;
+
+      sum = 0;
+      for (i = 0; i < 100; i++)
+        sum += a[i];
+    }
+
+Below is the code fragment after forward store optimization (we assume that t is a compiler generated temporary that is kept in a register).
+
+    int sum;
+
+    void f (void)
+    {
+      int i;
+      register int t;
+
+      t = 0;
+      for (i = 0; i < 100; i++)
+        t += a[i];
+      sum = t;
+    }
+
+Hoisting
+
+Loop-invariant expressions can be hoisted out of loops, thus improving run-time performance by executing the expression only once rather than at each iteration.
+Example:
+
+In the code fragment below, the expression (x + y) is loop invariant, and the addition can be hoisted out of the loop.
+
+    void f (int x, int y)
+    {
+      int i;
+
+      for (i = 0; i < 100; i++)
+        {
+          a[i] = x + y;
+        }
+    }
+
+Below is the code fragment after the invariant expression has been hoisted out of the loop.
+
+    void f (int x, int y)
+    {
+      int i;
+      int t;
+
+      t = x + y;
+      for (i = 0; i < 100; i++)
+        {
+          a[i] = t;
+        }
+    }
+
+Notes:
+
+Some C compilers can hoist a subset of loop-invariant expressions (e.g. integer addition, subtraction, and multiplication), but few compilers can hoist a wide range of expressions (e.g. left shift, right shift, etc.). 
+If Optimization
+
+The conditional expression of an IF statement is known to be true in the then-clause and false in the else-clause, and this information can be used to simplify nested IF and other statements. In addition, two adjacent IF statements with the same conditional expressions can be combined into one IF statement.
+Example:
+
+In the code fragment below, the conditional-clause of the nested IF statement can be eliminated.
+
+    void f (int *p)
+    {
+      if (p)
+        {
+          g(1);
+          if (p) g(2);
+          g(3);
+        }
+      return;
+    }
+
+Below is the code fragment after the nested conditional-clause has been eliminated.
+
+    void f (int *p)
+    {
+      if (p)
+        {
+          g(1);
+          g(2);
+          g(3);
+        }
+      return;
+    }
+
+Example:
+
+In the code fragment below, the two IF statements can be combined into one IF statement.
+
+    void f (int *p)
+    {
+      if (p) g(1);
+      if (p) g(2);
+      return;
+    }
+
+Below is the code fragment after the two IF statements have been combined into one IF statement.
+
+    void f (int *p)
+    {
+      if (p)
+        {
+          g(1);
+          g(2);
+        }
+      return;
+    }
+
+Induction Variable Elimination
+
+Some loops contain two or more induction variables that can be combined into one induction variable.
+Example:
+
+The code fragment below has three induction variables (i1, i2, and i3) that can be replaced with one induction variable, thus eliminating two induction variables.
+
+    int a[SIZE];
+    int b[SIZE];
+
+    void f (void)
+    {
+      int i1, i2, i3;
+
+      for (i1 = 0, i2 = 0, i3 = 0; i1 < SIZE; i1++)
+        a[i2++] = b[i3++];
+      return;
+    }
+
+The code fragment below shows the loop after induction variable elimination.
+
+    int a[SIZE];
+    int b[SIZE];
+
+    void f (void)
+    {
+      int i1;
+
+      for (i1 = 0; i1 < SIZE; i1++)
+        a[i1] = b[i1];
+      return;
+    }
+
+Notes:
+
+Induction variable elimination can reduce the number of additions (or subtractions) in a loop, and improve both run-time performance and code space. 
+Instruction Combining
+
+At the source code level, combine two statements into one statement. At the IL (Intermediate Language) level, combine two instructions into one instruction.
+Example:
+
+In the code fragment below, the two post-increment statements can be combined into one statement.
+
+    int i;
+
+    void f (void)
+    {
+      i++;
+      i++;
+    }
+
+The code fragment below shows the function after the two post-increment statements have been combined into one statement.
+
+    int i;
+
+    void f (void)
+    {
+      i += 2;
+    }
+
+Notes:
+
+Many operators are candidates for instruction combining, including addition, subtraction, multiplication, left and right shift, boolean operations, and others. Some compilers perform instruction combining for some operators; few compilers perform instruction combining for a wide variety of operators. For example, some compilers will combine two post-increment statements, but will not combine two pre-increment statements, or two post-decrement statements.
+
+Instruction combining can be performed within basic blocks and across basic blocks. Some compilers perform this optimization within basic blocks; few compilers perform this optimization across basic blocks.
+
+Loop unrolling can provide additional opportunities for instruction combining. 
+Integer Divide Optimization
+
+Integer divide instructions are usually slower or much slower than other instructions such as integer addition and shift. Divide expressions with power-of-two denominators or other special bit patterns can be replaced with a faster instructions.
+Example:
+
+The integer divide expression in the code fragment below can be replaced with a shift expression.
+
+    int f (unsigned int i)
+    {
+      return i / 2;
+    }
+
+Below is the code fragment after the integer divide expression has been replaced with a shift expression.
+
+    int f (unsigned int i)
+    {
+      return i >> 1;
+    }
+
+Notes:
+
+Failure to generate correct code for integer divide is one of the most common defects in optimizers. NULLSTONE isolated defects in twelve of twenty commercially available compilers that were evaluated.
+
+It is possible to perform integer divide optimization for both signed and unsigned integers, and both positive and negative power-of-two denominators. Most compilers optimize some power-of-two divide expressions, but few compilers can optimize all four combinations.
+
+Integer Mod Optimization
+
+On most architectures, integer divide is a relatively expensive instruction. Power-of-two integer modulus expressions can be replaced with conditional and shift instructions to avoid the divide and multiply and increase run-time performance.
+Example:
+
+In the function below, the power-of-two integer modulus expression (x % 8) can be replaced with faster instructions.
+
+    int f (int x)
+    {
+      return x % 8;
+    }
+
+The code fragment below shows the function after the modulus expression has been optimized.
+
+    int f (int x)
+    {
+      int temp = x & 7;
+      return (x < 0) ? ((temp == 0) ? 0 : (temp | ~7)) : temp;
+    }
+
+Integer Multiply Optimization
+
+On many architectures, integer multiply instructions are slower than other instructions such as integer add and shift, and multiply expressions with power-of-two constant multiplicands and other bit patterns can be replaced with faster instructions.
+Example:
+
+The integer multiply expression in the code fragment below can be replaced with an shift expression.
+
+    int f (int i)
+    {
+      return i * 4;
+    }
+
+Below is the code fragment after the multiply expression has been translated to a shift expression.
+
+    int f (int i)
+    {
+      return i << 2;
+    }
+
+Loop Collapsing
+
+Some nested loops can be collapsed into a single-nested loop to reduce loop overhead and improve run-time performance.
+Example:
+
+In the code fragment below, the double-nested loop on i and j can be collapsed into a single-nested loop.
+
+    int a[100][300];
+
+    for (i = 0; i < 300; i++)
+      for (j = 0; j < 100; j++)
+        a[j][i] = 0;
+
+Here is the code fragment after the loop has been collapsed.
+
+    int a[100][300];
+    int *p = &a[0][0];
+
+    for (i = 0; i < 30000; i++)
+      *p++ = 0;
+
+Notes:
+
+Loop collapsing can improve the opportunities for other optimizations, such as loop unrolling.
+
+Loop collapsing is not common in C compilers, but is supported in some C compilers that target the scientific market. 
+Loop Unrolling
+
+Loop overhead can be reduced by reducing the number of iterations and replicating the body of the loop.
+Example:
+
+In the code fragment below, the body of the loop can be replicated once and the number of iterations can be reduced from 100 to 50.
+
+    for (i = 0; i < 100; i++)
+      g ();
+
+Below is the code fragment after loop unrolling.
+
+    for (i = 0; i < 100; i += 2)
+    {
+      g ();
+      g ();
+    }
+Narrowing
+
+The limited dynamic range of small integers can be used to simplify some expressions, even if the value of the small integer is not known.
+Example:
+
+Each of the expressions in the code fragments below can be replaced with the value zero (on systems that define short to have 16 bits).
+
+    unsigned short int s;
+
+    (s >> 20)      /* all bits of precision have been shifted out, thus 0 */
+    (s > 0x10000)  /* 16 bit value can't be greater than 17 bit, thus 0 */
+    (s == -1)      /* can't be negative, thus 0 */
+
+Notes:
+
+This type of expression may indicate an error in the program, and some compilers emit warnings for some of these expressions (e.g. unsigned short compared to a negative constant).
+
+Programmers generally don't write these expressions directly. However, these expressions can occur after macro expansion, or after other optimizations. 
+
+Tail Recursion
+
+A tail-recursive call can be replaced with a goto, which avoids the overhead of the call and return and can also reduce stack space usage.
+Example:
+
+In the code fragment below, the tail-recursive call to f() can be replaced with a goto.
+
+    int f (int i)
+    {
+      if (i > 0)
+        {
+          g (i);
+          return f (i - 1);
+        }
+      else
+        return 0;
+    }
+
+Below is the code fragment after tail recursion.
+
+    int f (int i)
+    {
+
+     entry:
+
+      if (i > 0)
+        {
+          g (i);
+          i--;
+          goto entry;
+        }
+      else
+        return 0;
+    }
+
+Notes:
+
+Tail recursion can significantly improve the performance of small recursive benchmarks such as Hanoi.
+
+Although more difficult than simple tail recursion, it is also possible to optimize a() calls b() calls a() tail recursion. 
+Unswitching
+
+A loop containing a loop-invariant IF statement can be transformed into an IF statement containing two loops.
+Example:
+
+In the example below, the IF expression is loop-invariant, and can be hoisted out of the loop.
+
+    for (i = 0; i < N; i++)
+      if (x)
+        a[i] = 0;
+      else
+        b[i] = 0;
+
+After unswitching, the IF expression is only executed once, thus improving run-time performance.
+
+    if (x)
+      for (i = 0; i < N; i++)
+        a[i] = 0;
+    else
+      for (i = 0; i < N; i++)
+        b[i] = 0;
+
+
+
+ if RX_BUF_SIZE is zero. Zero is of course a power of two, and so will pass the check. Now most C90 compliant compilers will complain about declaring an array with zero length. However this is legal in C99 compilers in general and GNU compilers in particular. Thus, we also need to protect against this case. Furthermore as Yevheniy was kind enough to point out in the comments, we also have to protect against a buffer size of 1 (as 1 & 0 = 0). So we now get:
+
+#ifndef RX_BUF_SIZE
+ #define RX_BUF_SIZE (32)
+#endif
+#if RX_BUF_SIZE < 2
+ #error Rx buffer must be a minimum length of 2
+#endif
+#define RX_BUF_MASK  (RX_BUF_SIZE - 1)
+#if ( RX_BUF_SIZE & RX_BUF_MASK )
+ #error Rx buffer size is not a power of 2
+#endif
+
+As a final comment, note that the definition of RX_BUF_MASK has an additional benefit in that it can be used in the mask operation in place of (RX_BUF_SIZE – 1), so that my interrupt handler now becomes:
+
+__interrupt void RX_interrupt(void)
+{
+ static uint8_t RxHead = 0; /* Offset into Rx_Buf[] where next character should be written */
+ uint8_t rx_char;
+
+ rx_char = HW_REG;          /* Get the received character */
+
+ RxHead &= RX_BUF_MASK;     /* Mask the offset into the buffer */
+ Rx_Buf[RxHead] = rx_char;  /* Store the received char */
+ ++RxHead;                  /* Increment offset */
+}
+Consider, for example, a receive buffer on a communications channel. The data are received a character at a time under interrupt and so the receive ISR needs to know where to place the next character. The question arises as to how best to do this? Now for performance reasons I usually make my buffer size a power of 2 such that I can use a simple mask operation. I then use an offset into the buffer to dictate where the next byte should be written. Code to do this typically looks something like this:
+
+#define RX_BUF_SIZE (32)
+#define RX_BUF_MASK  (RX_BUF_SIZE - 1)
+static uint8_t Rx_Buf[UART_RX_BUF_SIZE]; /* Receive buffer */
+
+static uint8_t RxHead = 0; /* Offset into Rx_Buf[] where next character should be written */
+
+__interrupt void RX_interrupt(void)
+{
+ uint8_t rx_char;
+
+ rx_char = HW_REG;         /* Get the received character */
+ Rx_Buf[RxHead] = rx_char; /* Store the received char */
+ ++RxHead;                 /* Increment offset */
+ RxHead &= RX_BUF_MASK;    /* Mask the offset into the buffer */
+}
+
+In the last couple of lines, I increment the value of RxHead and then mask it, with the intention of ensuring that the next write into Rx_Buf[] will be in the requisite range. The operative word here is ‘intention’. To see what I mean, consider what would happen if RxHead gets corrupted in some way. Now if the corruption is caused by RFI or some other such phenomenon then you are probably out of luck. However, what if RxHead gets unintentionally manipulated by a bug elsewhere in your code? As written, the manipulation may cause a write to occur beyond the end of the buffer – with all the attendant chaos that would inevitably arise. You can prevent this by simply doing the masking before indexing into the array. That is the code looks like this:
+
+__interrupt void RX_interrupt(void)
+{
+ uint8_t rx_char;
+
+ rx_char = HW_REG;         /* Get the received character */
+ RxHead &= RX_BUF_MASK;    /* Mask the offset into the buffer */
+ Rx_Buf[RxHead] = rx_char; /* Store the received char */
+ ++RxHead;                 /* Increment offset */
+}
+
+What has this bought you? Well by coding it this way you guarantee that you will not index beyond the end of the array regardless of the value of RxHead when the ISR is invoked. Furthermore the guarantee comes at zero performance cost. Of course this hasn’t solved your problem with some other piece of code stomping on RxHead. However it does make finding the problem a lot easier because your problem will now be highly localized (i.e. data are received out of order) versus the system crashes randomly. The former class of problem is considerably easier to locate than is the latter.
+
+he final major problem with this code is that it’s hard to tell what caused the trap. While you can of course examine the call stack and work backwards, it’s far easier if you instead do something like this:
+
+static volatile bool Exit_Trap = false; 
+
+void trap(void)
+{
+#ifndef NDEBUG
+ __disable_interrupts();
+ while (!Exit_Trap)
+ {
+ }
+#endif
+}
+
+What I’ve done is declare a volatile variable called Exit_Trap and have initialized it to false. Thus when the trap occurs, the code spins in an infinite loop. However by setting Exit_Trap to true, I will cause the loop to be exited and I can then step the debugger and find out where the problem occurred.
+
+Regular readers will perhaps have noticed that this isn’t the first time I’ve used volatile to achieve a useful result.
+
+Incidentally I’m sure that many of you trap errors via the use of the assert macro. I do too – and I plan to write about how I do this at some point.
+
+
+It is well known that standard C language features map horribly on to the architecture of many processors. While the mapping is obvious and appalling for some processors (low end PICs, 8051 spring to mind), it’s still not necessarily great at the 32 bit end of the spectrum where processors without floating point units can be hit hard with C’s floating point promotion rules. While this is all obvious stuff, it’s essentially about what those CPUs are lacking. Where it gets really interesting in the embedded space is when you have a processor that has all sorts of specialized features that are great for embedded systems – but which simply do not map on to the C language view of the world. Some examples will illustrate my point.
+Arithmetic vs. Logical shifting
+
+The C language does of course have support for performing shift operations. However, these are strictly arithmetic shifts. That is when bits get shifted off the end of an integer type, they are simply lost. Logical shifting, sometimes known as rotation, is different in that bits simply get rotated back around (often through the carry bit but not always). Now while arithmetic shifting is great for, well arithmetic operations, there are plenty of occasions in which I find myself wanting to perform a rotation. Now can I write a rotation function in C – sure – but it’s a real pain in the tuches.
+Saturated addition
+
+If you have ever had to design and implement an integer digital filter, I am sure you found yourself yearning for an addition operator that will saturate rather than overflow. [In this form of arithmetic, if the integral type would overflow as the result of an operation, then the processor simply returns the minimum or maximum value as appropriate].  Processors that the designers think might be required to perform digital filtering will have this feature built directly into their instruction sets.  By contrast the C language has zero direct support for such operations, which must be coded using nasty checks and masks.
+Nibble swapping
+
+Swapping the upper and lower nibbles of a byte is a common operation in cryptography and related fields. As a result many processors include this ever so useful instruction in their instruction sets. While you can of course write C code to do it, it’s horrible looking and grossly inefficient when compared to the built in instruction.
+Implications
+
+If you look over the examples quoted I’m sure you noticed a theme:
+
+    Yes I can write C code to achieve the desired functionality.
+    The resultant C code is usually ugly and horribly inefficient when compared to the intrinsic function of the processor.
+
+Now in many cases, C compilers simply don’t give you access to these intrinsic functions, other than resorting to the inline assembler. Unfortunately, using the inline assembler causes a lot of problems. For example:
+
+    It will often force the compiler to not optimize the enclosing function.
+    It’s really easy to screw it up.
+    It’s banned by most coding standards.
+
+As a result, the intrinsic features can’t be used anyway. However, there are embedded compilers out there that support intrinsic functions. For example here’s how to swap nibbles using IAR’s AVR compiler:
+
+foo = __swap_nibbles(bar);
+
+There are several things to note about this:
+
+    Because it’s a compiler intrinsic function, there are no issues with optimization.
+    Similarly because one works with standard variable names, there is no particular likelihood of getting this wrong.
+    Because it looks like a function call, there isn’t normally a problem with coding standards.
+
+This then leads to one of the essential quandaries of embedded systems. Is it better to write completely standard (and hence presumably portable) C code, or should one take every advantage of neat features that are offered by your CPU (and if it is any good), your compiler?
+
+I made my peace with this decision many years ago and fall firmly into the camp of take advantage of every neat feature offered by the CPU / compiler – even if it is non-standard. My rationale for doing so is as follows:
+
+    Porting code from one CPU to another happens rarely. Thus to burden the bulk of systems with this mythical possibility seems weird to me.
+    End users do not care. When was the last time you heard someone extoll the use of standard code in the latest widget? Instead end users care about speed, power and battery life. All things that can come about by having the most efficient code possible.
+    It seems downright rude not to use those features that the CPU designer built in to the CPU just because some purist says I should not.
+
+Having said this, I do of course understand completely if you are in the business of selling software components (e.g. an AES library), where using intrinsic / specialized instructions could be a veritable pain. However for the rest of the industry I say use those intrinsic functions! As always, let the debate begin.
+
+This is the thirteenth in a series of tips on writing efficient C for embedded systems.  As the title suggests, if you are interested in writing efficient C, you need to be cautious about using the modulus operator.  Why is this? Well a little thought shows that C = A % B is equivalent to C = A – B * (A / B). In other words the modulus operator is functionally equivalent to three operations. As a result it’s hardly surprising that code that uses the modulus operator can take a long time to execute. Now in some cases you absolutely have to use the modulus operator. However in many cases it’s possible to restructure the code such that the modulus operator is not needed. To demonstrate what I mean, some background information is in order as to how this blog posting came about.
+Converting seconds to days, hours, minutes and seconds
+
+In Embedded Systems Design there is an increasing need for some form of real time clock. When this is done, the designer typically implements the time as a 32 bit variable containing the number of seconds since a particular date. When this is done, it’s not usually long before one has to convert the ‘time’ into days, hours, minutes and seconds. Well I found myself in just such a situation recently. As a result, I thought a quick internet search was in order to find the ‘best’ way of converting ‘time’ to days, hours, minutes and seconds. The code I found wasn’t great and as usual was highly PC centric. I thus sat down to write my own code.
+Attempt #1 – Using the modulus operator
+
+My first attempt used the ‘obvious’ algorithm and employed the modulus operator. The relevant code fragment appears below.
+
+void compute_time(uint32_t time)
+{
+ uint32_t    days, hours, minutes, seconds;
+
+ seconds = time % 60UL;
+ time /= 60UL;
+ minutes = time % 60UL;
+ time /= 60UL;
+ hours = time % 24UL;
+ time /= 24UL;
+ days = time;  
+}
+
+This approach has a nice looking symmetry to it.  However, it contained three divisions and three modulus operations. I thus was rather concerned about its performance and so I measured its speed for three different architectures – AVR (8 bit), MSP430 (16 bit), and ARM Cortex (32 bit). In all three cases I used an IAR compiler with full speed optimization. The number of cycles quoted are for 10 invocations of the test code and include the test harness overhead:
+
+AVR:  29,825 cycles
+
+MSP430: 27,019 cycles
+
+ARM Cortex: 390 cycles
+
+No that isn’t a misprint. The ARM was nearly two orders of magnitude more cycle efficient than the MSP430 and AVR. Thus my claim that the modulus operator can be very inefficient is true for some architectures – but not all.  Thus if you are using the modulus operator on an ARM processor then it’s probably not worth worrying about. However if you are working on smaller processors then clearly something needs to be done  – and so I investigated some alternatives.
+Attempt #2 – Replace the modulus operator
+
+As mentioned in the introduction,  C = A % B is equivalent to C = A – B * (A / B). If we compare this to the code in attempt 1, then it should be apparent that the intermediate value (A/B) computed as part of the modulus operation is in fact needed in the next line of code. Thus this suggests a simple optimization to the algorithm.
+
+void compute_time(uint32_t time)
+{
+ uint32_t    days, hours, minutes, seconds;
+
+ days = time / (24UL * 3600UL);    
+ time -= days * 24UL * 3600UL;
+ /* time now contains the number of seconds in the last day */
+ hours = time / 3600UL;
+ time -= (hours * 3600UL);
+ /* time now contains the number of seconds in the last hour */
+ minutes = time / 60U;
+ seconds = time - minutes * 60U;
+ }
+
+In this case I have replaced three mods with three subtractions and three multiplications. Thus although I have replaced a single operator (%) with two operations (- *) I still expect an increase in speed because the modulus operator is actually three operators in one (- * /).  Thus effectively I have eliminated three divisions and so I expected a significant improvement in speed. The results however were a little surprising:
+
+AVR:  18,720 cycles
+
+MSP430: 14,805 cycles
+
+ARM Cortex: 384 cycles
+
+Thus while this technique yielded a roughly order of two improvements for the AVR and MSP430 processors, it had essentially no impact on the ARM code.  Presumably this is because the ARM has native support for the modulus operation. Notwithstanding the ARM results, it’s clear that at least in this example, it’s possible to significantly speed up an algorithm by eliminating the modulus operator.
+
+I could of course just stop at this point. However examination of attempt 2 shows that further optimizations are possible by observing that if seconds is a 32 bit variable, then days can be at most a 16 bit variable. Furthermore, hours, minutes and seconds are inherently limited to an 8 bit range. I thus recoded attempt 2 to use smaller data types.
+Attempt #3 – Data type size reduction
+
+My naive implementation of the code looked like this:
+
+void compute_time(uint32_t time)
+{
+ uint16_t    days;
+ uint8_t     hours, minutes, seconds;
+ uint16_t    stime;
+
+ days = (uint16_t)(time / (24UL * 3600UL));    
+ time -= (uint32_t)days * 24UL * 3600UL;
+ /* time now contains the number of seconds in the last day */
+ hours = (uint8_t)(time / 3600UL);
+ stime = time - ((uint32_t)hours * 3600UL);
+ /*stime now contains the number of seconds in the last hour */
+ minutes = stime / 60U;
+ seconds = stime - minutes * 60U;
+}
+
+All I have done is change the data types and to add casts where appropriate. The results were interesting:
+
+AVR:  14,400 cycles
+
+MSP430: 11,457 cycles
+
+ARM Cortex: 434 cycles
+
+Thus while this resulted in a significant improvement for the AVR & MSP430, it resulted in a significant worsening for the ARM. Clearly the ARM doesn’t like working with non 32 bit variables. Thus this suggested an improvement that would make the code a lot more portable – and that is to use the C99 fast types. Doing this gives the following code:
+Attempt #4 – Using the C99 fast data types
+
+void display_time(uint32_t time)
+{
+ uint_fast16_t    days;
+ uint_fast8_t    hours, minutes, seconds;
+ uint_fast16_t    stime;
+
+ days = (uint_fast16_t)(time / (24UL * 3600UL));    
+ time -= (uint32_t)days * 24UL * 3600UL;
+ /* time now contains the number of seconds in the last day */
+ hours = (uint_fast8_t)(time / 3600UL);
+ stime = time - ((uint32_t)hours * 3600UL);
+ /*stime now contains the number of seconds in the last hour */
+ minutes = stime / 60U;
+ seconds = stime - minutes * 60U;
+}
+
+All I have done is change the data types to the C99 fast types. The results were encouraging:
+
+AVR:  14,400 cycles
+
+MSP430: 11,595 cycles
+
+ARM Cortex: 384 cycles
+
+Although the MSP430 time increased very slightly, the AVR and ARM stayed at their fastest speeds. Thus attempt #4 is both fast and portable.
+Conclusion
+
+Not only did replacing the modulus operator with alternative operations result in faster code, it also opened up the possibility for further optimizations. As a result with the AVR & MSP430 I was able to more than halve the execution time.
+Converting Integers for Display
+
+A similar problem (with a similar solution) occurs when one wants to display integers on a display. For example if you are using a custom LCD panel with say a 3 digit numeric field, then the problem arises as to how to determine the value of each digit. The obvious way, using the modulus operator is as follows:
+
+void display_value(uint16_t value)
+{
+ uint8_t    msd, nsd, lsd;
+
+ if (value > 999)
+ {
+ value = 999;
+ }
+
+ lsd = value % 10;
+ value /= 10;
+ nsd = value % 10;
+ value /= 10;
+ msd = value;
+
+ /* Now display the digits */
+}
+
+However, using the technique espoused above, we can rewrite this much more efficiently as:
+
+void display_value(uint16_t value)
+{
+ uint8_t    msd, nsd, lsd;
+
+ if (value > 999U)
+ {
+  value = 999U;
+ }
+
+ msd = value / 100U;
+ value -= msd * 100U;
+
+ nsd = value / 10U;
+ value -= nsd * 10U;
+
+ lsd = value;
+
+ /* Now display the digits */
+}
+
+If you benchmark this you should find it considerably faster than the modulus based approach.
+This is the twelfth in a series of tips on writing efficient C for embedded systems. Like the previous topic, I suspect that this will be a bit controversial. As the title suggests, if you are interested in writing efficient C, you need to be wary of switch statements. Before I explain why, a little background will be useful. I did all of my early embedded systems programming in assembly language. This wasn’t out of some sense of machismo, it was simply a reflection of the fact that there were no high level languages available (with the possible exception of PL/M). Naturally as well as programming embedded systems I also did computer programming, initially in Pascal and BASIC, and later in C. One of the major differences I found in using the HLL was the wonderful switch / case statement. I found it to be a beautiful tool – with a few lines of source code I could do all sorts of powerful things that were simply very difficult or tedious to do in assembly language. Fast forward a number of years and C compilers began to become available for small embedded systems and so I naturally started using them, together with of course the attendant switch statement. All was well in paradise until the day I used a switch statement in an interrupt service routine and found to my horror that the ISR was taking about ten times longer to execute than I thought was reasonable.
+
+This precipitated an investigation into how exactly switch statements are implemented by the compiler. When I did this, I discovered a number of things that should give one pause.
+Heuristic Algorithms
+
+The first thing I discovered is that compilers typically have a number of ways of implementing a switch statement. They seem to be loosely divided into the following trichotomy:
+
+    An if-else-if-else-if chain. In this implementation, the switch statement is treated as syntactic sugar for an if-else-if chain.
+    Some form of jump or control tables, or as they are sometimes called a computed goto. This is a favorite technique of assembly language programmers and the compiler writers can use it to great effect.
+    A hybrid of 1 & 2.
+
+Where it gets interesting is how the compiler decides which approach to use. If the case values are contiguous (e.g. zero through ten), then it’s likely the compiler will use some form of jump table. Conversely if the case values are completely disjointed (e.g. zero, six, twenty, four hundred and a thousand) then an if-else implementation is likely. However what does the compiler do when, for example, you have a bifurcated set of ranges such as zero-ten and ninety – one hundred? Well the answer is, that each compiler seems to have some form of heuristic algorithm for determining what is the ‘best’ way of implementing a given set of cases. Although some compilers allow you to force a particular implementation, for the most part you are at the mercy of the compiler.
+Comparative Execution Speeds
+
+If you think about it, it should become apparent that a jump table approach is likely to give a highly consistent time of execution through the decision tree, whereas the if-else -if chain has a highly variable time of execution depending upon the particular value of the switched variable.  Notwithstanding this, the jump table approach has a certain amount of execution overhead associated with it. This means that although its  mean execution time (which is normally the same as its worst and best execution time) may be dramatically better than the mean execution time of the if-else-if chain, the if-else-if chain’s best execution time may be considerably better. So what you say! Well in some cases, a particular value is far more likely to occur than the other values, thus it would be very nice if this value was tested first. However, as you will now see, this isn’t guaranteed…
+Order of Execution
+
+For many years I wrote switch statements under the assumption that the case values would be evaluated from top to bottom. That is, if the compiler chose to implement the switch statement as an if-else-if chain, then it would first test the first case, then the second case and so on down to the default case at the bottom of my source code. Well it turns out that my assumption was completely wrong. The compiler is under no such obligation, and indeed will often evaluate the values bottom to top. Furthermore, the compiler will often evaluate the default value first. For example consider a defaulted switch statement with contiguous case values in the range zero to ten. If the index variable is an unsigned int, then there are at least 65525 possible values handled by the default case, and so it makes sense to eliminate them first. Now if you know that the index variable can only possibly take on the values zero to ten, then you can of course eliminate the default statement – and then get excoriated by the coding standards / MISRA folks.
+Maintenance
+
+This is the area where I really get worried. Consider the case where you have a switch statement in an ISR. The code is working with no problems until one day it is necessary to make a change to the switch statement – by for example adding an additional case value. This simple change can cause the compiler to completely change the implementation of the switch statement. As a result, you may find that:
+
+    The worst case execution time has jumped dramatically.
+    The mean execution time has jumped dramatically.
+    The stack space required by the ISR has jumped dramatically.
+
+Any of these three possibilities can cause your program to fail catastrophically. Now of course one could argue ‘that’s why you test all changes’. However, in my opinion it’s far better to be proactive and to avoid putting yourself in this situation in the first place.
+
+I’d also be remiss in not noting the dreaded missing break statement maintenance problem. However as a religious user of Lint, I’m not normally too concerned about this.
+Switch statement alternatives
+
+If performance and stability is your goal then I strongly recommend that you implement your code, the way you want it executed. This means either explicitly use an if-else-if chain or use function pointers. If function pointers scare you, then you might want to read this article I wrote on the subject.
+Recommendations
+
+Based on my experience, I have a number of things that I do when it comes to switch statements. If you find my analysis compelling, you may want to adopt them:
+
+    Switch statements should be the last language construct you reach for – and not the first.
+    Learn how to use function pointers. Once you do you’ll find a lot of the reasons for using switch statements go away.
+    Try to keep all the case values contiguous.
+    If you can’t keep the case values contiguous, go to the other extreme and make them disparate – that way you are less likely to have the compiler change the algorithm on you.
+    If your compiler supports it, consider using pragmas to lock in a particular implementation.
+    Be very wary of using switch statements in interrupt service routines or any other performance critical code.
+    Use Lint to guard against missing break statements.
+This is the tenth in a series of tips on writing efficient C for embedded systems. Today I consider the topic of whether one should use signed integers or unsigned integers in order to produce faster code. Well the short answer is that unsigned integers nearly always produce faster code. Why is this you ask? Well there are several reasons:
+Lack of signed integer support at the op code level
+
+Many low end microprocessors lack instruction set support (i.e. op codes) for signed integers. The 8051 is a major example. I believe low end PICs are also another example. The Rabbit processor is sort of an example in that my recollection is that it lacks support for signed 8 bit types, but does have support for signed 16 bit types! Furthermore some processors will have instructions for performing signed comparisons, but only directly support unsigned multiplication.
+
+Anyway, so what’s the implication of this? Well lacking direct instruction set support, use of a signed integer forces the compiler to use a library function or macro to perform the requisite operation. Clearly this is not very efficient. But what if you are programming a processor that does have instruction set support for signed integers? Well for most basic operations such as comparison and addition you should find no difference. However this is not the case for division…
+Shift right is not the same as divide by two for signed integers
+
+I doubt there is a compiler in existence that doesn’t recognize that division by 2N is equivalent to a right shift N places for unsigned integers. However this is simply not the case for signed integers, since the issue of what to do with the sign bit always arises. Thus when faced with performing a division by 2N on a signed integer, the compiler has no choice other than to invoke a signed divide routine rather than a simple shift operation. This holds true for every microprocessor I have ever looked at in detail.
+
+There is a third area where unsigned integers offer a speed improvement over signed integers – but it comes about by a different mechanism…
+Unsigned integers can often save you a comparison
+
+From time to time I find myself writing a function that takes as an argument an index into an array or a file. Naturally to protect against indexing beyond the bounds of the array or file, I add protection code. If I declare the function as taking a signed integer type, then the code looks like this:
+
+void foo(int offset)
+{
+ if ((offset >= 0) && (offset < ARRAY_SIZE))
+ {
+  //Life is good...
+ }
+}
+
+However, if I declare the function as taking an unsigned integer type, then the code looks like this:
+
+void foo(unsigned int offset)
+{
+ if (offset < ARRAY_SIZE)
+ {
+  //Life is good...
+ }
+}
+
+Clearly it’s nonsensical to check whether an unsigned integer is >=0 and so I can dispense with a check. The above are examples of where unsigned integer types are significantly more efficient than signed integer types. In most other cases, there isn’t usually any difference between the types. That’s not to say that you should choose one over the other on a whim. See this for a discussion of some of the other good reasons to use an unsigned integer. Before I leave this topic, it’s worth asking whether there are situations in which a signed integer is more efficient than an unsigned integer? Off hand I can’t think of any. There are situations where I could see the possibility of this occurring. For example when performing pointer arithmetic, the C standard requires that subtraction of two pointers return the data type ptrdiff_t. This is a signed integral type (since the result may be negative). Thus if after subtracting two pointers, you needed to add an offset to the result, it’s likely that you’ll get better code if the offset is a signed integral type. Of course this touches upon the nasty topic of mixing signed and unsigned integral types in an expression. I’ll address this another day.
+
+
+
+An issue that comes up frequently in embedded systems is division of an integer by a constant. Of course most of the time we try and arrange things such that the divisor is a power of two such that the division may be performed by shift operations. However, all too often we have to divide an integer by some non power of two value. Divisors that seem to crop up a lot are 10 & 100 (for obvious reasons), 3 (for no good reason), 60 (when dealing with time) and of course various combination’s of pi and root 2. In cases like these you can of course just code it ‘normally’ and let the compiler do the work for you. However, when you feel the need for speed, there are other techniques that are spectacularly good.
+
+I learned about this subject in dribs and drabs over the years without ever coming across a good summary – until I located this paper by Douglas Jones (no relationship). It does a nice job of explaining most of what you need to know in order to perform division of an integer by a constant. I particularly like the fact that he has algorithms for CPUs that contain barrel shifters – and those that do not. I strongly recommend that you read the paper. One note of caution however – Jones like many academics is used to working on CPUs with 32 bit word lengths. As such, his code assumes that integers are 32 bits. If you use his code as is, then it will fail on 16 bit word length machines. It’s for reasons such as this that I really recommend everyone would use the C99 data types.
+
+For those of you too lazy to read the paper, its basic premise is based upon the fact that division by a constant is equivalent to multiplication by the reciprocal of that constant. There is nothing of course earth shattering about this observation. However, Jones then goes ahead and explains about binary points, rounding etc in order to achieve the desired result. Since I had to reduce his paper to practice, I thought I’d go ahead and share the ‘recipe’ with you. Before doing so I should note that I work mostly with 8 & 16 bit CPUs that do not contain barrel shifters. As a result I am most interested in the techniques that use multiplication. If you are working with a 32 bit processor with a barrel shifter and an instruction cache then you should seriously look at his other implementations.
+Division of a uint16_t by a constant K
+
+In the steps that follow, there is no requirement that K be integer. It must however be greater than 1.
+There are two recipes. The first works for many divisors – but not all and is the faster of the two. The second recipe will give better results for all inputs – but produces less efficient code. While I am sure that there is some analytical way of making the determination ahead of time, I’ve found it easier to use the first recipe and exhaustively test it. If it works – great. If not then switch to the second recipe.
+
+In the following descriptions, Q is the quotient (i.e. the result) of dividing an unsigned integer A by the constant K.
+Recipe #1
+
+    Convert 1 / K into binary. There is a nice web based calculator here that will do the job.
+    Take all the bits to the right of the binary point, and left shift them until the bit to the right of the binary point is 1. Record the required number of shifts S.
+    Take the most significant 17 bits and add 1 and then truncate to 16 bits. This effectively rounds the result.
+    Express the remaining 16 bits to the right of the binary point as a 4 digit hexadecimal number M of the form hhhh.
+    Q = (((uint32_t)A * (uint32_t)M) >> 16) >> S
+    Perform an exhaustive check for all A & Q. If necessary adjust M or try recipe #2.
+
+Incidentally, you may be wondering why I don’t use the form espoused by Jones, namely:Q = (((uint32_t)A * (uint32_t)M) >> (16 + S))
+The answer is that this requires a left shift 16 + S places of a 32 bit integer. By splitting the shift into two as shown and by making use of the C integer promotion rules, the expression becomes:
+
+    Right shift a 32 bit integer 16 places and convert to a 16 bit integer. This effectively means just use the top half of the 32 bit integer.
+    Right shift the 16 bit integer S places.
+
+This is dramatically more efficient on an 8 or 16 bit processor. On a 32 bit processor it probably is not.
+Recipe #2
+
+    Convert 1 / K into binary.
+    Take all the bits to the right of the binary point, and left shift them until the bit to the right of the binary point is 1. Record the required number of shifts S.
+    Take the most significant 18 bits and add 1 and then truncate to 17 bits. This effectively rounds the result.
+    Express the 17 bit result as 1hhhh. Denote the hhhh portion as M
+    Q = ((((uint32_t)A * (uint32_t)M) >> 16) + A) >> 1) >> S;
+    Perform an exhaustive check for all A & Q. If necessary adjust M.
+
+Again I split the shifts up as shown for efficiency on an 8 / 16 bit machine.
+Example 1 – Divide by 30
+
+In this case I wish to divide a uint16_t by 30.
+
+    Convert to binary. 1 / 30 = 0.000010001000100010001000100010001000100010001000100010001
+    Left shift until there is a 1 to the right of the binary point. In this case it requires 4 shifts and we get 0.10001000100010001000100010001000100010001000100010001. S is thus 4.
+    Take the most significant 17 bits: 1000 1000 1000 1000 1
+    Add 1: giving 1000 1000 1000 1000 1 + 1 = 1000 1000 1000 1001 0
+    Truncate to 16 bits: 1000 1000 1000 1001
+    Express in hexadecimal: M = 0x8889
+    Q = (((uint32_t)A * (uint32_t)0x8889) >> 16) >> 4
+
+An exhaustive check confirms that this expression does indeed do the job for all 16 bit values of A. It is also about 10 times faster than the compiler division routine on an AVR processor.
+Example 2 – Divide by 100
+
+In this case I wish to divide a uint16_t by 100. This is one of those cases where we need 17 bit resolution
+
+    Convert to binary. 1 / 100 = 0.00000010100011110101110000101000111101011100001010001111011
+    Left shift until there is a 1 to the right of the binary point. In this case it requires 6 shifts and we get 0.10100011110101110000101000111101011100001010001111011. S is thus 6.
+    Take the most significant 18 bits: 1 0100 0111 1010 1110 0
+    Add 1: 1 0100 0111 1010 1110 0 + 1 = 1 0100 0111 1010 1110 1
+    Truncate to 17 bits: 1 0100 0111 1010 1110
+    Express in hexadecimal: M = 1 47AE
+    Q = ((((uint32_t)A * (uint32_t)0x47AE) >> 16) + A) >> 1) >> 6;
+
+An exhaustive check shows that the division is not exact for all A. I thus incremented M to 0x47AF and got exact results for all A. This code was about twice as fast as the compiler division routine on an AVR processor.
+Example 3 – Divide by π
+
+This is an example where the resultant expression results in an approximate result. The approximation is very good though, with a quotient that is off by at most 1 for all A.
+
+    Convert to binary: 1 / π = 0.010100010111110011000001101101110010011100100010001001
+    Left shift until there is a 1 to the right of the binary point. In this case it requires 1 shift and we get
+    10100010111110011000001101101110010011100100010001001. S is thus 1.
+    Take the most significant 18 bits: 1 0100 0101 1111 0011 0
+    Add 1: 1 0100 0101 1111 0011 0 + 1 = 1 0100 0101 1111 0011 1
+    Truncate to 17 bits: 1 0100 0101 1111 0011
+    Express in hexadecimal: M = 1 45F3
+    Q = ((((uint32_t)A * (uint32_t)0x45F3) >> 16) + A) >> 1) >> 1;
+
+An exhaustive check that compared the result of this expression to (float)A * 0.31830988618379067153776752674503f showed that the match was exact for all but 263 values in the range 0 – 0xFFFF. Where there was a mismatch it is off by at most 1. It’s also 23 times faster than converting to floating point. Not a bad trade off.
+Example 4 – Divide by 10 on an 8 bit value
+
+This technique is obviously usable on 8 bit values. One just has to adjust the number of bits. Here’s an example
+
+    Convert to binary. 1 / 10 = 0.0001100110011001100110011001100110011001100110011001101
+    Left shift until there is a 1 to the right of the binary point. In this case it requires 3 shifts and we get 0.1100110011001100110011001100110011001100110011001101. S is thus 3.
+    Take the most significant 9 bits: 1100 1100 1
+    Add 1: giving 110011001 + 1 = 110011010
+    Truncate to 8 bits: 1100 1101
+    Express in hexadecimal: M = 0xCD
+    Q = (((uint16_t)A * (uint16_t)0xCD) >> 8) >> 3
+
+An exhaustive check confirms that this expression does indeed do the job for all 8 bit values of A. It is also about 8 times faster than the compiler division routine on an AVR processor.
+Summary
+
+Using the values generated by Jones, together with some of the values I have computed, here’s a summary of some common divisors for unsigned 16 bit integers.
+
+Divide by 3: (((uint32_t)A * (uint32_t)0xAAAB) >> 16) >> 1
+Divide by 5: (((uint32_t)A * (uint32_t)0xCCCD) >> 16) >> 2
+Divide by 6: (((uint32_t)A * (uint32_t)0xAAAB) >> 16) >> 2
+Divide by 7: ((((uint32_t)A * (uint32_t)0x2493) >> 16) + A) >> 1) >> 2
+Divide by 9: (((uint32_t)A * (uint32_t)0xE38F) >> 16) >> 3
+Divide by 10: (((uint32_t)A * (uint32_t)0xCCCD) >> 16) >> 3
+Divide by 11: (((uint32_t)A * (uint32_t)0xBA2F) >> 16) >> 3
+Divide by 12: (((uint32_t)A * (uint32_t)0xAAAB) >> 16) >> 3
+Divide by 13: (((uint32_t)A * (uint32_t)0x9D8A) >> 16) >> 3
+Divide by 14: ((((uint32_t)A * (uint32_t)0x2493) >> 16) + A) >> 1) >> 3
+Divide by 15: (((uint32_t)A * (uint32_t)0x8889) >> 16) >> 3
+Divide by 30: (((uint32_t)A * (uint32_t)0x8889) >> 16) >> 4
+Divide by 60: (((uint32_t)A * (uint32_t)0x8889) >> 16) >> 5
+Divide by 100: (((((uint32_t)A * (uint32_t)0x47AF) >> 16U) + A) >> 1) >> 6
+Divide by PI: ((((uint32_t)A * (uint32_t)0x45F3) >> 16) + A) >> 1) >> 1
+Divide by √2: (((uint32_t)A * (uint32_t)0xB505) >> 16) >> 0
+
+Hopefully you have spotted the relationship between divisors that are multiples of two. For example compare the expressions for divide by 15, 30 & 60.
+
+If someone has too much time on their hands and would care to write a program to compute the values for all integer divisors, then I’d be happy to post the results for everyone to use.
+Update
+
+Alan Bowens has risen to the challenge and has generated some nifty programs for generating coefficients for arbitrary 8 and 16 bit values. He’s also generated header files for all 8 and 16 bit integer divisors that you can just include and use. You’ll find it all at his blog. Nice work Alan.
+
+
+
+he (Douglas) Jones article explains how to use reciprocal multiplication to perform division - for instance, if you want to divide by 10, this is the same as multiplying by 1/10. However, by doing everything in fixed point arithmetic, you can avoid the computational overhead of invoking your compiler's division routine. The result is smaller, faster code that has exactly the same accuracy as the compiler-supplied result. Anyone writing PC code may not appreciate this, but in the embedded world this sort of approach is vitally important in terms of both code size and run time.
+
+The original article is quite long and detailed, and despite having stumbled upon it a couple of times in the past, I'd never got round to actually reading it. And so (Nigel) Jones's article came as a very welcome abstract, boiling it down as he does to a couple of simple algorithms - if you want to divide by 'x', here's what to do.
+
+At the end of his post, (Nigel) Jones said 'If someone has too much time on their hands and would care to write a program to compute the values for all integer divisors, then I'd be happy to post the results for everyone to use.' Well, I don't know about having too much time, but I do enjoy a lunchtime programming exercise, so I sent him a text file containing the coefficients to perform integer division for all 16-bit unsigned numbers from 3 to 32768. I also asked if he would mind if I posted the source code here, in case it was of use to anyone.
+
+He responded with an excellent suggestion - how about generating a header file containing macros with the appropriate coefficients for all divisors? Anyone wanting to use these algorithms could then simply include the header file, and call the relevant macro to perform the required division.
+
+I've followed this suggestion, so please follow the links to check out:
+
+    a header file containing the coefficients for unsigned 16-bit division
+    a header file containing the coefficients for unsigned 8-bit division
+    a command-line program generating the coefficients for unsigned 16-bit division [source][exe]
+    a command-line program generating the coefficients for unsigned 8-bit division [source][exe]
+
+The programs were written in Borland Builder, but are in ANSI C, and so should run on any platform with appropriate tweaks to the uintX_t typedefs. They accept floating-point arguments, and so can generate the coefficients for division by π, sqrt(2), etc. They will also report the number of errors found during an exhaustive search of all divisors, and the maximum error found. 
+
+
+
