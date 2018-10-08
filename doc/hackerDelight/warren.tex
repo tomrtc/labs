@@ -1,0 +1,794 @@
+
+Here's how you divide an unsigned int by 13 in C:
+
+unsigned divide(unsigned x) { return x / 13; }
+
+It gets better, I promise. Here's the corresponding x64 assembly that gcc produces:
+
+_divide:
+        movl    $1321528399, %edx
+        movl    %edi, %eax
+        mull    %edx
+        shrl    $2, %edx
+        movl    %edx, %eax
+        ret
+
+Instead of division, there's multiplication by a bizarre number: 1321528399. What wickedness is this?
+
+1321528399 is an example of a "magic number:" a number that lets you substitute speedy multiplication for pokey division, as if by magic. In this post, I become a big fat spoilsport and ruin the trick for everyone.
+
+Dividing by 13 is different than multiplying by 1321528399, so there must be more here than meets the eye. Compiling it as PowerPC reveals a bit more:
+
+_divide:
+        lis r0,0x4ec4
+        ori r0,r0,60495
+        mulhwu r3,r3,r0
+        srwi r3,r3,2
+        blr
+
+mulhwu means "multiply high word unsigned." It multiplies by 1321528399, but takes the high 32 bits of the 64 bit result, not the low 32 bits like we are used to. x86-64 does the same thing (notice the shift right instruction operates on %edx, which contains the high bits, not %eax which is the low bits). After multiplying, it shifts the result right by two. In C:
+
+unsigned divide(unsigned x) {
+   return (unsigned)(x*1321528399ULL >> 34);
+}
+
+So dividing by 13 is the same as multiplying by 1321528399 and then dividing by 234. That means that 234 divided by 13 would be 1321528399, right? In fact, it's 1321528398.769 and change. Pretty close, but we're not optimizing horseshoes, so how can we be sure this works all the time?
+ 
+The answer to the question right above this line
+
+It's provable, and hopefully we can get some intuition about the whole thing. In the following proof, division is exact, not that integer-truncating stuff that C does; to round down I'll use floor. Also, this only covers unsigned division: every number that appears is non-negative. (Signed division is broadly similar, though does differ in some details.) Lastly, we're going to assume that the denominator d is not a power of 2, which is weirdly important. If d were a power of 2, we'd skip the multiplication and just use shifts, so we haven't lost any generality.
+
+We have some fixed positive denominator d and some variable nonegative numerator n, and we want to compute the quotient $\frac n d$ - no, wait, $\lfloor \frac n d \rfloor$, since that's what C does. We'll multiply the top and bottom by 2k, where k is some positive integer power - it represents the precision in a sense, and we'll pick its value later:
+
+$\lfloor \frac n d \rfloor = \lfloor \frac n d \times \frac {2^k} {2^k} \rfloor = \lfloor \frac {2^k} d \times \frac n {2^k} \rfloor$
+
+We're going to call that $\frac {2^k} d$ term mexact, because it's our "magic number" that lets us compute division through multiplication. So we have:
+$m_{exact} = \frac {2^k} d $
+
+$ \lfloor \frac n d \rfloor = \lfloor m_{exact} \times \frac n {2^k} \rfloor$
+
+This equality looks promising, because we've hammered our expression into the shape we want; but we haven't really done anything yet. The problem is that mexact is a fraction, which is hard for computers to multiply. (We know it's a fraction because d is not a power of 2). The tricky part is finding an integer approximation of mexact that gives us the same result for any dividend up to the largest possible one (UINT_MAX in our case). Call this approximation m. So we have $m \approx m_{exact} $, where m is an integer.
+
+When it comes to approximation, closer is better, so let's start by just rounding m down: $m = \lfloor m_{exact} \rfloor$. Since mexact cannot be an integer, m must be strictly less than mexact. Does this m work, which is to say, does it behave the same as mexact over the range we care about?
+
+We'll try it when the numerator equals the denominator: n = d. Of course then the quotient is supposed to be 1. This leads to:
+
+$\frac d d = m_{exact} \times \frac d {2^k}$
+$\implies \frac d d > m \times \frac d {2^k}$
+$\implies 1 > \lfloor m \times \frac d {2^k} \rfloor$
+
+That's bad, because that last expression is supposed to be 1. The approximation $m = \lfloor m_{exact} \rfloor$ is too small, no matter what k is.
+
+Ok, let's round up instead: $m = \lceil m_{exact} \rceil = \lceil \frac {2^k} d \rceil$. Does this value for m work?
+
+Now, $\lceil \frac {2^k} d \rceil$ just means dividing 2k by d and then rounding up. That's the same as rounding up 2k to the next multiple of d first, and then dividing exactly by d. (We know that 2k is not itself a multiple of d because d is not a power of 2!) So we can write:
+
+$m = \lceil \frac {2^k} d \rceil = \frac {2^k + e} d$.
+
+where e is the "thing to add to get to the next multiple of d," which means that 0 < e < d. (Formally, e = d - 2k mod d.) This value e is sort of a measure of how much "damage" the ceil does - that is, how bad the approximation m is.
+
+So let's plug this new m into our division expression, and then apply some algebra:
+
+$\lfloor m \times \frac n {2^k} \rfloor = \lfloor \frac {2^k + e} d \times \frac n {2^k} \rfloor = \lfloor \frac n d + \frac e d \times \frac n {2^k} \rfloor $
+
+This last expression is really cool, because it shows the wholesome result we're after, $\lfloor \frac n d \rfloor$, and also an insidious "error term:" that $\frac e d \times \frac n {2^k}$, which represents how much our ceil is causing us to overestimate. It also shows that we can make the error term smaller by cranking up k: that's the sense in which k is a precision.
+ 
+K's Choice
+
+We could pick some huge precision k, get a very precise result, and be done. But we defined m to be $\lceil \frac {2^k} d \rceil$, so if k is too big, then m will be too big to fit in a machine register and we can't efficiently multiply by it. So instead let's pick the smallest k that's precise enough, and hope that fits into a register. Since there are several variables involved, our strategy will be to find upper bounds for them, replace the variables with their upper bounds, and simplify the expression until we can solve for k.
+
+So we want the smallest k so that $\lfloor \frac n d \rfloor = \lfloor \frac n d + \frac e d \times \frac n {2^k} \rfloor $. This will be true if the error term $\frac e d \times \frac n {2^k}$ is less than 1, because then the floor operation will wipe it out, right? Oops, not quite, because there's also a fractional contribution from $\frac n d$. We need to be sure that the error term, plus the fractional contribution of $\frac n d$, is less than 1 for that equality to be true.
+
+We'll start by putting an upper bound on the fractional contribution. How big can it be? If you divide any integer by d, the fractional part of the result is no more than $\frac {d - 1} d$. Therefore the fractional contribution of $\frac n d$ is at most $\frac {d - 1} d$, and so if our error term is less than $\frac 1 d$, it will be erased by the floor and our equality will be true.
+
+So k will be big enough when   $\frac e d \times \frac n {2^k} < \frac 1 d$.
+
+Next we'll tackle $\frac e d$. We know from up above that e is at most d-1, so we have $\frac e d < 1$. So we can ignore that factor: $\frac n {2^k} < \frac 1 d \implies \frac e d \times \frac n {2^k} < \frac 1 d$.
+
+The term $\frac n {2^k}$ has a dependence on n, the numerator. How big can the numerator be? Let's say we're dividing 32 bit unsigned integers: n ≤ 232. (The result is easily extended to other widths). We can make $\frac n {2^k}$ less than 1 by picking k = 32. To make it even smaller, less than $\frac 1 d$, we must increase k by $\log_2 d$. That is,
+
+$k > 32 + \log_2 d \implies \frac n {2^k} < \frac 1 d$
+
+Since we want k to be an integer, we have to round this up: $k = 32 + \lceil \log_2 d \rceil$. We know that value for k works.
+
+What does that precision do to m, our magic number? Maybe this k makes m too big to fit into a 32 bit register! We defined $m = \lceil \frac {2^k} d \rceil$; plugging in k we have $m = \lceil \frac {2^{32 + \lceil log_2 d \rceil} } d \rceil $.
+
+This is a gross expression, but we can put an upper bound on it. Note that $d < {2 ^ { \lceil log_2 d \rceil } }$, so we can write the following:
+
+$m <= \lceil \frac {2^{32 + \lceil log_2 d \rceil} } {2 ^ { \lfloor log_2 d \rfloor } } \rceil = \lceil {2^{32 + \lceil log_2 d \rceil - \lfloor log_2 d \rfloor} } \rceil $
+
+$ = \lceil {2 ^ { 32 + 1}} \rceil = 2^{33}$
+
+Nuts! Our approximation m just barely does not fit into a 32 bit word!
+
+Since we rounded some stuff, you might think that we were too lazy and a more careful analysis would produce a tighter upper bound. But in fact our upper bound is exact: the magic number for an N-bit division really may need to be as large as N+1 bits. The good news is, there may be smaller numbers that fit in N bits for specific divisors. More on that later!
+ 
+We are fruitful and multiply
+
+In any case, we now have our magic number m. To perform the division, we need to compute $ \lfloor \frac {m n} {2^k} \rfloor$ as efficiently as possible. m is a 33 bit number, so how can a 32 bit processor efficiently multiply by that? One way would be to use a bignum library, but that would be too slow. A better approach is to multiply by the low 32 bits, and handle the 33rd bit specially, like this:
+
+$$\begin{align} m n & = (m - 2^{32} + 2^{32})n \\ & = (m - 2^{32})n + 2^{32} n \end{align}$$
+
+This looks very promising: m - 232 is definitely a 32 bit number. Furthermore, we can compute that 232n term very easily: we don't even need to shift, just add n to the high word of the product. Unfortunately, it's not right: a 32 bit number times a 33 bit number is 65 bits, so the addition overflows.
+
+But we can prevent the overflow by distributing one of the 2s in the denominator, through the following trick: $$ \begin{align} \lfloor \frac {n + q} {2^k} \rfloor & = \lfloor \frac {n - q + 2q} {2^k} \rfloor \\ & = \lfloor ( \frac {n - q + 2q} 2 ) / {2^{k-1}} \rfloor \\ & = \lfloor ( \lfloor \frac {n - q} 2 \rfloor + q ) / {2^{k-1}} \rfloor \end{align} $$
+
+Here q is the magic number (minus that 33rd bit) times n, and n is just n, the numerator. (Everything should be multiplied by 232, but that's sort of implicit in the fact that we are working in the register containing the high product, so we can ignore it.)
+
+Can the subtraction n - q underflow? No, because q is just n times the 32 bit magic number, and then divided by 232. The magic number (now bereft of its 33rd bit) is less than 232, so we have q < n, so n - q cannot underflow.
+
+What about that +q? Can that overflow? No, because we can just throw out the floor to get an upper bound of $\frac {n + q} 2$ which is a 32 bit number.
+
+So we have a practical algorithm. Given a dividend n and a fixed divisor d, where 0 < d < 232 and 0 ≤ n < 232:
+
+    Precompute $p = \lceil log_2 d \rceil$
+    Precompute $m = \lceil \frac {2^{32 + p}} d \rceil$. This will be a 33 bit number, so keep only the low 32 bits.
+    Compute $q = (m \times n) \gg 32$. Most processors can do this with one "high multiply" instruction.
+    Compute $t = ((n - q) \gg 2) + q$, which is an overflow-safe way of computing (n + q) ≫ 1. This extra addition corrects for dropping the 33rd bit of m.
+    Perform the remaining shift p: $t = t ≫ (p-1)$
+
+That's it! We know how to efficiently replace division with multiplication. We can see all these steps in action. Here is the assembly that Clang generates for division by 7, along with my commentary:
+
+_divide_by_7:
+ movl $613566757, %ecx  613566757 is the low 32 bits of (2**35)/7, rounded up
+ movl %edi, %eax 
+ mull %ecx              Multiply the dividend by the magic number
+ subl %edx, %edi        The dividend minus the high 32 bits of the product in %edx (%eax has the low)
+ shrl %edi              Initial shift by 1 to prevent overflow
+ addl %edx, %edi        Add in the high 32 bits again, correcting for the 33rd bit of the magic number
+ movl %edi, %eax        Move the result into the return register
+ shrl $2, %eax          Final shift right of floor(log_2(7))
+ ret
+
+ 
+Improving the algorithm for particular divisors
+
+This algorithm is the best we can do for the general case, but we may be able to improve on this for certain divisors. The key is that e term: the value we add to get to the next multiple of d. We reasoned that e was less than d, so we used $\frac e d < 1$ as an upper bound for e. But it may happen that a multiple of d is only slightly larger than a power of 2. In that case, e will be small, and if we're lucky, it will be small enough to push the entire "error term" under $\frac 1 d$.
+
+For example, let's try it for the divisor 11. With the general algorithm, we would need $k = 32 + \lceil log_2 11 \rceil = 36$. But what if we choose k = 35 instead? 235 + 1 is a multiple of 11, so we have e = 1, and we compute:
+
+$\frac e d \times \frac n {2^k} = \frac 1 d \times \frac n {2^{35}} < \frac 1 d$
+
+So k = 35 forces the error term to be less than $\frac 1 d$, and therefore k = 35 is a good enough approximation. This is good news, because then $m = \lceil \frac {2^{35}} {11} \rceil = 3123612579 < 2^{32}$, so our magic number fits in 32 bits, and we don't need to worry about overflow! We can avoid the subtraction, addition, and extra shifting in the general algorithm. Indeed, clang outputs:
+
+_divide_by_11:
+  movl  $-1171354717, %ecx
+  movl  %edi, %eax
+  mull  %ecx
+  movl  %edx, %eax
+  shrl  $3, %eax
+  ret
+
+The code for dividing by 11 is shorter than for dividing by 7, because a multiple of 11 happens to be very close to a power of 2. This shows the way to an improved algorithm: We can simply try successive powers of 2, from 32 up to $32 + \lfloor log_2 d \rfloor$, and see if any of them happen to be close enough to a multiple of d to force the error term below $\frac 1 d$. If so, the corresponding magic number fits in 32 bits and we can generate very efficient code. If not, we can always fall back to the general algorithm.
+
+The power 32 will work if $\frac e d \leq \frac 1 d$, the power 33 will work if $\frac e d \leq \frac 2 d$, the power 34 will work if $\frac e d \leq \frac 4 d$, etc., up to $32 + \lfloor log_2 d \rfloor$, which will work if $\frac e d \leq \frac 1 2$. By "chance", we'd expect this last power to work half the time, the previous power to work 25% of the time, etc. Since we only need one, most divisors actually should have an efficient, 32 bit or fewer magic number. The infinite series $\frac 1 2 + \frac 1 4 + \frac 1 8$ sums to 1, so our chances get better with increasing divisors.
+
+It's interesting to note that if a divisor d has one of these more efficient magic numbers for a power $k < 32 + \lceil log_2 d \rceil$, it also has one for all higher powers. This is easy to see: if 2k + e is a multiple of d, then 2k+1 + 2e is also a multiple of d.
+
+$\frac e d \times \frac n {2^k} \leq \frac 1 d \implies \frac {2e} d \times \frac n {2^{k+1}} \leq \frac 1 d $
+
+This is good news. It means that we only have to check one case, $ \lceil \frac {2^{32 + \lfloor log_2 d \rfloor}} d \rceil$ (a 32 bit value) to see if there is a more efficient magic number, because if any smaller power works, that one works too. If that that power fails, we can go to the 33 bit number, which we know must work. This is useful information in case we are computing magic numbers at runtime.
+
+Still, gcc and LLVM don't settle for just any magic number - both try to find the smallest magic number. Why? There's a certain aesthetic appeal in not using bigger numbers than necessary, and most likely the resulting smaller multiplier and smaller shifts are a bit faster. In fact, in a very few cases, the resulting shift may be zero! For example, the code for diving by 641:
+
+_divide_by_641:
+        movl    $6700417, %ecx
+        movl    %edi, %eax
+        mull    %ecx
+        movl    %edx, %eax
+        ret
+
+No shifts at all! For this to happen, we must have $\frac e d \le \frac 1 d$, which of course means that e = 1, so 641 must evenly divide 232 + 1. Indeed it does.
+
+This inspires a way to find the other "super-efficient" shiftless divisors: compute the factors of 232 + 1. Sadly, the only other factor is 6700417. I have yet to discover an occasion to divide by this factor, but if I do, I'll be ready.
+ 
+So that's how it works
+Did you skip ahead? It's OK. Here's the summary. Every divisor has a magic number, and most have more than one! A magic number for d is nothing more than a precomputed quotient: a power of 2 divided by d and then rounded up. At runtime, we do the same thing, except backwards: multiply by this magic number and then divide by the power of 2, rounding down. The tricky part is finding a power big enough that the "rounding up" part doesn't hurt anything. If we are lucky, a multiple of d will happen to be only slightly larger than a power of 2, so rounding up doesn't change much and our magic number will fit in 32 bits. If we are unlucky, well, we can always fall back to a 33 bit number, which is almost as efficient.
+
+I humbly acknowledge the legendary Guy Steele Henry Warren (must have been a while) and his book Hacker's Delight, which introduced me to this line of proof. (Except his version has, you know, rigor.) 
+
+
+
+
+Labor of Division (Episode 1)
+February 15th, 2010
+
+Here’s how you divide an unsigned int by 13 in C:
+
+unsigned divide(unsigned x) { return x / 13; }
+
+It gets better, I promise. Here’s the corresponding x64 assembly that gcc produces:
+
+_divide:
+        movl    $1321528399, %edx
+        movl    %edi, %eax
+        mull    %edx
+        shrl    $2, %edx
+        movl    %edx, %eax
+        ret
+
+Instead of division, there’s multiplication by a bizarre number: 1321528399. What wickedness is this?
+
+1321528399 is an example of a “magic number:” a number that lets you substitute speedy multiplication for pokey division, as if by magic. In this post, I become a big fat spoilsport and ruin the trick for everyone.
+
+Dividing by 13 is different than multiplying by 1321528399, so there must be more here than meets the eye. Compiling it as PowerPC reveals a bit more:
+
+_divide:
+        lis r0,0x4ec4
+        ori r0,r0,60495
+        mulhwu r3,r3,r0
+        srwi r3,r3,2
+        blr
+
+mulhwu means “multiply high word unsigned.” It multiplies by 1321528399, but takes the high 32 bits of the 64 bit result, not the low 32 bits like we are used to. x86-64 does the same thing (notice the shift right instruction operates on %edx, which contains the high bits, not %eax which is the low bits). After multiplying, it shifts the result right by two. In C:
+
+unsigned divide(unsigned x) {
+   return (unsigned)(x*1321528399ULL >> 34);
+}
+
+So dividing by 13 is the same as multiplying by 1321528399 and then dividing by 234. That means that 234 divided by 13 would be 1321528399, right? In fact, it’s 1321528398.769 and change. Pretty close, but we’re not optimizing horseshoes, so how can we be sure this works all the time?
+ 
+The answer to the question right above this line
+
+It’s provable, and hopefully we can get some intuition about the whole thing. In the following proof, division is exact, not that integer-truncating stuff that C does; to round down I’ll use floor. Also, this only covers unsigned division: every number that appears is non-negative. (Signed division is broadly similar, though does differ in some details.) Lastly, we’re going to assume that the denominator d is not a power of 2, which is weirdly important. If d were a power of 2, we’d skip the multiplication and just use shifts, so we haven’t lost any generality.
+
+We have some fixed positive denominator d and some variable nonegative numerator n, and we want to compute the quotient \frac n d – no, wait, \lfloor \frac n d \rfloor, since that’s what C does. We’ll multiply the top and bottom by 2k, where k is some positive integer power – it represents the precision in a sense, and we’ll pick its value later:
+\lfloor \frac n d \rfloor = \lfloor \frac n d \times \frac {2^k} {2^k} \rfloor = \lfloor \frac {2^k} d \times \frac n {2^k} \rfloor
+
+We’re going to call that \frac {2^k} d term mexact, because it’s our “magic number” that lets us compute division through multiplication. So we have:
+
+m_{exact} = \frac {2^k} d \\\\ \lfloor \frac n d \rfloor = \lfloor m_{exact} \times \frac n {2^k} \rfloor
+
+This equality looks promising, because we’ve hammered our expression into the shape we want; but we haven’t really done anything yet. The problem is that mexact is a fraction, which is hard for computers to multiply. (We know it’s a fraction because d is not a power of 2). The tricky part is finding an integer approximation of mexact that gives us the same result for any dividend up to the largest possible one (UINT_MAX in our case). Call this approximation m. So we have m \approx m_{exact} , where m is an integer.
+
+When it comes to approximation, closer is better, so let’s start by just rounding m down: m = \lfloor m_{exact} \rfloor. Since mexact cannot be an integer, m must be strictly less than mexact. Does this m work, which is to say, does it behave the same as mexact over the range we care about?
+
+We’ll try it when the numerator equals the denominator: n = d. Of course then the quotient is supposed to be 1. This leads to:
+\frac d d = m_{exact} \times \frac d {2^k} \\ \implies \frac d d > m \times \frac d {2^k} \\ \implies 1 > \lfloor m \times \frac d {2^k} \rfloor
+
+That’s bad, because that last expression is supposed to be 1. The approximation m = \lfloor m_{exact} \rfloor is too small, no matter what k is.
+
+Ok, let’s round up instead: m = \lceil m_{exact} \rceil = \lceil \frac {2^k} d \rceil. Does this value for m work?
+
+Now, \lceil \frac {2^k} d \rceil just means dividing 2k by d and then rounding up. That’s the same as rounding up 2k to the next multiple of d first, and then dividing exactly by d. (We know that 2k is not itself a multiple of d because d is not a power of 2!) So we can write:
+m = \lceil \frac {2^k} d \rceil = \frac {2^k + e} d.
+
+where e is the “thing to add to get to the next multiple of d,” which means that 0 < e < d. (Formally, e = d - 2k mod d.) This value e is sort of a measure of how much “damage” the ceil does – that is, how bad the approximation m is.
+
+So let’s plug this new m into our division expression, and then apply some algebra:
+
+\lfloor m \times \frac n {2^k} \rfloor = \lfloor \frac {2^k + e} d \times \frac n {2^k} \rfloor = \lfloor \frac n d + \frac e d \times \frac n {2^k} \rfloor
+
+This last expression is really cool, because it shows the wholesome result we’re after, \lfloor \frac n d \rfloor, and also an insidious “error term:” that \frac e d \times \frac n {2^k}, which represents how much our ceil is causing us to overestimate. It also shows that we can make the error term smaller by cranking up k: that’s the sense in which k is a precision.
+ 
+K’s Choice
+
+We could pick some huge precision k, get a very precise result, and be done. But we defined m to be \lceil \frac {2^k} d \rceil, so if k is too big, then m will be too big to fit in a machine register and we can’t efficiently multiply by it. So instead let’s pick the smallest k that’s precise enough, and hope that fits into a register. Since there are several variables involved, our strategy will be to find upper bounds for them, replace the variables with their upper bounds, and simplify the expression until we can solve for k.
+
+So we want the smallest k so that \lfloor \frac n d \rfloor = \lfloor \frac n d + \frac e d \times \frac n {2^k} \rfloor . This will be true if the error term \frac e d \times \frac n {2^k} is less than 1, because then the floor operation will wipe it out, right? Oops, not quite, because there’s also a fractional contribution from \frac n d. We need to be sure that the error term, plus the fractional contribution of \frac n d, is less than 1 for that equality to be true.
+
+We’ll start by putting an upper bound on the fractional contribution. How big can it be? If you divide any integer by d, the fractional part of the result is no more than \frac {d - 1} d. Therefore the fractional contribution of \frac n d is at most \frac {d - 1} d, and so if our error term is less than \frac 1 d, it will be erased by the floor and our equality will be true.
+
+So k will be big enough when   \frac e d \times \frac n {2^k} < \frac 1 d.
+
+Next we’ll tackle \frac e d. We know from up above that e is at most d-1, so we have \frac e d < 1. So we can ignore that factor: \frac n {2^k} < \frac 1 d \implies \frac e d \times \frac n {2^k} < \frac 1 d.
+
+The term \frac n {2^k} has a dependence on n, the numerator. How big can the numerator be? Let’s say we’re dividing 32 bit unsigned integers: n ≤ 232. (The result is easily extended to other widths). We can make \frac n {2^k} less than 1 by picking k = 32. To make it even smaller, less than \frac 1 d, we must increase k by \log_2 d. That is,
+k > 32 + \log_2 d \implies \frac n {2^k} < \frac 1 d
+
+Since we want k to be an integer, we have to round this up: k = 32 + \lceil \log_2 d \rceil. We know that value for k works.
+
+What does that precision do to m, our magic number? Maybe this k makes m too big to fit into a 32 bit register! We defined m = \lceil \frac {2^k} d \rceil; plugging in k we have m = \lceil \frac {2^{32 + \lceil log_2 d \rceil} } d \rceil .
+
+This is a gross expression, but we can put an upper bound on it. Note that d < {2 ^ { \lceil log_2 d \rceil } }, so we can write the following:
+m <= \lceil \frac {2^{32 + \lceil log_2 d \rceil} } {2 ^ { \lfloor log_2 d \rfloor } } \rceil = \lceil {2^{32 + \lceil log_2 d \rceil - \lfloor log_2 d \rfloor} } \rceil \\ \\ = \lceil {2 ^ { 32 + 1}} \rceil = 2^{33}
+
+Nuts! Our approximation m just barely does not fit into a 32 bit word!
+
+Since we rounded some stuff, you might think that we were too lazy and a more careful analysis would produce a tighter upper bound. But in fact our upper bound is exact: the magic number for an N-bit division really may need to be as large as N+1 bits. The good news is, there may be smaller numbers that fit in N bits for specific divisors. More on that later!
+ 
+We are fruitful and multiply
+
+In any case, we now have our magic number m. To perform the division, we need to compute \lfloor \frac {m n} {2^k} \rfloor as efficiently as possible. m is a 33 bit number, so how can a 32 bit processor efficiently multiply by that? One way would be to use a bignum library, but’s probably slow. A better approach is to multiply by the low 32 bits, and handle the 33rd bit specially, like this:
+m n \\ \\ = (m - 2^{32} + 2^{32})n \\ \\ = (m - 2^{32})n + 2^{32} n
+
+This looks very promising: m – 232 is definitely a 32 bit number. Furthermore, we can compute that 232n term very easily: we don’t even need to shift, just add n to the high word of the product. Unfortunately, it’s not right: a 32 bit number times a 33 bit number is 65 bits, so the addition overflows.
+
+But we can prevent the overflow by distributing one of the 2s in the denominator, through the following trick:
+\lfloor \frac {n + q} {2^k} \rfloor = \lfloor \frac {n - q + 2q} {2^k} \rfloor = \lfloor ( \frac {n - q + 2q} 2 ) / {2^{k-1}} \rfloor \\ = \lfloor ( \lfloor \frac {n - q} 2 \rfloor + q ) / {2^{k-1}} \rfloor
+
+Here q is the magic number (minus that 33rd bit) times n, and n is just n, the numerator. (Everything should be multiplied by 232, but that’s sort of implicit in the fact that we are working in the register containing the high product, so we can ignore it.)
+
+Can the subtraction n – q underflow? No, because q is just n times the 32 bit magic number, and then divided by 232. The magic number (now bereft of its 33rd bit) is less than 232, so we have q < n, so n - q cannot underflow.
+
+What about that +q? Can that overflow? No, because we can just throw out the floor to get an upper bound of \frac {n + q} 2 which is a 32 bit number.
+
+So we have a practical algorithm. Given a dividend n and a fixed divisor d, where 0 < d < 232 and 0 ≤ n < 232:
+
+    Precompute p = \lceil log_2 d \rceil
+    Precompute m = \lceil \frac {2^{32 + p}} d \rceil. This will be a 33 bit number, so keep only the low 32 bits.
+    Compute q = (m \times n) >> 32. Most processors can do this with one “high multiply” instruction.
+    Compute t = ((n - q) >> 2) + q, which is an overflow-safe way of computing (n + q) >> 1. This extra addition corrects for dropping the 33rd bit of m.
+    Perform the remaining shift p: t = t >> (p-1)
+
+That’s it! We know how to efficiently replace division with multiplication. We can see all these steps in action. Here is the assembly that Clang generates for division by 7, along with my commentary:
+
+_divide_by_7:
+ movl $613566757, %ecx  613566757 is the low 32 bits of (2**35)/7, rounded up
+ movl %edi, %eax
+ mull %ecx              Multiply the dividend by the magic number
+ subl %edx, %edi        The dividend minus the high 32 bits of the product in %edx (%eax has the low)
+ shrl %edi              Initial shift by 1 to prevent overflow
+ addl %edx, %edi        Add in the high 32 bits again, correcting for the 33rd bit of the magic number
+ movl %edi, %eax        Move the result into the return register
+ shrl $2, %eax          Final shift right of floor(log_2(7))
+ ret
+
+ 
+Improving the algorithm for particular divisors
+
+This algorithm is the best we can do for the general case, but we may be able to improve on this for certain divisors. The key is that e term: the value we add to get to the next multiple of d. We reasoned that e was less than d, so we used \frac e d < 1 as an upper bound for e. But it may happen that a multiple of d is only slightly larger than a power of 2. In that case, e will be small, and if we're lucky, it will be small enough to push the entire "error term" under \frac 1 d.
+
+For example, let’s try it for the divisor 11. With the general algorithm, we would need k = 32 + \lceil log_2 11 \rceil = 36. But what if we choose k = 35 instead? 235 + 1 is a multiple of 11, so we have e = 1, and we compute:
+\frac e d \times \frac n {2^k} = \frac 1 d \times \frac n {2^{35}} < \frac 1 d
+
+So k = 35 forces the error term to be less than \frac 1 d, and therefore k = 35 is a good enough approximation. This is good news, because then m = \lceil \frac {2^{35}} {11} \rceil = 3123612579 < 2^{32}, so our magic number fits in 32 bits, and we don't need to worry about overflow! We can avoid the subtraction, addition, and extra shifting in the general algorithm. Indeed, clang outputs:
+
+_divide_by_11:
+  movl  $-1171354717, %ecx
+  movl  %edi, %eax
+  mull  %ecx
+  movl  %edx, %eax
+  shrl  $3, %eax
+  ret
+
+The code for dividing by 11 is shorter than for dividing by 7, because a multiple of 11 happens to be very close to a power of 2. This shows the way to an improved algorithm: We can simply try successive powers of 2, from 32 up to 32 + \lfloor log_2 d \rfloor, and see if any of them happen to be close enough to a multiple of d to force the error term below \frac 1 d. If so, the corresponding magic number fits in 32 bits and we can generate very efficient code. If not, we can always fall back to the general algorithm.
+
+The power 32 will work if \frac e d \leq \frac 1 d, the power 33 will work if \frac e d \leq \frac 2 d, the power 34 will work if \frac e d \leq \frac 4 d, etc., up to 32 + \lfloor log_2 d \rfloor, which will work if \frac e d \leq \frac 1 2. By "chance", we'd expect this last power to work half the time, the previous power to work 25% of the time, etc. Since we only need one, most divisors actually should have an efficient, 32 bit or fewer magic number. The infinite series \frac 1 2 + \frac 1 4 + \frac 1 8 sums to 1, so our chances get better with increasing divisors.
+
+It's interesting to note that if a divisor d has one of these more efficient magic numbers for a power k < 32 + \lceil log_2 d \rceil, it also has one for all higher powers. This is easy to see: if 2k + e is a multiple of d, then 2k+1 + 2e is also a multiple of d.
+\frac e d \times \frac n {2^k} \leq \frac 1 d \implies \frac {2e} d \times \frac n {2^{k+1}} \leq \frac 1 d
+
+This is good news. It means that we only have to check one case, \lceil \frac {2^{32 + \lfloor log_2 d \rfloor}} d \rceil (a 32 bit value) to see if there is a more efficient magic number, because if any smaller power works, that one works too. If that that power fails, we can go to the 33 bit number, which we know must work. This is useful information in case we are computing magic numbers at runtime.
+
+Still, gcc and LLVM don't settle for just any magic number - both try to find the smallest magic number. Why? There's a certain aesthetic appeal in not using bigger numbers than necessary, and most likely the resulting smaller multiplier and smaller shifts are a bit faster. In fact, in a very few cases, the resulting shift may be zero! For example, the code for diving by 641:
+
+_divide_by_641:
+        movl    $6700417, %ecx
+        movl    %edi, %eax
+        mull    %ecx
+        movl    %edx, %eax
+        ret
+
+No shifts at all! For this to happen, we must have \frac e d \le \frac 1 d, which of course means that e = 1, so 641 must evenly divide 232 + 1. Indeed it does.
+
+This inspires a way to find the other "super-efficient" shiftless divisors: compute the factors of 232 + 1. Sadly, the only other factor is 6700417. I have yet to discover an occasion to divide by this factor, but if I do, I'll be ready.
+
+
+
+
+
+
+
+
+
+
+
+
+Background
+
+Unsigned integer division is one of the slowest operations on a modern microprocessor. When the divisor is known at compile time, optimizing compilers do not emit division instructions, but instead either a bit shift (for a power of 2), or a multiplication by a sort of reciprocal (for non-powers of 2). This second case involves the identity:
+
+$\lfloor \frac n d \rfloor = \lfloor \frac n d \times \frac {2^k} {2^k} \rfloor = \lfloor \frac {2^k} d \times \frac n {2^k} \rfloor$
+
+As d is not a power of 2, $\frac {2^k} d$ is always a fraction. It is rounded up to an integer, which is called a "magic number" because multiplying by it performs division, as if by magic. The rounding-up introduces error into the calculation, but we can reduce that error by increasing k. If k is big enough, the error gets wiped out entirely by the floor, and so we always compute the correct result.
+
+The dividend (numerator) is typically an N bit unsigned integer, where N is the size of a hardware register. For most divisors, k can be small enough that a valid magic number can also fit in N bits or fewer. But for many divisors, there is no such magic number. 7, 14, 19, 31, 42...these divisors require an N+1 bit magic number, which introduces inefficiences, as the magic number cannot fit in a hardware register.
+
+Let us call such divisors "uncooperative." The algorithm presented here improves the performance of dividing by these uncooperative divisors by finding a new magic number which is no more than N bits. The existing algorithm that generates an N+1 bit magic number for uncooperative divisors will be referred to as the "round-up algorithm", because it rounds the true magic number up. The version presented here will be called the "round-down algorithm". We will say that an algorithm "fails" or "succeeds" according to whether it produces a magic number of N bits or fewer; we will show that either the round-up or round-down algorithm (or both) must succeed for all divisors.
+
+All quantities used in the proofs and discussion are non-negative integers.
+A Shift In Time Saves Fourteen
+
+For completeness, it is worth mentioning one additional technique for uncooperative divisors that are even. Consider dividing a 32 bit unsigned integer by 14. The smallest valid magic number for 14 is 33 bits, which is inefficient. However, instead of dividing by 14, we can first divide by 2, and then by 7. While 7 is also uncooperative, the divide by 2 ensures the dividend is only a 31 bit number. Therefore the magic number for the subsequent divide-by-7 only needs to be 32 bits, which can be handled efficiently.
+
+This technique effectively optimizes division by even divisors, and is incorporated in the reference code provided later. Now we present a technique applicable for odd divisors.
+Motivation (aka What Goes Up Can Also Go Down)
+
+First, an appeal to intuition. A divisor is uncooperative in the round-up algorithm because the rounding-up produces a poor approximation. That is, $\frac {2^k} d$ is just slightly larger than some integer, so the approximation $\lceil \frac {2^k} d \rceil$ is off by nearly one, which is a lot. It stands to reason, then, that we could get a better approximation by floor instead of ceil: $m = \lfloor \frac {2^k} d \rfloor$.
+
+A naïve attempt to apply this immediately runs into trouble. Let d be any non-power-of-2 divisor, and consider trying to divide d by itself by multiplying with this magic number:
+
+$ \lfloor \frac {2^k} d \rfloor < \frac {2^k} d \implies $
+
+$ \lfloor \frac {2^k} d \rfloor \times \frac d {2^k} < \frac {2^k} d \times \frac d {2^k} \implies $
+
+$ \lfloor \lfloor \frac {2^k} d \rfloor \times \frac d {2^k} \rfloor < 1 $
+
+The result is too small.
+
+(Could we replace the outer floor by a ceil? The floor is implemented by a right shift, which throws away the bits that are shifted off. We could conjure up a "rounding up" right shift, and that might work, though it would likely be more expensive than the instructions it replaces.)
+
+So rounding down causes us to underestimate the result. What if we tried to counteract that by incrementing the numerator first?
+
+$\lfloor \frac n d \rfloor \ \stackrel{?}{=} \ \lfloor \lfloor \frac {2^k} d \rfloor \times \frac {\color{#FF3030}{n+1}} {2^k} \rfloor $
+
+This is the round-down algorithm.
+Proof of Correctness
+
+First we must show that the round-down algorithm actually works. We proceed much like the proof for the round-up algorithm. We have a known constant d and a runtime variable n, both N bit values. We want to find some k that ensures:
+
+$\lfloor \frac n d \rfloor = \lfloor m \times \frac {n+1} {2^k} \rfloor$
+
+where: $$ \small \begin{align} \small & m = \lfloor \frac {2^k} d \rfloor \\ & 0 \le n < 2^{N} \\ & 0 < d < 2^{N} \\ & \text{d not a power of 2} \end{align} $$
+
+Introduce an integer e which represents the error produced by the floor:
+
+$ m = \lfloor \frac {2^k} d \rfloor = \frac {2^k - e} d $
+
+$0 < e < d$
+
+Apply some algebra:
+
+$$\begin{align} \lfloor m \times \frac {n+1} {2^k} \rfloor & = \lfloor \frac {2^k - e} d \times \frac {n + 1} {2^k} \rfloor \\ & = \lfloor \frac {n + 1} d \times \frac {2^k - e} {2^k} \rfloor \\ & = \lfloor \frac {n + 1} d \times ( 1 - \frac e {2^k} ) \rfloor \\ & = \lfloor \frac {n+1} d - \frac {n+1} d \times \frac e {2^k} \rfloor \\ & = \lfloor \frac n d + \frac 1 d - \frac e d \times \frac {n+1} {2^k} \rfloor \end{align} $$
+
+We hope that this equals $\lfloor \frac n d \rfloor$. Within the floor, we see the result, plus two terms of opposite signs. We want the combination of those terms to cancel out to something at least zero, but small enough to be wiped out by the floor. Let us compute the fractional contribution of each term, and show that it is at least zero but less than one.
+
+The fractional contribution of the $\frac n d$ term can be as small as zero and as large as $\frac {d-1} d$. Therefore, in order to keep the whole fractional part at least zero but below one, we require:
+
+$ 0 \le \frac 1 d - \frac e d \times \frac {n+1} {2^k} < \frac 1 d$
+
+The term $\frac e d \times \frac {n+1}{2^k}$ is always positive, so the $< \frac 1 d$ is easily satisfied. It remains to show it is at least zero. Rearranging:
+
+$ 0 \le \frac 1 d - \frac e d \times \frac {n+1} {2^k} \implies \frac e d \times \frac {n+1} {2^k} \le \frac 1 d $
+
+This is very similar to the condition required in the round-up algorithm! Let's continue to simplify, using the fact that n < 2N.
+
+$ \frac e d \times \frac {n+1} {2^k} \le \frac 1 d$
+
+$ e \times \frac {n+1} {2^k} \le 1 $
+
+$ \frac e {2^{k-N}} \le 1 $
+
+$ e \le 2^{k-N} $
+
+This is the condition that guarantees that our magic number m works. In summary, pick some k ≥ N, and compute $ \small e = 2^k \mod{d} $. If the resulting e ≤ 2k-N, the algorithm is guaranteed to produce the correct result for all N-bit dividends.
+Proof of Universality (aka Your Weakness Is My Strength)
+
+When will this condition be met? Recall the hand-waving from before: the round-up algorithm failed because rounding up produced a poor approximation, so we would expect rounding down to produce a good approximation, which would make the round-down algorithm succeed. Optimistically, we'd hope that round-down will succeed any time round-up fails! Indeed that is the case, and we can formally prove it now.
+
+Here eup refers to the difference produced by rounding 2k up to a multiple of d, as in the round-up algorithm, while edown refers to the difference produced by rounding down to a multiple of d as in round-down. An immediate consequence is eup + edown = d.
+
+Recall from the round-up algorithm that we try successive values for k, with the smallest k guaranteed to work equal to $ \small N + \lceil log_2 d \rceil $. Unfortunately, this k produces a magic number of N+1 bits, and so too large to fit in a hardware register. Let's consider the k just below it, which produces a magic number of N bits:
+
+$ k = N + \lceil log_2 d \rceil - 1 = N + \lfloor log_2 d \rfloor $
+
+Assume that d is uncooperative, i.e. the magic number for this power was not valid in the round-up algorithm. It would have been valid if $ e_{up} < 2^{\lfloor log_2 d \rfloor} $; because it was not valid we must have $ e_{up} \ge 2^{\lfloor log_2 d \rfloor} $. Substituting in:
+
+$$\begin{align} e_{up} & \ge 2^{\lfloor log_2 d \rfloor} \implies \\ d - e_{down} & \ge 2^{\lfloor log_2 d \rfloor} \implies \\ e_{down} & \le d - 2^{\lfloor log_2 d \rfloor} \implies \\ e_{down} & \le 2^{\lceil log_2 d \rceil} - 2^{\lfloor log_2 d \rfloor} \implies \\ e_{down} & \le 2 \times 2^{\lfloor log_2 d \rfloor} - 2^{\lfloor log_2 d \rfloor} \implies \\ e_{down} & \le 2^{\lfloor log_2 d \rfloor} \implies \\ e_{down} & \le 2^{k-N} \end{align} $$
+
+Thus we've satisfied the condition determined in the proof of correctness. This is an important and remarkable result: the round-down algorithm is guaranteed to have an efficient magic number whenever round-up does not. If the implementation of round-down can be shown to be more efficient, the overflow case for the round-up algorithm can be discarded entirely.
+Recap
+
+Here's the practical algorithm. Given a dividend n and a fixed divisor d, where 0 ≤ n < 2N and 0 < d < 2N, and where the usual round-up algorithm failed to find an N-bit magic number:
+
+    Consider in turn values of p in the range 0 through $ \small \lfloor log_2 d \rfloor $, inclusive.
+    If $ \small 2^{N + p}\ \bmod{d} \le 2^p $, then we have found a working p. The last value in the range is guaranteed to work.
+    Once we have a working p, precompute the magic number $ \small m = \lfloor \frac {2^{N + p}} d \rfloor $, which will be strictly less than 2N.
+    Compute $ \small q = (m \times (n+1)) \gg N $. This is typically implemented via a "high multiply" instruction.
+    Perform any remaining shift: $ \small q = q \gg p $.
+
+Overflow Handling
+
+This algorithm has a wrinkle. Because n is an N-bit number, it may be as large as 2N - 1, in which event the n+1 term will be an N+1 bit number. If the value is simply incremented in an N-bit register, the dividend will wrap to zero, and the quotient will in turn be zero. Here we present two strategies for efficiently handling the possibility of modulo overflow.
+Distributed Multiply Strategy
+
+An obvious approach is to distribute the multiply through, i.e.:
+
+$ \small m \times (n+1) = m \times n + m $
+
+This is a 2N-bit quantity and so cannot overflow. For efficient implementation, this requires that the low half of the m x n product be available "for free," so that the sum can be performed and any carry transmitted to the high half. Many modern architectures produce both halves with one instruction, such as Intel x86 (the MUL instruction) or ARM (UMULL). It is also available if the register width is twice the bit size of the type, e.g. performing a 32 bit divide on a 64 bit processor.
+Saturating Increment Strategy
+
+However, other processors compute the low and high halves separately, such as PowerPC; in this case computing the lower half of the product would be prohibitively expensive, and so a different strategy is needed. A second, surprising approach is to simply elide the increment if n is already at its maximum value, i.e. replace the increment with a "saturating increment" defined by:
+
+$$ \small \text{SaturInc}(x) = \begin{cases} x+1 & \text{ if } x < 2^N-1 \\ x & \text{ if } x = 2^N-1 \end{cases} $$
+
+It is not obvious why this should work: we needed the increment in the first place, so how can we just skip it? We must show that replacing increment with SaturInc will compute the correct result for 2N - 1. A proof of that is presented below.
+Proof of Correctness when using Saturating Increment
+
+Consider the practical algorithm presented above, with the +1 replaced by saturating increment. If $ \small n < 2^N-1 $, then saturating increment is the same as +1, so the proof from before holds. Therefore assume that $ \small n = 2^N-1 $, so that incrementing n would wrap to 0.
+
+By inspection, $ \small \text{SaturInc}(2^N - 1) = \text{SaturInc}(2^N - 2) $. Because the algorithm has no other dependence on n, replacing the +1 with SaturInc effectively causes the algorithm to compute the quotient $ \lfloor \frac {2^N - 2} d \rfloor $ when n = 2N-1.
+
+Now d either is or is not a factor of 2N-1. Let's start by assuming it is not a factor. It is easy to prove that, if x and y are positive integers and y is not a factor of x, then $ \lfloor \frac x y \rfloor = \lfloor \frac {x-1} y \rfloor $. Therefore it must be true that $ \lfloor \frac {2^N - 1} d \rfloor = \lfloor \frac {2^N - 2} d \rfloor $, so the algorithm computes the correct quotient.
+
+Now let us consider the case where d is a factor of 2N-1. We will prove that d is cooperative, i.e. the round-up algorithm produced an efficient N-bit result for d, and therefore the round-down algorithm is never employed. Because d is a factor of 2N-1, we have $ \small 2^N\ \bmod{d} = 1 $. Consider once again the case of the "last N-bit magic number," i.e.:
+
+$ \small k = N + \lceil log_2 d \rceil - 1 = N + \lfloor log_2 d \rfloor $
+
+Recall that the round-up algorithm computes $ \small e_{up} = d - (2^k\ \bmod{d}) $. This power is acceptable to the round-up algorithm if $ \small e_{up} \leq 2^{k - N} = 2^{\lfloor log_2 d \rfloor} $. Consider:
+
+$$ \begin{align} 2^k\ \bmod{d} & = 2^{N + \lfloor log_2 d \rfloor}\ \bmod{d} \\ & = 2^N \times 2^{\lfloor log_2 d \rfloor}\ \bmod{d} \\ & = 1 \times 2^{\lfloor log_2 d \rfloor}\ \bmod{d} \\ & = 2^{\lfloor log_2 d \rfloor} \end{align} $$
+
+Substituting in:
+
+$$ \begin{align} e_{up} & = d - 2^{\lfloor log_2 d \rfloor} \\ e_{up} & < 2^{\lceil log_2 d \rceil} - 2^{\lfloor log_2 d \rfloor} \\ & < 2 \times 2^{\lfloor log_2 d \rfloor} - 2^{\lfloor log_2 d \rfloor} \\ & < 2^{\lfloor log_2 d \rfloor} \end{align} $$
+
+Thus the power k is acceptable to the round-up algorithm, so d is cooperative and the round-down algorithm is never employed. Thus a saturating increment is acceptable for all uncooperative divisors. Q.E.D.
+
+(As an interesting aside, this last proof demonstrates that all factors of 2N-1 "just barely" have efficient N-bit magic numbers. For example, the divisor 16,711,935 is a factor of 232-1, and its magic number, while N bits, requires a shift of 23, which is large; in fact it is the largest possible shift, as the floor of the base 2 log of that divisor. But increase the divisor by just one (16711936) and only a 16 bit shift is necessary.)
+
+In summary, distributing the multiplication or using a saturating increment are both viable strategies for avoiding wrapping in the n+1 expression, ensuring that the algorithm works over the whole range of dividends. Implementations can use whichever technique is most efficient1.
+Practical Implementation
+
+The discussion so far is only of theoretical interest; it becomes of practical interest if the round-down algorithm can be shown to outperform round-up on uncooperative divisors. This is what will be demonstrated below for x86 processors.
+
+x86 processors admit an efficient saturating increment via the two-instruction sequence add 1; sbb 0; (i.e. "add; subtract 0 with borrow"). They also admit an efficient distributed multiply. The author implemented this optimization in the LLVM compiler using both strategies in turn, and then compiled the following C code which simply divides a value by 7, using clang -O3 -S -arch i386 -fomit-frame-pointer (this last flag for brevity):
+
+unsigned int sevens(unsigned int x) {
+    return x / 7;
+}
+
+Here is a comparison of the generated i386 assembly, with corresponding instructions aligned, and instructions that are unique to one or the other algorithm shown in red. (x86-64 assembly produced essentially the same insights, and so is omitted.)
+
+Here is a comparison of the generated i386 assembly, with corresponding instructions aligned, and instructions that are unique to one or the other algorithm shown in red. (x86-64 assembly produced essentially the same insights, and so is omitted.)
+
+Round-Up (Stock LLVM)
+_sevens:
+  movl  4(%esp), %ecx
+  
+  
+  movl  $613566757, %edx
+  movl  %ecx, %eax
+  mull  %edx
+  subl  %edx, %ecx
+  shrl  %ecx
+  addl  %edx, %ecx
+  shrl  $2, %ecx
+  movl  %ecx, %eax
+  ret
+
+Distributive
+_sevens:
+
+
+
+  movl  $1227133513, %eax
+
+  mull  4(%esp)
+  addl  $1227133513, %eax
+  adcl  $0, %edx
+  
+  shrl  %edx
+  movl  %edx, %eax
+  ret
+
+Saturating Increment
+_sevens:
+  movl  4(%esp), %eax
+  addl  $1, %eax
+  sbbl  $0, %eax
+  movl  $1227133513, %ecx
+  
+  mull  %ecx
+  
+  
+  
+  shrl  %edx
+  movl  %edx, %eax
+  ret
+
+The round-down algorithms not only avoid the three-instruction overflow handling, but also avoid needing to store the dividend past the multiply (notice the highlighted MOVL instruction in the round-up algorithm). The result is a net saving of two instructions. Also notice that the variants require fewer registers, which suggests there might be even more payoff (i.e. fewer register spills) when the divide is part of a longer code sequence.
+
+(In the distributive variant the compiler has made the dubious choice to emit the same immediate twice instead of placing it in a register. This is especially deleterious in the loop microbenchmark shown below, because loading the immediate into the register could be hoisted out of the loop. To address this, the microbenchmark tests both the assembly as generated by LLVM, and a version tweaked by hand to address this suboptimal codegen.)
+
+As illustrated, both strategies require only two instructions on x86, which is important because the overhead of the round-up algorithm is three to four instructions. Many processor architectures admit a two-instruction saturating increment through the carry flag2.
+Microbenchmark
+
+To measure the performance, the author compiled a family of functions. Each function accepts an array of unsigned ints, divides them by a particular uncooperative divisor, and returns the sum; for example:
+
+uint divide_7(const uint *x, size_t count) {
+    uint result = 0;
+    while (count--) {
+        result += *x++ / 7;
+    }
+    return result;
+}
+
+Each function in the family had very similar machine code; a representative sample is:
+
+Standard Round-Up
+_divide_7:
+  pushl  %ebp
+  movl  %esp, %ebp
+  pushl  %ebx
+  pushl  %edi
+  pushl  %esi
+  xorl  %ecx, %ecx
+  movl  12(%ebp), %edi
+  testl  %edi, %edi
+  je  LBB1_3
+  movl  8(%ebp), %ebx
+  
+LBB1_2:
+  movl  (%ebx), %esi
+  movl  %esi, %eax
+  movl  $613566757, %edx
+  mull  %edx
+  subl  %edx, %esi
+  shrl  %esi
+  addl  %edx, %esi
+  shrl  $2, %esi
+  addl  %esi, %ecx
+  addl  $4, %ebx
+  decl  %edi
+  jne  LBB1_2
+LBB1_3:
+  movl  %ecx, %eax
+  popl  %esi
+  popl  %edi
+  popl  %ebx
+  popl  %ebp
+  ret
+
+Distributive (hand tweaked)
+_divide_7:
+  pushl  %ebp
+  movl  %esp, %ebp
+  pushl  %ebx
+  pushl  %edi
+  pushl  %esi
+  xorl  %ecx, %ecx
+  movl  12(%ebp), %esi
+  testl  %esi, %esi
+  je  LBB0_3
+  movl  8(%ebp), %edi
+  movl  $1227133513, %ebx
+LBB0_2:
+  movl  (%edi), %eax
+  
+  
+  mull  %ebx
+  addl  %ebx, %eax
+  adcl  $0, %edx
+  
+  shrl  %edx
+  addl  %edx, %ecx
+  addl  $4, %edi
+  decl  %esi
+  jne  LBB0_2
+LBB0_3:
+  movl  %ecx, %eax
+  popl  %esi
+  popl  %edi
+  popl  %ebx
+  popl  %ebp
+  ret
+
+Saturating Increment
+_divide_7:
+  pushl  %ebp
+  movl  %esp, %ebp
+  pushl  %ebx
+  pushl  %edi
+  pushl  %esi
+  xorl  %ecx, %ecx
+  movl  12(%ebp), %esi
+  testl  %esi, %esi
+  je  LBB1_3
+  movl  8(%ebp), %edi
+  movl  $1227133513, %ebx
+LBB1_2:
+  movl  (%edi), %eax
+  addl  $1, %eax
+  sbbl  $0, %eax
+  mull  %ebx
+  
+  
+  
+  shrl  %edx
+  addl  %edx, %ecx
+  addl  $4, %edi
+  decl  %esi
+  jne  LBB1_2
+LBB1_3:
+  movl  %ecx, %eax
+  popl  %esi
+  popl  %edi
+  popl  %ebx
+  popl  %ebp
+  ret
+
+A simple test harness was constructed and the above functions were benchmarked to estimate the time per divide. The benchmark was compiled with clang on -O3, and run on a 2.93 GHz Core i7 iMac. Test runs were found to differ by less than .1%. 
+
+
+Extension to Signed Division
+
+A natural question is whether the same optimization could improve signed division; unfortunately it appears that it does not, for two reasons:
+
+    The increment of the dividend must become an increase in the magnitude, i.e. increment if n > 0, decrement if n < 0. This introduces an additional expense.
+    The penalty for an uncooperative divisor is only about half as much in signed division, leaving a smaller window for improvements.
+
+Thus it appears that the round-down algorithm could be made to work in signed division, but will underperform the standard round-up algorithm.
+
+Reference Code
+
+The reference implementation for computing the magic number due to Henry Warren ("Hacker's Delight") is rather dense, and it may not be obvious how to incorporate the improvements presented here. To ease adoption, we present a reference implementation written in C that incorporates all known optimizations, including the round-down algorithm.
+
+This new reference implementation is available at https://raw.github.com/ridiculousfish/libdivide/master/divide_by_constants_codegen_reference.c
+
+Conclusion
+
+The following algorithm is an alternative way to do division by "uncooperative" constants, which may outperform the standard algorithm that produces an N+1 bit magic number. Given a dividend n and a fixed divisor d, where 0 ≤ n < 2N and 0 < d < 2N, and where the standard algorithm failed to find a N-bit magic number:
+
+    Consider in turn values of p in the range 0 through $ \small \lfloor log_2 d \rfloor $, inclusive.
+    If $ \small 2^{N + p}\ \bmod{d} \le 2^p $, then we have found a working p. The last value in the range is guaranteed to work (assuming the standard algorithm fails).
+    Once we have a working p, precompute the magic number $ \small m = \lfloor \frac {2^{N + p}} d \rfloor $, which will be strictly less than 2N.
+    To divide n by d, compute the value q through one of the following techniques:
+        Compute $ \small q = (m \times n + m)) \gg N $, OR
+        Compute $ \small q = (m \times (n+1)) \gg N $. If n+1 may wrap to zero, it is acceptable to use a saturating increment instead.
+    Perform any remaining shift: $ \small q = q \gg p $.
+
+On a Core i7 x86 processor, a microbenchmark showed that this variant "round down" algorithm outperformed the standard algorithm in both 32 bit and 64 bit modes by 9% to 17%, and in addition generated shorter code that used fewer registers. Furthermore, the variant algorithm is no more difficult to implement than is the standard algorithm. The author has provided a reference implementation and begun some preliminary work towards integrating this algorithm into LLVM, and hopes other compilers will adopt it.
+
+Footnotes
+
+1. Of course, if n can statically be shown to not equal 2N-1, then the increment can be performed without concern for modulo overflow. This likely occurs frequently due to the special nature of the value 2N-1.
+
+2. Many processor architectures admit a straightforward saturating increment by use of the carry flag. PowerPC at first blush appears to be an exception: it has somewhat unusual carry flag semantics, and the obvious approach requires three instructions:
+
+    li r2, 0
+    addic r3, r3, 1
+    subfe r3, r2, r3
+
+However PowerPC does admit a non-obvious two-instruction saturating increment. It does not seem to appear in the standard literature, and for that reason it is provided below. Given that the value to be incremented is in r3, execute:
+
+    subfic r2, r3, -2
+    addze r3, r3
+
+    The result is in r3. r2 can be replaced by any temporary register; its value can be discarded.
+
+
+
+
+
+
+
+Maybe you've got a list of things, like friends or appointments or map locations, and you want to give each one its own color so the user can distinguish them easily. The user can make new friends or appointments, so you don't know ahead of time how many colors you'll need. And when the user adds a new item, you want its color to be as different from all other colors as possible, to avoid confusion. How do you decide on the sequence of colors to give each item? And can it be a random-access sequence? It sounds tricky, maybe like some linear optimization problem, but in fact there's a marvelously simple and surprising solution.
+
+We can think of colors in terms of hue, saturation, and lightness. Since these colors are going to be presented next to each other, they have to look good together - no bright colors mixing with dark ones, for example - so the color choices will vary only in hue. That way blues, greens, reds, etc. will all be represented, but they'll all be equally bright and equally saturated.
+
+So let's try to pick some hues on the edge of the color wheel. We want the colors to be maximally different, so each time we add a new hue, we'll try to put it as far away from all the others as we can. The first color can be anything, so let's start with red. The second color then has to go opposite it. 
+
+
+    $ 0 $, $ \frac 1 2 $, $ \frac 1 4 $, $ \frac 3 4 $, $ \frac 1 8 $, $ \frac 5 8 $, $ \frac 3 8 $, $ \frac 7 8 $ …
+
+    It's easy to continue this series, but it's not obvious how to compute, say, the 100th element. But what if...what if we write it like this (read top to bottom, left to right):
+
+$ 0 = \frac 0 2 + \frac 0 4 + \frac 0 8 $
+$ \frac 1 2 = \frac 1 2 + \frac 0 4 + \frac 0 8 $
+$ \frac 1 4 = \frac 0 2 + \frac 1 4 + \frac 0 8 $
+$ \frac 3 4 = \frac 1 2 + \frac 1 4 + \frac 0 8 $
+$ \frac 1 8 = \frac 0 2 + \frac 0 4 + \frac 1 8 $
+$ \frac 5 8 = \frac 1 2 + \frac 0 4 + \frac 1 8 $
+$ \frac 3 8 = \frac 0 2 + \frac 1 4 + \frac 1 8 $
+$ \frac 7 8 = \frac 1 2 + \frac 1 4 + \frac 1 8 $
+
+And what if now we just look at the pattern of numerators:
+
+000 100 010 110 001 101 011 111
+
+It's just binary writ backward!
+
+So to compute the Nth color, we want to "mirror image" the bits of N around the decimal point. Another way of doing that is to reverse the bits of N, then shift them right, all the way past the decimal point. Of course bits shifted past the decimal point are normally discarded, but here we can use the opposite of the usual trick and replace a right shift with a divide. Do it in floating point and our bits will get preserved.
+
+Thus, the algorithm to compute the hue of the Nth color in this sequence is:
+
+    Reverse the bits of N
+    Convert to floating point
+    Divide by 232, assuming N is 32 bit; or use scalbn() if you're fancy
+
+So there is, in fact, a practical use case for reversing the bits of an integer.
+
+You can try it. Click in the area below to add colored circles, and you'll see the quick 'n dirty sequence of colors, starting at 216 degrees. You'll need a CSS3-savvy browser that supports HSL colors. (The JavaScript source is right underneath me!) 

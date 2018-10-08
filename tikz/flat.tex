@@ -1,0 +1,63 @@
+\documentclass[tikz,border=10pt,multi]{standalone}
+\usepackage{forest}
+\usetikzlibrary{arrows.meta,bending}
+\tikzset{
+    connect/.style={{Stealth[bend]}-{Stealth[bend]}, draw=green, shorten <=-3pt, shorten >=-3pt},
+    deparrow/.style={-Latex,blue}
+  }
+
+\forestset{
+  wg/.style={
+    for tree={
+      no edge,
+      draw,
+      outer ysep=1pt,
+    },
+    copy label/.style={
+      for children={
+        if content={}{
+            content/.pgfmath={content("!u")},
+            calign with current,
+            edge={draw,{-Triangle[open,reversed]}},
+            copy label,
+            !u.content/.pgfmath={content},
+            !u.content+=',
+        }{
+          copy label,
+        }
+      }
+    },
+    delay={
+      copy label,
+      for tree={name/.pgfmath={content}},
+    },
+    for tree={content format={\strut\forestoption{content}}},
+    where n children={0}{
+      tier=word,
+    }{},
+  },
+}
+\begin{document}
+
+\begin{forest}
+  wg
+  [,phantom
+   [small]
+   [children]
+   [were]
+   [playing]
+   [outside]
+  ] \draw[deparrow] ([xshift=-5pt]were.north) to[out=north, in=north] ([xshift=5pt]children.north);
+  \draw[deparrow] ([xshift=-5pt]children.north) to[out=north, in=north] ([xshift=5pt]small.north);
+  \draw[deparrow] ([xshift=5pt]were.north) to[out=north, in=north] ([xshift=-5pt]playing.north);
+  \draw[deparrow] ([xshift=-3.5pt, yshift=2.5pt]playing.north) to[out=north, in=north] ([xshift=3.5pt, yshift=2.5pt]children.north);
+  \draw[deparrow] ([xshift=5pt]playing.north) to[out=north, in=north] ([xshift=-5pt]outside.north);
+%  \draw[deparrow] (were.north) [bend.left] to ([xshift=-10pt]children.north);
+  %\draw[deparrow] (were) to[out=north, in=north] ([xshift=-10pt]children.north);
+ % \draw[deparrow] (children) to[out=north, in=north] (small);
+ % \draw[deparrow] (were) to[out=north, in=north] (playing);
+ % \draw[deparrow] (playing) to[out=north, in=north] (children);
+ % \draw[deparrow] (playing) to[out=north, in=north] (outside);
+\end{forest}
+
+\end{document}

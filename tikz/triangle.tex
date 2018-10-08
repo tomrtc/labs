@@ -1,0 +1,48 @@
+\documentclass[border=5pt]{standalone}
+\usepackage{forest}
+\usetikzlibrary{shapes.geometric}
+\begin{document}
+\forestset{
+  tria/.style={
+    node format={
+      \noexpand\node [
+      draw,
+      shape=regular polygon,
+      regular polygon sides=3,
+      inner sep=0pt,
+      outer sep=0pt,
+      \forestoption{node options},
+      anchor=\forestoption{anchor}
+      ]
+      (\forestoption{name}) {\foresteoption{content format}};
+    },
+    child anchor=parent,
+  },
+  triangle/.style={
+    isosceles triangle, isosceles triangle apex angle=45, child anchor=parent, shape border uses incircle, shape border rotate=90, draw,
+    delay={
+      if={
+        >O_> {!u.n children}{1}
+      }{
+        replace by/.process={ Ow {id} {[, coordinate, tier=##1, append, l'=0pt]}},
+        for siblings={tier/.option=id},
+        no edge,
+      }{},
+    },
+  },
+}%
+\begin{forest}
+  for tree={l'+=0.5cm, s sep'+=1cm, math content}
+  [q_5 [q_8 [q_1 [\overline q_2] [\overline q_6]]
+  [q_9 [q_3 [\vdots] [\vdots]] [q_5 [\vdots, triangle] [\vdots]] ] ]
+  [q_3 [\overline q_2] [q_4 [\overline q_2] [\overline q_6]] ]
+  ]
+\end{forest}
+\begin{forest}
+  for tree={l'+=0.5cm, s sep'+=1cm, math content}
+  [q_5 [q_8 [q_1 [\overline q_2] [\overline q_6]]
+  [q_9 [q_3 [\vdots] [\vdots]] [q_5 [\vdots, tria] [\vdots]] ] ]
+  [q_3 [\overline q_2] [q_4 [\overline q_2] [\overline q_6]] ]
+  ]
+\end{forest}
+\end{document}

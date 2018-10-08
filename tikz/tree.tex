@@ -1,0 +1,27 @@
+\documentclass{article}
+\usepackage{tikz, forest}
+\usetikzlibrary{shapes.geometric}
+\forestset{%
+  default preamble={
+    for tree={
+      circle,
+      draw,
+      inner sep=0pt,
+      minimum size=.5cm,
+      font=\scriptsize,
+      edge=->,
+      anchor=north
+    }
+  },
+  ssarbre/.style={isosceles triangle,
+                  draw,
+                  shape border rotate=90,
+                  minimum size=.7cm,
+                  child anchor=apex,
+                  anchor=apex}
+}
+\begin{document}
+\begin{forest}
+[$x$ [$y$ [$A$,ssarbre] [$z$ [$B$,ssarbre] [$C$,ssarbre] ] ] [$D$,ssarbre] ]
+\end{forest}
+\end{document}

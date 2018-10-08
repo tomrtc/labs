@@ -1,0 +1,93 @@
+\documentclass[tikz,border=10pt,multi,dvipsnames,svgnames,x11names]{standalone}
+\usepackage[edges]{forest}
+\usetikzlibrary{backgrounds}
+\begin{document}
+% addaswyd o gôd Gonzalo Medina: http://tex.stackexchange.com/a/270761/
+\definecolor{fblue}{RGB}{92,144,192}
+\definecolor{fgreen}{RGB}{34,162,70}
+
+\forestset{% addaswyd o gôd Gonzalo Medina: http://tex.stackexchange.com/a/270761/
+  declare toks={my folder colour}{fblue},
+  my folder/.style={
+    inner xsep=10pt,
+    inner ysep=8pt,
+    tikz+={
+      \begin{scope}[on background layer]
+        \filldraw[rounded corners=1pt, fill=\forestoption{my folder colour}, draw=white, double=black]
+        ([xshift=-10pt,yshift=-5pt].north east) -- ++(-4pt,10pt) -- ++(-10pt,0) -- ++(-4pt,-10pt) -- cycle;
+        \filldraw[rounded corners, draw=white, double=black, top color=\forestoption{my folder colour}, bottom color=\forestoption{my folder colour}!30]
+        ([xshift=-4pt].north east) -- ([xshift=-10pt].south east) -- ([xshift=10pt].south west) -- ([xshift=4pt].north west) -- cycle;
+      \end{scope}
+    },
+  },
+}
+
+\begin{forest}
+  for tree={% addaswyd o gôd Gonzalo Medina: http://tex.stackexchange.com/a/270761/
+    folder,
+    font=\sffamily,
+    grow'=0,
+    edge+={rounded corners},
+  }
+  [{UAFSynopsis}, my folder=fgreen
+     [{Documentation}, my folder]
+     [SynopsisMain, my folder
+        [01Abstract.tex]
+        [02Signature.tex]
+        [03Introduction.tex]
+        [04LiteratureReview.tex]
+        [05MaterialMethod.tex]
+        [06BackSignature.tex]
+        [SynopsisBib.bib]
+     ]
+     [LICENSE]
+     [NEWS.md]
+     [README.html]
+     [README.md]
+     [Makefile]
+     [MPhilSynopsis.tex]
+     [MPhilSynopsis.pdf]
+     [UAFSynopsis.cls]
+  ]
+\end{forest}
+
+
+essai 
+
+\begin{forest}
+for tree={
+    font=\sffamily,
+    text=white,
+    text width=2cm,
+    minimum height=0.75cm,
+    if level=0
+      {fill=mygreenii}
+      {fill=mygreeni},
+    rounded corners=4pt,
+    grow'=0,
+    child anchor=west,
+    parent anchor=south,
+    anchor=west,
+    calign=first,
+    edge={mygreenii,rounded corners,line width=1pt},
+    edge path={
+      \noexpand\path [draw, \forestoption{edge}]
+      (!u.south west) +(7.5pt,0) |- (.child anchor)\forestoption{edge label};
+    },
+    before typesetting nodes={
+      if n=1
+        {insert before={[,phantom]}}
+        {}
+    },
+    fit=band,
+    s sep=15pt,
+    before computing xy={l=15pt},
+  }
+\end{forest}
+
+
+
+
+
+
+\end{document}

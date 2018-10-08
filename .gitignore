@@ -49,3 +49,8 @@ skelete-fig*.pdf
 /doc/*.gif
 *.aux
 /doc/laby.pdf
+*.log
+gummi.gummi
+*-fig1.mp
+livre-fig*
+/doc/GÉOMÉTROGRAPHIE/livre.idx

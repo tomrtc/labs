@@ -1,3 +1,9 @@
+%%% Local Variables: 
+%%% coding: utf-8
+%%% mode: latex
+%%% TeX-engine: xetex
+%%% TeX-command-extra-options: "-shell-escape"
+%%% End: 
 \documentclass[12pt,a4paper,twocolumn]{book} % 12pt font size, A4 paper and two-sided margins twocolumn,oneside
 
 \usepackage[a4paper,text={16.5cm,25.2cm},centering]{geometry}
@@ -81,7 +87,7 @@
 \includegraphics[width=4cm]{company-logo.eps}
 }
 \pagestyle{plain}
-\title{\thispagestyle{fancy}\flushleft{\HAMA{0010111aa} GÉOMÉTROGRAPHIE    }}
+\title{\thispagestyle{fancy}\flushleft{\HAMA{0010111} GÉOMÉTROGRAPHIE avec  \LaTeX{}}}
 \date{}
 \newcommand\rlArrow[1]{$\color{red}{abc \rightarrow} #1 \color{blue}{\leftarrow} abc$\\}
 
@@ -108,33 +114,8 @@
 
 \chapter{Introduction}
 \thispagestyle{fancy}
-\lettrine{C}{ette introduction} présente en premier lieu l'incontournable ...\textbf{Giordano Bruno (1548-1600)\index{Bruno Giordano}} \LaTeX{}
-$R = \R N = \N Z = \Z sp= \Sp E = \E $ et   $x \ddiv y    floor \floor{x} $
+\lettrine{C}{ette introduction} présente en premier lieu l'incontournable ...\textbf{Giordano Bruno (1548-1600)\index{Bruno Giordano}}
 
-
-\begin{align*}
-    fraction&=\frac{numerator}{denominator}\\
-    &\\
-    \text{fraction}&=\frac{\text{numerator}}{\text{denominator}}
-\end{align*}
-\begin{align}
-F = f_1+f_2+f_3+...+f_n
-\intertext{can be written as}
-\sum_1^n{f_i}
-\end{align}
-The summation of every item is: $\sum$
-
-$$ \textrm{The summation of every item is: } \sum$$
-
-
-\[
-\mathit{def}
-    f(x) =
-    \begin{cases}
-        0 & \text{if $x=0$,}\\
-        \frac{1}{x} & \text{otherwise.}
-    \end{cases}
-\]
 
 \begin{figure*}[t]
 \caption[La taille des planètes]{La queue de la comète\label{billetcomete}}
@@ -144,7 +125,8 @@ $$ \textrm{The summation of every item is: } \sum$$
     \centering
     \shadowbox{\phantom{\rule{4cm}{3cm}}}
     \caption{Phantom figure}
-\end{figure}
+  \end{figure}
+  
 \section{Définitions des expressions mathematiques}
 
 
@@ -177,13 +159,13 @@ endfor
 \end{mpdisplay}
 %\entry{Géométrographie}{définition}{ʒeɔ.me.tʁɔ.ɡʁa.fi}{estArt des constructions géométriques .}
 
-essai de ligne
+
 
 
 \begin{mpdisplay}
 draw fullcircle xscaled 6.5cm yscaled 2\mpdim\baselineskip;
 \end{mpdisplay}
-e1
+
 \begin{mpdisplay}
 u=.5cm;
 z1 = (0,0);
@@ -220,7 +202,11 @@ label.lft("O", z1);
 label.lft("A", z4);
 label.lrt("X", (z4 shifted (-1u,-1u)));
 \end{mpdisplay}
-e5
+
+
+
+
+
 \begin{mpdisplay}
   u=1cm;
   z1=(0,0);
@@ -334,6 +320,7 @@ label.bot(btex $d\theta$ etex,((x5+x6)/2,2.45u));
 
 \lettrine{L}{a théorie} proprement dite qui n'est, en somme, que l'indication
 de notations avec les conventions adoptées.
+
 \begin{mpdisplay}
     numeric u; u:=1.0cm;
     draw (0,0)*u--(1,0)*u;
@@ -362,6 +349,7 @@ Une notation géométrographique \emph{Lemoine}, \Ra{1} \Ra{2} \Rab{1} \Ca{1} \C
 \Ra{1} \gd{1} \gc{1} \gq{1}
 
 Symboles pour la règle : \Ra{1} \Ra{2} ou \gd{1} \gd{2}
+
 
 Tracer une droite quelquonque : \Ra{2}  \gd{}
 
