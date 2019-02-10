@@ -1,0 +1,55 @@
+%%% Local Variables:
+%%% coding: utf-8
+%%% TeX-PDF-mode: t
+%%% TeX-engine: xetex
+%%% End:
+
+\documentclass[a4paper]{tufte-handout}
+% Book metadata
+\title{Hash essay}
+\author[rto]{Rémy Tomasetto}
+
+
+\begin{document}
+Let $U$ be the \emph{universe} the set of all
+possible keys. A set of hash functions
+$H = {h : U → { 0 , 1 , 2 , . . . , m − 1 }}$
+
+
+
+is called a universal family if for any two keys
+$x, y ∈ U, x ̸ = y$ the probability of collision
+
+$Pr [h(x) = h(y )] <= 1/m$
+
+
+
+
+
+
+Operations run in $O( 1 )$
+
+$α = m / n$ is called load factor
+
+$n$ phone numbers stored
+$m$ cardinality of the hash function
+$c$ length of the longest chain
+$O(n + m)$
+memory is used
+
+Lemma
+If number of possible keys is big $( |U| >> m )$,
+for any hash function h there is a bad input
+resulting in many collisions.
+
+
+
+\section{universal}
+
+Define a family (set) of hash functions
+
+\label{sec:universal}
+
+
+
+\end{document}

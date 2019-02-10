@@ -1,0 +1,58 @@
+t allows using arguments in nested macro definitions.
+
+In
+
+\def\a#1{\def\b#1{...}}
+
+the macro \b would not have an argument, since #1 belongs to \a and would be replaced by its argument.
+
+However,
+
+\def\a#1{\def\b##1{...}}
+
+defines \b with an argument. During expansion
+
+    #1 will be replaced by a parameter
+    ## becomes #
+
+Then \b can use #1 instead of the original ##1.
+
+It follows, that for each level of nesting you need to double the number of # characters:
+
+\def\a#1{\def\b##1{\def\c####1{...}}}
+
+Example:
+
+\documentclass{article}
+\def\a#1{\def\b##1{#1 ##1}}
+\begin{document}
+\a{x} % consequence: \def\b#1{x #1}
+\b{y} % prints: x y
+\end{document}
+
+In LaTeX syntax this would be:
+
+\newcommand{\a}[1]{%
+  \newcommand{\b}[1]{#1 ##1}}
+
+or, as \a and \b are already defined, which you would see if you would try it in the small example,
+
+\renewcommand{\a}[1]{%
+  \renewcommand{\b}[1]{#1 ##1}}
+
+
+The problem here is that when you have #1 in a \newcommand definition, that is interpreted as being an argument for the macro itself, and you need to specify how many arguments your macro should take. For example if you define
+
+\newcommand\foo{#1}
+
+that will throw the same error. The correct definition would be
+
+\newcommand\foo[1]{#1}
+
+Where the [1] states that this macro takes one mandatory argument, the default being zero I think, and you would call the macro as
+
+\foo{bar}
+
+When you have a style with an argument, that is (probably) akin to having a second macro definition inside the definition of \Stack. So to make the #1 belong to the style, you need to use ##1 instead, as daleif mentioned. The double # indicates that the argument is for the "inner" macro. See What is the meaning of double pound symbol (number sign, hash character) ##1 in an argument? for more discussion about that.
+
+But in your case you seem to always have the same argument for that style (3), so it would perhaps make more sense to modify the style definition to have rectangle split parts=3 instead of rectangle split parts=#1, and change stack=3 to stack in the node.
