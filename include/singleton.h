@@ -30,6 +30,7 @@ class singleton {
   //  1:  copy-constructor
   //  3:  default-constructor + assigment
   //  2:  naively like 3 but actually is 1.
+  // Copying and assignment must be consistent.!!!
   // copy-constructor
   singleton(const singleton& t_x) // x convention for variables
     : value(t_x.value) {}         // default implementation by compiler : explicit declaration 
@@ -98,6 +99,9 @@ class singleton {
   {
     return !(t_x < t_y);    
   }
+
+	// conversion
+
 }; // this is the important semicolon ; it is used to terminate the class declaration ; for instance 'T' left the lexical scope .
 
 
