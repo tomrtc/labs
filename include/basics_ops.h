@@ -46,6 +46,18 @@ swap_xor(T& t_l, T& t_r)
 
 // min operator
 / first define the moste general mechanism.
+template <typename T, typename Compare>
+// requires Compare defines a StrictWeakOrdering on T
+inline
+const T& min(const T& a, const T& b, Compare cmp) {
+    if (cmp(b, a)) {
+        return b;
+    } else {
+        return a;
+    }
+}
+
+
 template <typename T> // contrainte sur T  tottally-ordered
 inline
 void 
@@ -56,13 +68,15 @@ min(T& t_l, T& t_r)
   // so in a sort context this reduce swap !!!
   // rule min must return the left value in preference.      
   if (t_r < t_l) 
-    {return  t_r;}
+    {
+      return  t_r;
+    }
   else 
     {
       return  t_l;
     }
-
 }
+
 
 
 
@@ -70,29 +84,37 @@ min(T& t_l, T& t_r)
 // There is a problem with this definition of assignment. If there is an
 // exception during the construction, the object is going to be left in 
 // an unacceptable “destroyed” state.
-T& T::operator=(const T& t_rvalue)
+template <typename T> 
+T&
+T::operator=(const T& t_rvalue)
 {
-  if (this != &t_rvalue) {
-    this -> ~T(); // destroy object in place
-    new (this) T(t_rvalue); // construct it in place
-  }
+  if (this != &t_rvalue)
+    {
+      this -> ~T(); // destroy object in place
+      new (this) T(t_rvalue); // construct it in place
+    }
   return *this;
 }
+  
+
 
 // partial specialisation when contaner with size
 // size is an internal information for constructionally complete
-  T& T::operator=(const T& t_rvalue)
-  {
-    if (this != &t_rvalue) {
-      if (this->length == t_rvalue.length)
-        { // no exception no allocation
-        }
-      else 
-        {
-          this -> ~T(); // destroy object in place
-          new (this) T(x); // construct it in place
-        }
-    }
-    return *this;
+template <typename T> 
+T&
+T::operator=(const T& t_rvalue)
+{
+  if (this != &t_rvalue)
+    {
+    if (this->length == t_rvalue.length)
+      { // no exception no allocation
+      }
+    else 
+      {
+        this -> ~T(); // destroy object in place
+        new (this) T(x); // construct it in place
+      }
   }
+  return *this;
+}
  
