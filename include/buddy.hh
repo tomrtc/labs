@@ -19,7 +19,7 @@ public:
   buddy_allocator(const buddy_allocator&)            = delete;
   buddy_allocator& operator=(const buddy_allocator&) = delete;
   // the destructor does not clean the pieces ; it is sometimes not necessary to do that if the process ends just after.
-  // the clean must be explicit using valgrind kind of tools.
+  // the clean must be explicit and checked using valgrind kind of tools.
   ~buddy_allocator()                                 = default;
 
 

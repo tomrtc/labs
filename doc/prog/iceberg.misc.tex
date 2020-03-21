@@ -1,0 +1,29 @@
+
+
+There is a pretty efficient algorithm proposed by Karp Papadimtrioue Shanke, that is finding candidates in a single traversal on the data (it was basically designed for stream processing) in order to find items that have frequency of at least theta for any theta in (0,1).
+
+The algorithm in high level:
+
+    Collect elements into PF, counting their appearances
+    Whenever 1/θ distinct elements are encountered, decrease all counters by 1 and remove from PF those whose counters are zero
+    Output the elements in PF that survive this process
+
+The algorithm yields 1/Theta (at most) candidates, and it has no false negatives (doesn't miss any candidate) - but it does have some false positives (some candidates are not frequent).
+
+For simplicity, assuming 1/Theta is an integer.
+
+Pseudo Code:
+
+PF = {} //empty dictionary
+for each element e:
+   if PF.contains(e):
+       PF[e] = PF[e] + 1
+   else:
+       PF[e] = 1
+       if PF.size() == 1/Theta:
+             for each element k in PF:
+                PF[k] = PF[k] - 1
+                if PF[k] == 0:
+                     remove k from PF
+When done, all elements in PF are your candidates.
+
